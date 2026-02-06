@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "samma-suit"
+version = "0.1.0"
+description = "Samma Suit SDK — 8-layer security framework for AI agent systems"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "OneZeroEight", email = "dev@onezeroeight.ai"}]
+dependencies = [
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+    "starlette>=0.27",
+]
+
+[project.optional-dependencies]
+fastapi = ["fastapi>=0.100"]
+dev = ["pytest>=7.0", "pytest-asyncio>=0.21", "httpx>=0.25"]
+
+[tool.setuptools.packages.find]
+include = ["samma*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"

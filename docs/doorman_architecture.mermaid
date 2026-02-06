@@ -1,0 +1,186 @@
+---
+title: DOORMAN — Sammā Suit Eight-Layer Architecture
+---
+graph TB
+    subgraph EXTERNAL["EXTERNAL WORLD"]
+        WA["📱 WhatsApp"]
+        TG["📱 Telegram"]
+        DC["📱 Discord"]
+        SL["📱 Slack"]
+        SG["📱 Signal"]
+        WEB["🌐 Web / APIs"]
+        SKILLS["🧩 Skill Marketplace"]
+        MOLTBOOK["🤖 Agent Networks"]
+    end
+
+    subgraph LAYER1["LAYER 1: SUTRA — Gateway"]
+        direction LR
+        GW["Gateway Process"]
+        OV["Origin Validator"]
+        TLS["TLS 1.3 Enforcer"]
+        WS["WebSocket Auth"]
+        RL["Rate Limiter"]
+        AL["Connection Allowlist"]
+    end
+
+    subgraph LAYER2["LAYER 2: DHARMA — Permissions"]
+        direction LR
+        RBAC["Role-Based Access Control"]
+        SCOPE["Agent Scope Engine"]
+        PERM["Permission Grants<br/>file_read ≠ file_write ≠ shell ≠ browser"]
+        ESC["Escalation Blocker"]
+    end
+
+    subgraph LAYER3["LAYER 3: SANGHA — Skill Vetting"]
+        direction LR
+        SCAN["Automated Scanner"]
+        SIG["Signature Matcher<br/>(AMOS, ClawHavoc)"]
+        SAND["Sandbox Evaluator"]
+        REV["Manual Review Queue"]
+        VREG["Vetted Registry"]
+    end
+
+    subgraph LAYER4["LAYER 4: KARMA — Cost Controls"]
+        direction LR
+        BUD["Per-Agent Budget Caps"]
+        TOK["Token Optimizer"]
+        CRON["Smart Cron Scheduler"]
+        ALERT["Cost Alert System"]
+        THROT["Auto-Throttle"]
+    end
+
+    subgraph LAYER5["LAYER 5: SILA — Audit Trail"]
+        direction LR
+        LOG["Activity Logger"]
+        ANOM["Anomaly Detector"]
+        MEM_INT["Memory Integrity"]
+        POISON["Poison Detection<br/>(time-shifted injection)"]
+    end
+
+    subgraph LAYER6["LAYER 6: METTA — Identity"]
+        direction LR
+        CRYPT["Crypto Agent Signing"]
+        STAKE["SUTRA Staking"]
+        MUTUAL["Mutual Auth<br/>(inter-agent)"]
+        BADGE["Verified Badge"]
+    end
+
+    subgraph LAYER7["LAYER 7: BODHI — Isolation"]
+        direction LR
+        PROC["Process Sandbox"]
+        NET["Network Egress Allowlist"]
+        FS["Filesystem Isolation"]
+        LAT["Lateral Movement Block"]
+    end
+
+    subgraph AGENTS["AGENT RUNTIME"]
+        direction LR
+        A1["⚡ Agent 1<br/>Email"]
+        A2["🎤 Agent 2<br/>Code"]
+        A3["🌙 Agent 3<br/>Calendar"]
+        A4["💜 Agent 4<br/>Browser"]
+        AN["... Agent N"]
+    end
+
+    subgraph LAYER8["LAYER 8: NIRVANA — Recovery"]
+        direction LR
+        SNAP["State Snapshots"]
+        ROLL["1-Click Rollback"]
+        KILL["Kill Switches<br/>(per-agent + global)"]
+        DEAD["Dead Man's Switch"]
+        IRP["Incident Response<br/>Playbooks"]
+    end
+
+    subgraph STORAGE["LOCAL STORAGE"]
+        MEM["📝 Memory<br/>(Markdown)"]
+        CONFIG["⚙️ Config"]
+        FILES["📁 User Files"]
+        AUDIT["📊 Audit Logs"]
+    end
+
+    subgraph MODELS["AI MODELS"]
+        CLAUDE["Claude (Anthropic)"]
+        GPT["GPT (OpenAI)"]
+        LOCAL["Local Models<br/>(Ollama)"]
+    end
+
+    subgraph TOKEN["SUTRA TOKEN (Polygon)"]
+        SUB_C["DoormanSubscription.sol"]
+        STK_C["DoormanStaking.sol"]
+        RWD_C["DoormanRewards.sol"]
+        GOV_C["DoormanGovernance.sol"]
+        BNT_C["DoormanBounty.sol"]
+        SUSHI["SushiSwap TWAP Oracle"]
+    end
+
+    %% Connections
+    WA & TG & DC & SL & SG --> GW
+    WEB --> GW
+    SKILLS --> SCAN
+    MOLTBOOK --> GW
+
+    GW --> OV --> TLS --> WS --> RL --> AL
+    AL --> RBAC
+
+    RBAC --> SCOPE --> PERM --> ESC
+    ESC --> AGENTS
+
+    SCAN --> SIG --> SAND --> REV --> VREG
+    VREG --> AGENTS
+
+    AGENTS --> BUD
+    BUD --> TOK --> CRON --> ALERT --> THROT
+
+    AGENTS --> LOG
+    LOG --> ANOM --> MEM_INT --> POISON
+
+    AGENTS --> CRYPT
+    CRYPT --> STAKE --> MUTUAL --> BADGE
+
+    A1 & A2 & A3 & A4 & AN --> PROC
+    PROC --> NET --> FS --> LAT
+
+    AGENTS --> SNAP
+    SNAP --> ROLL --> KILL --> DEAD --> IRP
+
+    AGENTS <--> MEM
+    AGENTS <--> CONFIG
+    AGENTS <--> FILES
+    LOG --> AUDIT
+
+    AGENTS <--> CLAUDE
+    AGENTS <--> GPT
+    AGENTS <--> LOCAL
+
+    STAKE --> STK_C
+    SUB_C --> SUSHI
+    VREG --> RWD_C
+
+    %% Styling
+    classDef layer1 fill:#7C3AED,stroke:#7C3AED,color:#fff
+    classDef layer2 fill:#059669,stroke:#059669,color:#fff
+    classDef layer3 fill:#00D4FF,stroke:#00D4FF,color:#000
+    classDef layer4 fill:#FFD700,stroke:#FFD700,color:#000
+    classDef layer5 fill:#EA580C,stroke:#EA580C,color:#fff
+    classDef layer6 fill:#FF6B9D,stroke:#FF6B9D,color:#000
+    classDef layer7 fill:#0EA5E9,stroke:#0EA5E9,color:#fff
+    classDef layer8 fill:#DC2626,stroke:#DC2626,color:#fff
+    classDef agent fill:#111126,stroke:#7C3AED,color:#fff
+    classDef external fill:#1A1A2E,stroke:#4D4D66,color:#B3B3CC
+    classDef storage fill:#1C1917,stroke:#CA8A04,color:#FFD700
+    classDef model fill:#0A1628,stroke:#0EA5E9,color:#00D4FF
+    classDef token fill:#1E1B4B,stroke:#7C3AED,color:#A78BFA
+
+    class GW,OV,TLS,WS,RL,AL layer1
+    class RBAC,SCOPE,PERM,ESC layer2
+    class SCAN,SIG,SAND,REV,VREG layer3
+    class BUD,TOK,CRON,ALERT,THROT layer4
+    class LOG,ANOM,MEM_INT,POISON layer5
+    class CRYPT,STAKE,MUTUAL,BADGE layer6
+    class PROC,NET,FS,LAT layer7
+    class SNAP,ROLL,KILL,DEAD,IRP layer8
+    class A1,A2,A3,A4,AN agent
+    class WA,TG,DC,SL,SG,WEB,SKILLS,MOLTBOOK external
+    class MEM,CONFIG,FILES,AUDIT storage
+    class CLAUDE,GPT,LOCAL model
+    class SUB_C,STK_C,RWD_C,GOV_C,BNT_C,SUSHI token
