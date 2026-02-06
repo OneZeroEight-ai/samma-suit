@@ -6,13 +6,13 @@
 
 ## Task 1: Update & Deploy Landing Page → sammasuit.com
 
-### 1A. Update `samma/docs/doorman_landing.html`
+### 1A. Update `samma/docs/samma_landing.html`
 
 The landing page is production-ready but has placeholder links and a Cloudflare email-obfuscated address. Fix these:
 
 **Replace all `href="#"` placeholder links:**
 - `Contact Us` button (line ~1040) → `mailto:info@sammasuit.com`
-- `Talk to Sales` button (line ~1055) → `mailto:info@sammasuit.com?subject=DOORMAN%20Enterprise%20Inquiry`
+- `Talk to Sales` button (line ~1055) → `mailto:info@sammasuit.com?subject=Samma%20Suit%20Enterprise%20Inquiry`
 
 **Replace the obfuscated email in the footer (line ~1075):**
 ```html
@@ -38,7 +38,7 @@ Currently points to `https://sammasuit.com`. Change to:
 
 **Update the copyright line (line ~1079):**
 ```html
-<div class="copy">© 2026 OneZeroEight.ai — DOORMAN powered by the Sammā Suit</div>
+<div class="copy">© 2026 OneZeroEight.ai — Powered by the Sammā Suit</div>
 ```
 
 **Remove the Cloudflare email decode script (line ~1083):**
@@ -46,21 +46,21 @@ Delete the `<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudfla
 
 **Add meta tags to `<head>` for SEO and social sharing:**
 ```html
-<meta name="description" content="DOORMAN — Eight layers of Right Protection for autonomous AI agents. The Sammā Suit security framework by OneZeroEight.">
-<meta property="og:title" content="DOORMAN — Sammā Suit by OneZeroEight">
+<meta name="description" content="Sammā Suit — Eight layers of Right Protection for autonomous AI agents. The security framework by OneZeroEight.">
+<meta property="og:title" content="Sammā Suit by OneZeroEight">
 <meta property="og:description" content="Eight layers of Right Protection for autonomous AI agents. Open-source security framework.">
 <meta property="og:url" content="https://sammasuit.com">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@OneZeroEight_ai">
-<meta name="twitter:title" content="DOORMAN — Sammā Suit">
+<meta name="twitter:title" content="Sammā Suit by OneZeroEight">
 <meta name="twitter:description" content="Eight layers of Right Protection for autonomous AI agents.">
 ```
 
 ### 1B. Deploy to sammasuit.com
 
 The domain is registered. Determine hosting setup:
-- **If using Cloudflare Pages:** Create a simple static site. The entire site is one HTML file. Create an `index.html` from the updated `doorman_landing.html`. Deploy.
+- **If using Cloudflare Pages:** Create a simple static site. The entire site is one HTML file. Create an `index.html` from the updated `samma_landing.html`. Deploy.
 - **If using GitHub Pages:** Can serve from the `samma-suit` repo (see Task 2), `docs/` folder or gh-pages branch.
 - **If using Railway (where the backend already lives):** Add a static file route.
 
@@ -96,13 +96,13 @@ samma-suit/
 ├── tests/                     # 60 passing tests
 ├── docs/                      # The 7 deliverables + CLAUDE.md
 │   ├── CLAUDE.md
-│   ├── DOORMAN_Pitch.pdf
-│   ├── DOORMAN_Eight_Layer_Armor_Spec.docx
-│   ├── DOORMAN_IP_Strategy.md
-│   ├── doorman_landing.html   # (updated version from Task 1)
-│   ├── doorman_manifesto.md
-│   ├── doorman_architecture.mermaid
-│   └── doorman_sutra_integration.md
+│   ├── SAMMA_SUIT_Pitch.pdf
+│   ├── SAMMA_SUIT_Eight_Layer_Armor_Spec.docx
+│   ├── SAMMA_SUIT_IP_Strategy.md
+│   ├── samma_landing.html   # (updated version from Task 1)
+│   ├── samma_manifesto.md
+│   ├── samma_architecture.mermaid
+│   └── samma_sutra_integration.md
 ├── examples/
 │   └── fastapi_demo.py        # Minimal working example of mounting Sammā Suit on a FastAPI app
 └── .github/
@@ -188,7 +188,7 @@ Ask me to create the GitHub repo first if it doesn't exist yet.
 
 ### 3A. Prepare the blog post
 
-The manifesto is at `samma/docs/doorman_manifesto.md`. It needs these updates before publishing:
+The manifesto is at `samma/docs/samma_manifesto.md`. It needs these updates before publishing:
 
 **Add at the top (after the title):**
 ```markdown

@@ -3,16 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DOORMAN — Sammā Suit | sammasuit.com | Eight-Layer Agent Armor by OneZeroEight</title>
-<meta name="description" content="DOORMAN — Eight layers of Right Protection for autonomous AI agents. The Sammā Suit security framework by OneZeroEight.">
-<meta property="og:title" content="DOORMAN — Sammā Suit by OneZeroEight">
+<title>Sammā Suit | sammasuit.com | Eight-Layer Agent Armor by OneZeroEight</title>
+<meta name="description" content="Sammā Suit — Eight layers of Right Protection for autonomous AI agents. The security framework by OneZeroEight.">
+<meta property="og:title" content="Sammā Suit by OneZeroEight">
 <meta property="og:description" content="Eight layers of Right Protection for autonomous AI agents. Open-source security framework.">
 <meta property="og:url" content="https://sammasuit.com">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@OneZeroEight_ai">
-<meta name="twitter:title" content="DOORMAN — Sammā Suit">
+<meta name="twitter:title" content="Sammā Suit by OneZeroEight">
 <meta name="twitter:description" content="Eight layers of Right Protection for autonomous AI agents.">
+<link rel="icon" type="image/x-icon" href="images/agents/favicon.ico">
+<link rel="apple-touch-icon" href="images/agents/apple-touch-icon.png">
+<meta property="og:image" content="https://sammasuit.com/images/agents/og-image.png">
+<meta name="twitter:image" content="https://sammasuit.com/images/agents/og-image.png">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -200,6 +204,40 @@ nav {
   display: flex;
   gap: 16px;
   animation: fadeIn 0.8s ease-out 0.3s both;
+}
+
+.hero-avatar {
+  text-align: center;
+  margin-bottom: 2rem;
+  animation: fadeIn 0.8s ease-out both;
+}
+
+.hero-avatar img {
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  border: 2px solid var(--purple);
+  box-shadow: 0 0 40px var(--purple-glow), 0 0 80px rgba(0, 212, 255, 0.1);
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.armor-avatar {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.armor-avatar img {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  border: 2px solid var(--purple);
+  box-shadow: 0 0 30px var(--purple-glow);
+  opacity: 0.9;
 }
 
 .btn {
@@ -798,7 +836,6 @@ footer .copy {
     <a href="#armor">Armor</a>
     <a href="#features">Features</a>
     <a href="#pricing">Pricing</a>
-    <a href="https://onezeroeight.ai">Platform</a>
     <a href="https://discord.gg/4A6ExTnKnK">Discord</a>
     <a href="https://sammasuit.com" class="btn btn-primary" style="padding:8px 16px;font-size:0.85rem;">sammasuit.com</a>
   </div>
@@ -807,8 +844,11 @@ footer .copy {
 <!-- HERO -->
 <section class="hero">
   <div class="hero-glow"></div>
+  <div class="hero-avatar">
+    <img src="images/agents/pulse_avatar.png" alt="Sammā Suit" width="280" height="280">
+  </div>
   <div class="hero-badge">PRODUCT CONCEPT • FEBRUARY 2026</div>
-  <h1>DOOR<span class="accent">MAN</span></h1>
+  <h1>SAMMĀ <span class="accent">SUIT</span></h1>
   <p class="hero-sub">
     <strong>The Sammā Suit</strong> — eight layers of Right Protection for autonomous AI agents.
     Every feature OpenClaw offers — messaging, memory, proactive tasks, skills, system access —
@@ -881,6 +921,9 @@ footer .copy {
 <!-- ARMOR -->
 <section class="armor" id="armor">
   <div class="section-label purple">THE SAMMĀ SUIT</div>
+  <div class="armor-avatar">
+    <img src="images/agents/pulse_avatar.png" alt="Sammā Suit Sentinel" width="180" height="180">
+  </div>
   <h2 class="section-title">Eight Layers of Right Protection.<br>Always on. Never optional.</h2>
   <p class="section-desc">Named for the Pali word at the heart of the Noble Eightfold Path. Inspired by Samus Aran's armor. Every layer protects against a specific class of vulnerability that OpenClaw leaves exposed.</p>
 
@@ -947,7 +990,7 @@ footer .copy {
       <tr>
         <th>Feature</th>
         <th>OC</th>
-        <th>DM</th>
+        <th>SS</th>
         <th>Armor Layer</th>
       </tr>
     </thead>
@@ -1061,7 +1104,7 @@ footer .copy {
         <li>Unlimited agents</li>
         <li>Dedicated SLA</li>
       </ul>
-      <a href="mailto:info@sammasuit.com?subject=DOORMAN%20Enterprise%20Inquiry" class="btn btn-ghost">Talk to Sales</a>
+      <a href="mailto:info@sammasuit.com?subject=Samma%20Suit%20Enterprise%20Inquiry" class="btn btn-ghost">Talk to Sales</a>
     </div>
   </div>
 </section>
@@ -1085,7 +1128,7 @@ footer .copy {
     <a href="https://discord.gg/4A6ExTnKnK">Discord</a>
     <a href="https://x.com/OneZeroEight_ai">@OneZeroEight_ai</a>
   </div>
-  <div class="copy">© 2026 OneZeroEight.ai — DOORMAN powered by the Sammā Suit</div>
+  <div class="copy">© 2026 OneZeroEight.ai — Powered by the Sammā Suit</div>
 </footer>
 
 <!-- SCROLL ANIMATIONS -->

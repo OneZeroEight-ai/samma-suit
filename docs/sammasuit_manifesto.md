@@ -100,7 +100,7 @@ We're publishing the full Sammā Suit framework as an open-source governance SDK
 
 ## What We're Building
 
-**DOORMAN** is our answer, powered by the **Sammā Suit** — eight layers of Right Protection for your AI agents. It delivers every feature OpenClaw offers — multi-channel messaging, persistent memory, proactive heartbeats, extensible skills, system access, model agnosticism, self-hosting — with all eight armor layers active from day one.
+**Sammā Suit** is our answer — eight layers of Right Protection for your AI agents. It delivers every feature OpenClaw offers — multi-channel messaging, persistent memory, proactive heartbeats, extensible skills, system access, model agnosticism, self-hosting — with all eight armor layers active from day one.
 
 Not a wrapper. Not a patch. A platform built on the same architecture we use to run 16 agents in production.
 
@@ -109,8 +109,8 @@ The philosophy is simple, borrowed from how we compensate our genre agents: **ag
 We're releasing it in phases:
 
 1. **Open-source Sammā Suit SDK** — the eight-layer framework, free, on GitHub at **sammasuit.com**. Use it with OpenClaw, use it with anything.
-2. **Doorman Pro** — managed hosting with the full Sammā Suit, vetted skill marketplace, cost dashboard, audit logs. $29/month.
-3. **Doorman Enterprise** — SSO, compliance reporting, custom policies, SUTRA token integration. For the 22% of enterprises where employees are already running agents.
+2. **Sammā Suit Pro** — managed hosting with the full Sammā Suit, vetted skill marketplace, cost dashboard, audit logs. $29/month.
+3. **Sammā Suit Enterprise** — SSO, compliance reporting, custom policies, SUTRA token integration. For the 22% of enterprises where employees are already running agents.
 
 ---
 

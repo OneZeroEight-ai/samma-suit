@@ -49,7 +49,7 @@ MIT licensed. Python 3.10+. FastAPI native.
 
 GitHub: https://github.com/OneZeroEight-ai/samma-suit
 Site: https://sammasuit.com
-Manifesto: https://sammasuit.com (docs/doorman_manifesto.md in the repo)
+Manifesto: https://sammasuit.com (docs/samma_manifesto.md in the repo)
 
 ---
 

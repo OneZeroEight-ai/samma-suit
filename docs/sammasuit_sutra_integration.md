@@ -1,4 +1,4 @@
-# SUTRA Token Integration Spec — DOORMAN (Sammā Suit)
+# SUTRA Token Integration Spec — Sammā Suit
 
 > How the SUTRA token economy extends from music promotion into agent governance via the Sammā Suit
 
@@ -6,7 +6,7 @@
 
 ## Overview
 
-DOORMAN, powered by the **Sammā Suit** (eight layers of Right Protection), introduces new utility for the SUTRA token (Polygon, contract `0x0b3f81d3e1fa01e911a8b4e49048eea0ddf2a896`) by integrating it as the native payment and incentive layer for the agent governance platform.
+The **Sammā Suit** (eight layers of Right Protection) introduces new utility for the SUTRA token (Polygon, contract `0x0b3f81d3e1fa01e911a8b4e49048eea0ddf2a896`) by integrating it as the native payment and incentive layer for the agent governance platform.
 
 **Current SUTRA Utility (Music Platform):**
 - Curator rewards: 50 SUTRA per honest placement
@@ -14,7 +14,7 @@ DOORMAN, powered by the **Sammā Suit** (eight layers of Right Protection), intr
 - Artist payments: 20% discount vs USD
 - Holder benefits: discounts for token holders
 
-**New SUTRA Utility (Doorman):**
+**New SUTRA Utility (Sammā Suit):**
 - Subscription payments with 20% discount
 - Skill developer rewards for vetted marketplace contributions
 - Agent staking for identity verification
@@ -27,14 +27,14 @@ DOORMAN, powered by the **Sammā Suit** (eight layers of Right Protection), intr
 
 ### 1. Subscription Payments
 
-Users can pay for Doorman Pro, Team, and Enterprise tiers in SUTRA at a 20% discount.
+Users can pay for Sammā Suit Pro, Team, and Enterprise tiers in SUTRA at a 20% discount.
 
 ```
 PAYMENT FLOW
 ─────────────────────────────────────────────
 User wallet (Polygon)
   │
-  ├─── SUTRA transfer ──→ Doorman Treasury
+  ├─── SUTRA transfer ──→ Sammā Suit Treasury
   │                         │
   │                         ├── 70% → Operations reserve
   │                         ├── 20% → Skill developer rewards pool
@@ -56,7 +56,7 @@ User wallet (Polygon)
 
 ### 2. Skill Developer Rewards
 
-Developers who publish vetted skills to the Doorman marketplace earn SUTRA.
+Developers who publish vetted skills to the Sammā Suit marketplace earn SUTRA.
 
 ```
 SKILL REWARD FLOW
@@ -79,7 +79,7 @@ Developer submits skill
 
 ### 3. Agent Identity Staking (METTA Layer)
 
-To create a verified agent identity on Doorman, users stake a small amount of SUTRA. This creates economic cost for identity spam/spoofing.
+To create a verified agent identity on the Sammā Suit platform, users stake a small amount of SUTRA. This creates economic cost for identity spam/spoofing.
 
 ```
 IDENTITY STAKING
@@ -102,7 +102,7 @@ User creates agent
 
 ### 4. Governance Voting
 
-SUTRA holders can vote on Doorman platform policies:
+SUTRA holders can vote on Sammā Suit platform policies:
 
 - **Skill marketplace policies** — what categories of skills are permitted
 - **Default permission templates** — which DHARMA permission sets ship as defaults
@@ -143,35 +143,35 @@ Pool: 10% of SUTRA subscription revenue + dedicated allocation
 ### Contracts Required
 
 ```
-DOORMAN CONTRACTS (Polygon)
+SAMMĀ SUIT CONTRACTS (Polygon)
 ─────────────────────────────────────────────
 
-1. DoormanSubscription.sol
+1. SammaSuitSubscription.sol
    - Accepts SUTRA payments for subscriptions
    - Calculates SUTRA price using SushiSwap TWAP oracle
    - Mints subscription NFT (access token)
    - Handles renewals and cancellations
    - Distributes to treasury splits (70/20/10)
 
-2. DoormanStaking.sol
+2. SammaSuitStaking.sol
    - Accepts SUTRA stakes for agent identity
    - Manages lock periods (30-day minimum)
    - Implements slash conditions
    - Emits identity attestation events
 
-3. DoormanRewards.sol
+3. SammaSuitRewards.sol
    - Manages skill developer reward pool
    - Tracks install counts (off-chain oracle)
    - Distributes monthly rewards proportionally
    - Handles one-time listing rewards
 
-4. DoormanGovernance.sol
+4. SammaSuitGovernance.sol
    - Proposal creation (10,000 SUTRA minimum)
    - Voting (snapshot-based, 1 token = 1 vote)
    - Quorum checking (5% of circulating supply)
    - Execution queue with timelock
 
-5. DoormanBounty.sol
+5. SammaSuitBounty.sol
    - Bounty pool management
    - Payout approval (multisig: 3-of-5 team members)
    - Tier-based reward distribution
@@ -179,17 +179,17 @@ DOORMAN CONTRACTS (Polygon)
 
 ### Integration with Existing SUTRA Contract
 
-The existing SUTRA token contract (`0x0b3f...a896`) remains unchanged. Doorman contracts interact with it via standard ERC-20 `approve` + `transferFrom` patterns.
+The existing SUTRA token contract (`0x0b3f...a896`) remains unchanged. Sammā Suit contracts interact with it via standard ERC-20 `approve` + `transferFrom` patterns.
 
 ```
 EXISTING                    NEW
 ────────                    ───
-SUTRA Token (ERC-20)  ←──→  DoormanSubscription
-         on Polygon   ←──→  DoormanStaking
-                      ←──→  DoormanRewards
-                      ←──→  DoormanGovernance
-                      ←──→  DoormanBounty
-                      
+SUTRA Token (ERC-20)  ←──→  SammaSuitSubscription
+         on Polygon   ←──→  SammaSuitStaking
+                      ←──→  SammaSuitRewards
+                      ←──→  SammaSuitGovernance
+                      ←──→  SammaSuitBounty
+
 SushiSwap Pool  ──────────→  Price Oracle (TWAP)
 ```
 
@@ -197,7 +197,7 @@ SushiSwap Pool  ──────────→  Price Oracle (TWAP)
 
 ## Token Economics Impact
 
-### Supply Allocation for Doorman
+### Supply Allocation for Sammā Suit
 
 From the existing 108,000,000 SUTRA total supply:
 
@@ -205,13 +205,13 @@ From the existing 108,000,000 SUTRA total supply:
 |-----------|--------|---------|
 | Skill Developer Rewards | 5,000,000 SUTRA | 3-year vesting for marketplace incentives |
 | Security Bounty Pool | 2,000,000 SUTRA | Ongoing security researcher rewards |
-| Early Adopter Airdrop | 1,000,000 SUTRA | First 1,000 Doorman Pro subscribers |
+| Early Adopter Airdrop | 1,000,000 SUTRA | First 1,000 Sammā Suit Pro subscribers |
 | Governance Bootstrap | 500,000 SUTRA | Initial governance proposal funding |
-| **Total Doorman Allocation** | **8,500,000 SUTRA** | **~7.9% of total supply** |
+| **Total Sammā Suit Allocation** | **8,500,000 SUTRA** | **~7.9% of total supply** |
 
 ### Demand Drivers
 
-Doorman creates new SUTRA demand through:
+Sammā Suit creates new SUTRA demand through:
 
 1. **Subscription payments** — recurring buy pressure from Pro/Team/Enterprise users paying in SUTRA for the 20% discount
 2. **Identity staking** — SUTRA locked in staking contracts (removed from circulating supply)
@@ -222,7 +222,7 @@ Doorman creates new SUTRA demand through:
 
 | Metric | Month 1 | Month 6 | Month 12 |
 |--------|---------|---------|----------|
-| Doorman Pro subscribers | 100 | 1,000 | 5,000 |
+| Sammā Suit Pro subscribers | 100 | 1,000 | 5,000 |
 | SUTRA subscribers (50% uptake) | 50 | 500 | 2,500 |
 | Monthly SUTRA subscription revenue | ~$1,160 equiv | ~$11,600 equiv | ~$58,000 equiv |
 | Staked agents (100 SUTRA each) | 200 | 3,000 | 20,000 |
@@ -234,31 +234,31 @@ Doorman creates new SUTRA demand through:
 ## Implementation Phases
 
 ### Phase 1: Subscription Payments (Launch)
-- Deploy DoormanSubscription.sol
+- Deploy SammaSuitSubscription.sol
 - Integrate SushiSwap TWAP oracle for pricing
-- Add SUTRA payment option to Doorman checkout
+- Add SUTRA payment option to Sammā Suit checkout
 - Mint subscription NFTs as access tokens
 
 ### Phase 2: Identity Staking (Month 2)
-- Deploy DoormanStaking.sol
+- Deploy SammaSuitStaking.sol
 - Integrate with METTA identity layer
 - Verified badge system for staked agents
 - Slash condition monitoring
 
 ### Phase 3: Skill Rewards (Month 3)
-- Deploy DoormanRewards.sol
+- Deploy SammaSuitRewards.sol
 - Off-chain oracle for install count tracking
 - Monthly distribution automation
 - Developer dashboard for earnings tracking
 
 ### Phase 4: Governance (Month 4)
-- Deploy DoormanGovernance.sol
+- Deploy SammaSuitGovernance.sol
 - Initial proposals for community input
-- Voting interface in Doorman dashboard
+- Voting interface in Sammā Suit dashboard
 - Timelock execution for passed proposals
 
 ### Phase 5: Security Bounties (Month 5)
-- Deploy DoormanBounty.sol
+- Deploy SammaSuitBounty.sol
 - Public bounty program announcement
 - Integration with existing security research community
 - Multisig payout approval process
@@ -268,7 +268,7 @@ Doorman creates new SUTRA demand through:
 ## Flywheel Effect
 
 ```
-More Doorman users
+More Sammā Suit users
        │
        ▼
 More SUTRA demand (subscriptions, staking)
@@ -283,7 +283,7 @@ More attractive skill developer rewards
 Better skill marketplace
        │
        ▼
-More Doorman users ←──── (cycle repeats)
+More Sammā Suit users ←──── (cycle repeats)
        │
        ▼
 More security bounty funding
@@ -311,9 +311,9 @@ Enterprise trust → Enterprise subscriptions → More SUTRA demand
 
 ## Summary
 
-DOORMAN's Sammā Suit extends SUTRA from a music-industry token into a general-purpose agent governance token. Every interaction with the Doorman platform — subscribing, staking identities, publishing skills, voting on policies, reporting vulnerabilities — creates a SUTRA transaction. The token becomes the connective tissue between security, incentives, and governance.
+The Sammā Suit extends SUTRA from a music-industry token into a general-purpose agent governance token. Every interaction with the Sammā Suit platform — subscribing, staking identities, publishing skills, voting on policies, reporting vulnerabilities — creates a SUTRA transaction. The token becomes the connective tissue between security, incentives, and governance.
 
-The music platform proved the model: agents earn for outcomes, not activity. Doorman scales that model to the entire AI agent ecosystem.
+The music platform proved the model: agents earn for outcomes, not activity. Sammā Suit scales that model to the entire AI agent ecosystem.
 
 ---
 
