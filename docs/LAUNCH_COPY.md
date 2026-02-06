@@ -47,7 +47,7 @@ suit.activate_dharma()
 
 MIT licensed. Python 3.10+. FastAPI native.
 
-GitHub: https://github.com/onezeroeight/samma-suit
+GitHub: https://github.com/OneZeroEight-ai/samma-suit
 Site: https://sammasuit.com
 Manifesto: https://sammasuit.com (docs/doorman_manifesto.md in the repo)
 
@@ -77,7 +77,7 @@ We run 16 AI agents in production at OneZeroEight.ai and just open-sourced the s
 
 MIT licensed Python package. Layers 1-2 fully implemented, 3-8 stubbed.
 
-https://github.com/onezeroeight/samma-suit
+https://github.com/OneZeroEight-ai/samma-suit
 
 ---
 
@@ -109,7 +109,7 @@ suit.activate_sutra(settings=SUTRASettings(
 suit.activate_dharma()
 ```
 
-GitHub: https://github.com/onezeroeight/samma-suit
+GitHub: https://github.com/OneZeroEight-ai/samma-suit
 
 Built by OneZeroEight.ai — we run 16 AI agents in production managing music promotion.
 
@@ -130,7 +130,7 @@ We built it because we run 16 AI agents in production at OneZeroEight.ai and nee
 - Single-worker friendly (Railway, fly.io, etc.)
 - MIT licensed
 
-https://github.com/onezeroeight/samma-suit
+https://github.com/OneZeroEight-ai/samma-suit
 
 ---
 
@@ -177,7 +177,7 @@ Layers 1-2 are fully implemented with 60 tests passing. Layers 3-8 are stubbed a
 **Tweet 6:**
 Read the full manifesto: sammasuit.com
 
-GitHub: github.com/onezeroeight/samma-suit
+GitHub: github.com/OneZeroEight-ai/samma-suit
 Discord: discord.gg/4A6ExTnKnK
 
 Same firepower. Built-in protection.
@@ -198,7 +198,7 @@ Layers 1-2 (SUTRA gateway + DHARMA permissions) are fully implemented with 60 te
 
 `pip install samma-suit`
 
-**GitHub:** https://github.com/onezeroeight/samma-suit
+**GitHub:** https://github.com/OneZeroEight-ai/samma-suit
 **Site:** https://sammasuit.com
 **Manifesto:** Read "We Run 16 AI Agents in Production. Here's What OpenClaw Gets Wrong." in the repo docs.
 

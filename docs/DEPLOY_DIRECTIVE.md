@@ -26,14 +26,14 @@ The landing page is production-ready but has placeholder links and a Cloudflare 
 **Update the final CTA section (line ~1065):**
 Add a GitHub button alongside the Discord button:
 ```html
-<a href="https://github.com/onezeroeight/samma-suit" class="btn btn-primary">View on GitHub</a>
+<a href="https://github.com/OneZeroEight-ai/samma-suit" class="btn btn-primary">View on GitHub</a>
 <a href="https://discord.gg/4A6ExTnKnK" class="btn btn-ghost">Join the Discord</a>
 ```
 
 **Update the View on GitHub button (line ~1010):**
 Currently points to `https://sammasuit.com`. Change to:
 ```html
-<a href="https://github.com/onezeroeight/samma-suit" class="btn btn-ghost">View on GitHub</a>
+<a href="https://github.com/OneZeroEight-ai/samma-suit" class="btn btn-ghost">View on GitHub</a>
 ```
 
 **Update the copyright line (line ~1079):**
@@ -176,7 +176,7 @@ git init
 git add .
 git commit -m "🛡️ Sammā Suit v0.1.0 — Eight layers of Right Protection for AI agents"
 git branch -M main
-git remote add origin https://github.com/onezeroeight/samma-suit.git
+git remote add origin https://github.com/OneZeroEight-ai/samma-suit.git
 git push -u origin main
 ```
 
@@ -192,7 +192,7 @@ The manifesto is at `samma/docs/doorman_manifesto.md`. It needs these updates be
 
 **Add at the top (after the title):**
 ```markdown
-> 🛡️ The Sammā Suit is now open source → [github.com/onezeroeight/samma-suit](https://github.com/onezeroeight/samma-suit)
+> 🛡️ The Sammā Suit is now open source → [github.com/OneZeroEight-ai/samma-suit](https://github.com/OneZeroEight-ai/samma-suit)
 > 📧 info@sammasuit.com | 🌐 sammasuit.com
 ```
 
@@ -206,7 +206,7 @@ The manifesto is at `samma/docs/doorman_manifesto.md`. It needs these updates be
 pip install samma-suit
 ```
 
-→ [GitHub](https://github.com/onezeroeight/samma-suit) · [sammasuit.com](https://sammasuit.com) · [Discord](https://discord.gg/4A6ExTnKnK)
+→ [GitHub](https://github.com/OneZeroEight-ai/samma-suit) · [sammasuit.com](https://sammasuit.com) · [Discord](https://discord.gg/4A6ExTnKnK)
 ```
 
 ### 3B. Publish to these channels

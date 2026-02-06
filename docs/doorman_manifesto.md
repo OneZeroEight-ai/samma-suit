@@ -2,7 +2,7 @@
 
 *By the OneZeroEight team · February 2026*
 
-> The Samma Suit is now open source → [github.com/onezeroeight/samma-suit](https://github.com/onezeroeight/samma-suit)
+> The Samma Suit is now open source → [github.com/OneZeroEight-ai/samma-suit](https://github.com/OneZeroEight-ai/samma-suit)
 > info@sammasuit.com | [sammasuit.com](https://sammasuit.com)
 
 ---
@@ -138,4 +138,4 @@ Same firepower. Built-in protection. Eight layers of Right Protection.
 pip install samma-suit
 ```
 
-[GitHub](https://github.com/onezeroeight/samma-suit) · [sammasuit.com](https://sammasuit.com) · [Discord](https://discord.gg/4A6ExTnKnK)
+[GitHub](https://github.com/OneZeroEight-ai/samma-suit) · [sammasuit.com](https://sammasuit.com) · [Discord](https://discord.gg/4A6ExTnKnK)
