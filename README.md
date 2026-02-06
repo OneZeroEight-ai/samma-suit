@@ -68,12 +68,12 @@ See [`examples/fastapi_demo.py`](examples/fastapi_demo.py) for a complete runnab
 |---|-------|----------|--------|
 | 1 | **SUTRA** | Gateway — rate limiting, origin validation, TLS | Active |
 | 2 | **DHARMA** | Permissions — roles, policy engine, default-deny | Active |
-| 3 | **SANGHA** | Skill Vetting — scan, sandbox, approve skills | Stub |
-| 4 | **KARMA** | Cost Controls — per-agent budgets, spend tracking | Stub |
-| 5 | **SILA** | Audit Trail — event logging, anomaly detection | Stub |
-| 6 | **METTA** | Identity — cryptographic agent signing | Stub |
-| 7 | **BODHI** | Isolation — process sandboxing, egress control | Stub |
-| 8 | **NIRVANA** | Recovery — state snapshots, rollback, kill switches | Stub |
+| 3 | **SANGHA** | Skill Vetting — scan, sandbox, approve skills | Active |
+| 4 | **KARMA** | Cost Controls — per-agent budgets, spend tracking | Active |
+| 5 | **SILA** | Audit Trail — event logging, anomaly detection | Active |
+| 6 | **METTA** | Identity — cryptographic agent signing | Active |
+| 7 | **BODHI** | Isolation — process sandboxing, egress control | Active |
+| 8 | **NIRVANA** | Recovery — state snapshots, rollback, kill switches | Active |
 
 ## SUTRA (Layer 1) — Gateway
 
