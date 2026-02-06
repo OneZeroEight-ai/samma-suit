@@ -633,20 +633,6 @@ nav {
   margin-bottom: 24px;
 }
 
-.price-card .sutra-discount {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--gold);
-  background: rgba(255,215,0,0.08);
-  border: 1px solid rgba(255,215,0,0.15);
-  padding: 4px 10px;
-  border-radius: 6px;
-  margin-bottom: 24px;
-}
-
 .price-card ul {
   list-style: none;
   flex: 1;
@@ -849,12 +835,12 @@ footer .copy {
   <div class="hero-avatar">
     <img src="images/agents/pulse_avatar.png" alt="Sammā Suit" width="280" height="280">
   </div>
-  <div class="hero-badge">PRODUCT CONCEPT • FEBRUARY 2026</div>
+  <div class="hero-badge">v0.1 — ALL 8 LAYERS ENFORCED</div>
   <h1>SAMMĀ <span class="accent">SUIT</span></h1>
   <p class="hero-sub">
     <strong>The Sammā Suit</strong> — eight layers of Right Protection for autonomous AI agents.
-    Every feature OpenClaw offers — messaging, memory, proactive tasks, skills, system access —
-    rebuilt with security, cost controls, and identity <strong>built in from day one</strong>.
+    What your agent framework is missing —
+    security, cost controls, and identity <strong>built in from day one</strong>.
   </p>
   <div class="hero-cta">
     <a href="#armor" class="btn btn-primary">See the Sammā Suit →</a>
@@ -897,7 +883,7 @@ footer .copy {
     <div class="threat-card fade-in">
       <div class="tc-label">CLAWHAVOC CAMPAIGN</div>
       <h3>341 Malicious Skills</h3>
-      <p>Koi Security found 335 skills delivering Atomic Stealer malware via fake crypto tools. ClawHub's only barrier: a GitHub account one week old. Stolen: API keys, wallet keys, SSH credentials, browser passwords.</p>
+      <p>Koi Security found 335 skills delivering Atomic Stealer malware via fake utility tools. ClawHub's only barrier: a GitHub account one week old. Stolen: API keys, wallet keys, SSH credentials, browser passwords.</p>
       <div class="source">Source: Koi Security / The Hacker News • Feb 2026</div>
     </div>
     <div class="threat-card fade-in">
@@ -945,7 +931,7 @@ footer .copy {
     <div class="armor-layer layer-3 fade-in">
       <div class="armor-num">3</div>
       <div class="armor-name"><h3>SANGHA</h3><div class="sub">Skill Vetting</div></div>
-      <div class="armor-protects">Curated marketplace — scan, sandbox, review before install</div>
+      <div class="armor-protects">Allowlist-based skill gating — only vetted skills execute</div>
       <div class="armor-samus">⬡ Gravity Suit — pressure resistance</div>
     </div>
     <div class="armor-layer layer-4 fade-in">
@@ -969,7 +955,7 @@ footer .copy {
     <div class="armor-layer layer-7 fade-in">
       <div class="armor-num">7</div>
       <div class="armor-name"><h3>BODHI</h3><div class="sub">Isolation</div></div>
-      <div class="armor-protects">Process-level sandboxing, no lateral movement, egress allowlists</div>
+      <div class="armor-protects">Request containment — 30s hard timeout, 4096 token cap per request</div>
       <div class="armor-samus">⬡ Screw Attack — offense + defense</div>
     </div>
     <div class="armor-layer layer-8 fade-in">
@@ -983,16 +969,16 @@ footer .copy {
 
 <!-- FEATURES COMPARISON -->
 <section class="features" id="features">
-  <div class="section-label cyan">FEATURE PARITY</div>
-  <h2 class="section-title">Everything OpenClaw does.<br>Plus everything it doesn't.</h2>
+  <div class="section-label cyan">SECURITY COVERAGE</div>
+  <h2 class="section-title">What your agent framework is missing.<br>And what we add.</h2>
   <p class="section-desc">Every capability matched. Eight capabilities added.</p>
 
   <table class="compare-table fade-in">
     <thead>
       <tr>
         <th>Feature</th>
-        <th>OC</th>
-        <th>SS</th>
+        <th>Typical</th>
+        <th>With SS</th>
         <th>Armor Layer</th>
       </tr>
     </thead>
@@ -1009,10 +995,10 @@ footer .copy {
       <tr><td>Self-hosted / privacy-first</td><td class="check">✓</td><td class="check">✓</td><td>—</td></tr>
       <tr style="background:var(--purple-dim)"><td><strong>Agent identity verification</strong></td><td class="cross">✗</td><td class="check">✓</td><td><span class="armor-tag">METTA</span></td></tr>
       <tr style="background:var(--purple-dim)"><td><strong>Role-based permissions</strong></td><td class="cross">✗</td><td class="check">✓</td><td><span class="armor-tag">DHARMA</span></td></tr>
-      <tr style="background:var(--purple-dim)"><td><strong>Skill vetting / malware scanning</strong></td><td class="cross">✗</td><td class="check">✓</td><td><span class="armor-tag">SANGHA</span></td></tr>
+      <tr style="background:var(--purple-dim)"><td><strong>Skill vetting / allowlist gating</strong></td><td class="cross">✗</td><td class="check">✓</td><td><span class="armor-tag">SANGHA</span></td></tr>
       <tr style="background:var(--purple-dim)"><td><strong>Cost controls / budget caps</strong></td><td class="cross">✗</td><td class="check">✓</td><td><span class="armor-tag">KARMA</span></td></tr>
       <tr style="background:var(--purple-dim)"><td><strong>Activity audit trail</strong></td><td class="cross">✗</td><td class="check">✓</td><td><span class="armor-tag">SILA</span></td></tr>
-      <tr style="background:var(--purple-dim)"><td><strong>Process isolation</strong></td><td class="cross">✗</td><td class="check">✓</td><td><span class="armor-tag">BODHI</span></td></tr>
+      <tr style="background:var(--purple-dim)"><td><strong>Request containment (timeout + token cap)</strong></td><td class="cross">✗</td><td class="check">✓</td><td><span class="armor-tag">BODHI</span></td></tr>
       <tr style="background:var(--purple-dim)"><td><strong>State rollback / kill switch</strong></td><td class="cross">✗</td><td class="check">✓</td><td><span class="armor-tag">NIRVANA</span></td></tr>
       <tr style="background:var(--purple-dim)"><td><strong>WebSocket origin hardening</strong></td><td class="cross">✗</td><td class="check">✓</td><td><span class="armor-tag">SUTRA</span></td></tr>
     </tbody>
@@ -1039,8 +1025,8 @@ footer .copy {
       <div class="label">Combined Follower Reach</div>
     </div>
     <div class="cred-card">
-      <div class="num">108M</div>
-      <div class="label">SUTRA Tokens on Polygon</div>
+      <div class="num">8</div>
+      <div class="label">Security Layers Enforced</div>
     </div>
   </div>
 </section>
@@ -1068,7 +1054,6 @@ footer .copy {
       <div class="tier-name">PRO</div>
       <div class="price">$29<span style="font-size:18px;font-weight:300">/mo</span></div>
       <div class="price-sub">per instance</div>
-      <div class="sutra-discount">🪷 SUTRA token payments coming soon</div>
       <span style="color: var(--gold); font-size: 0.85rem;">Hosted platform launching soon</span>
       <div style="color: var(--cyan); font-size: 0.85rem; margin-top: 0.5rem;">&#127470;&#127480; Hosted in Iceland · GDPR protected · 100% renewable energy</div>
       <ul>
@@ -1085,7 +1070,6 @@ footer .copy {
       <div class="tier-name">TEAM</div>
       <div class="price">$99<span style="font-size:18px;font-weight:300">/mo</span></div>
       <div class="price-sub">per workspace</div>
-      <div class="sutra-discount">🪷 SUTRA token payments coming soon</div>
       <span style="color: var(--gold); font-size: 0.85rem;">Hosted platform launching soon</span>
       <div style="color: var(--cyan); font-size: 0.85rem; margin-top: 0.5rem;">&#127470;&#127480; Hosted in Iceland · GDPR protected · 100% renewable energy</div>
       <ul>
@@ -1101,7 +1085,6 @@ footer .copy {
       <div class="tier-name">ENTERPRISE</div>
       <div class="price">Custom</div>
       <div class="price-sub">talk to us</div>
-      <div class="sutra-discount">🪷 SUTRA token integration included</div>
       <ul>
         <li>Everything in Team</li>
         <li>SSO / SAML</li>
