@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Getting Started | Samma Suit Docs</title>
+<meta name="description" content="Samma Suit documentation — installation, authentication, quickstart, the 8 layers, API reference, and configuration.">
+<link rel="icon" type="image/x-icon" href="images/agents/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #06060E;
+  --bg2: #0C0C1A;
+  --card: #111126;
+  --card-border: #1E1E3A;
+  --purple: #7C3AED;
+  --purple-glow: rgba(124, 58, 237, 0.3);
+  --purple-dim: rgba(124, 58, 237, 0.08);
+  --cyan: #00D4FF;
+  --cyan-glow: rgba(0, 212, 255, 0.2);
+  --gold: #FFD700;
+  --red: #DC2626;
+  --green: #059669;
+  --orange: #EA580C;
+  --pink: #FF6B9D;
+  --blue: #0EA5E9;
+  --white: #F0EFF4;
+  --gray: #8888AA;
+  --gray-dim: #4D4D66;
+  --font-display: 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: var(--font-display);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 3px; }
+
+.grid-bg {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(124,58,237,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124,58,237,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 16px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(20px);
+  background: rgba(6,6,14,0.8);
+  border-bottom: 1px solid var(--card-border);
+}
+
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--white);
+  letter-spacing: 0;
+}
+.nav-logo span { color: var(--purple); }
+.nav-logo a { color: inherit; text-decoration: none; }
+
+.nav-links { display: flex; gap: 32px; align-items: center; }
+.nav-links a {
+  color: var(--gray);
+  text-decoration: none;
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: color 0.3s;
+}
+.nav-links a:hover { color: var(--cyan); }
+.nav-links a.active { color: var(--cyan); }
+
+/* ── DOCS LAYOUT ── */
+.docs-layout {
+  display: flex;
+  padding-top: 64px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── SIDEBAR ── */
+.docs-sidebar {
+  width: 240px;
+  min-width: 240px;
+  position: fixed;
+  top: 64px;
+  left: 0;
+  bottom: 0;
+  padding: 32px 20px;
+  border-right: 1px solid var(--card-border);
+  overflow-y: auto;
+  background: rgba(6,6,14,0.95);
+  backdrop-filter: blur(10px);
+}
+
+.docs-sidebar h4 {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gray-dim);
+  margin-bottom: 12px;
+  margin-top: 24px;
+}
+
+.docs-sidebar h4:first-child { margin-top: 0; }
+
+.sidebar-link {
+  display: block;
+  padding: 7px 12px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--gray);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: all 0.2s;
+  margin-bottom: 2px;
+}
+
+.sidebar-link:hover {
+  color: var(--white);
+  background: var(--purple-dim);
+}
+
+.sidebar-link.active {
+  color: var(--cyan);
+  border-left-color: var(--cyan);
+  background: rgba(0,212,255,0.05);
+}
+
+/* Mobile sidebar toggle */
+.sidebar-toggle {
+  display: none;
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 101;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--purple);
+  color: white;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 0 20px var(--purple-glow);
+}
+
+/* ── DOCS CONTENT ── */
+.docs-content {
+  margin-left: 240px;
+  flex: 1;
+  max-width: 860px;
+  padding: 48px 60px 80px;
+}
+
+.docs-content h2 {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  margin-top: 64px;
+  padding-top: 20px;
+}
+
+.docs-content h2:first-of-type { margin-top: 0; }
+
+.docs-content h3 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-top: 40px;
+  margin-bottom: 12px;
+}
+
+.docs-content p {
+  font-size: 15px;
+  color: var(--gray);
+  margin-bottom: 16px;
+  line-height: 1.7;
+}
+
+.docs-content strong { color: var(--white); }
+
+.docs-content ul, .docs-content ol {
+  margin-bottom: 16px;
+  padding-left: 24px;
+}
+
+.docs-content li {
+  font-size: 15px;
+  color: var(--gray);
+  margin-bottom: 6px;
+  line-height: 1.6;
+}
+
+.docs-content a {
+  color: var(--cyan);
+  text-decoration: none;
+}
+.docs-content a:hover { text-decoration: underline; }
+
+/* ── CODE BLOCKS ── */
+.code-block {
+  position: relative;
+  background: var(--bg2);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.code-block .code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  background: var(--card);
+  border-bottom: 1px solid var(--card-border);
+}
+
+.code-lang {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--gray-dim);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.code-copy {
+  background: transparent;
+  border: 1px solid var(--card-border);
+  color: var(--gray);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.code-copy:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+.code-block pre {
+  padding: 16px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--white);
+}
+
+.code-block code {
+  font-family: var(--font-mono);
+}
+
+/* Inline code */
+.docs-content code:not(.code-block code) {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  background: var(--bg2);
+  border: 1px solid var(--card-border);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--cyan);
+}
+
+/* ── ENDPOINT CARDS ── */
+.endpoint-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+  transition: border-color 0.3s;
+}
+
+.endpoint-card:hover { border-color: var(--purple); }
+
+.endpoint-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.endpoint-method {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  min-width: 60px;
+  text-align: center;
+}
+
+.method-get { background: rgba(5,150,105,0.15); color: var(--green); }
+.method-post { background: var(--purple-dim); color: var(--purple); }
+.method-put { background: rgba(0,212,255,0.1); color: var(--cyan); }
+.method-delete { background: rgba(220,38,38,0.1); color: var(--red); }
+
+.endpoint-path {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--white);
+}
+
+.endpoint-desc {
+  font-size: 14px;
+  color: var(--gray);
+  margin-bottom: 12px;
+}
+
+.endpoint-details {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--card-border);
+}
+
+.endpoint-details summary {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--gray);
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.endpoint-details summary:hover { color: var(--cyan); }
+
+/* ── LAYER SECTION CARDS ── */
+.layer-doc {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 28px;
+  margin-bottom: 16px;
+}
+
+.layer-doc .layer-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.layer-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--bg);
+}
+
+.layer-doc h4 {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.layer-doc p { margin-bottom: 10px; }
+
+.layer-doc .layer-error {
+  margin-top: 12px;
+}
+
+/* ── ENV TABLE ── */
+.env-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 24px;
+}
+
+.env-table thead th {
+  background: var(--bg2);
+  padding: 12px 16px;
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--gray);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.env-table tbody td {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--card-border);
+  font-size: 14px;
+  color: var(--gray);
+}
+
+.env-table tbody td:first-child {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--cyan);
+}
+
+/* ── FAQ ── */
+.faq-item {
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.faq-item summary {
+  padding: 16px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 15px;
+  background: var(--card);
+  transition: background 0.2s;
+  list-style: none;
+}
+
+.faq-item summary::-webkit-details-marker { display: none; }
+
+.faq-item summary::before {
+  content: '+';
+  display: inline-block;
+  width: 20px;
+  font-family: var(--font-mono);
+  color: var(--purple);
+  font-weight: 700;
+}
+
+.faq-item[open] summary::before { content: '-'; }
+
+.faq-item summary:hover { background: var(--purple-dim); }
+
+.faq-item .faq-body {
+  padding: 16px 20px 20px 40px;
+  font-size: 14px;
+  color: var(--gray);
+  line-height: 1.7;
+}
+
+/* ── FADE IN ── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s ease-out;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .docs-sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+    z-index: 99;
+  }
+
+  .docs-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-toggle { display: block; }
+
+  .docs-content {
+    margin-left: 0;
+    padding: 32px 24px 80px;
+  }
+
+  .nav-links { display: none; }
+}
+
+@media (max-width: 600px) {
+  nav { padding: 16px 20px; }
+  .docs-content { padding: 24px 16px 80px; }
+  .docs-content h2 { font-size: 26px; }
+  .endpoint-header { flex-direction: column; align-items: flex-start; gap: 6px; }
+}
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo"><a href="index.html"><span>One</span>ZeroEight</a></div>
+  <div class="nav-links">
+    <a href="index.html#armor">Armor</a>
+    <a href="index.html#features">Features</a>
+    <a href="index.html#pricing">Pricing</a>
+    <a href="getting-started.html" class="active">Docs</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="https://discord.gg/4A6ExTnKnK">Discord</a>
+  </div>
+</nav>
+
+<!-- MOBILE SIDEBAR TOGGLE -->
+<button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle navigation">&#9776;</button>
+
+<!-- DOCS LAYOUT -->
+<div class="docs-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="docs-sidebar" id="docs-sidebar">
+    <h4>Getting Started</h4>
+    <a href="#installation" class="sidebar-link active">Installation</a>
+    <a href="#authentication" class="sidebar-link">Authentication</a>
+    <a href="#quickstart" class="sidebar-link">Quickstart</a>
+
+    <h4>Security</h4>
+    <a href="#layers" class="sidebar-link">The 8 Layers</a>
+
+    <h4>Reference</h4>
+    <a href="#api-reference" class="sidebar-link">API Reference</a>
+    <a href="#configuration" class="sidebar-link">Configuration</a>
+    <a href="#faq" class="sidebar-link">FAQ</a>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="docs-content">
+
+    <!-- ═══════════ INSTALLATION ═══════════ -->
+    <h2 id="installation">Installation</h2>
+
+    <h3>Via pip (recommended)</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>pip install samma-suit</code></pre>
+    </div>
+
+    <h3>From source</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>git clone https://github.com/OneZeroEight-ai/samma-suit.git
+cd samma-suit
+pip install -e .</code></pre>
+    </div>
+
+    <p>Requires <strong>Python 3.10+</strong>. The SDK integrates with any FastAPI application via a single call:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">python</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>from samma import SammaSuit
+
+app = FastAPI()
+SammaSuit(app)  # All 8 layers activated</code></pre>
+    </div>
+
+    <!-- ═══════════ AUTHENTICATION ═══════════ -->
+    <h2 id="authentication">Authentication</h2>
+
+    <p>Samma Suit supports two authentication methods:</p>
+
+    <h3>API Key</h3>
+    <p>API keys use the <code>samma_</code> prefix and are 56 hex characters. Include in the <code>Authorization</code> header:</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">http</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>Authorization: Bearer samma_a1b2c3d4e5f6...</code></pre>
+    </div>
+    <p>You receive an API key when you create an account through the <code>/api/billing/checkout</code> endpoint.</p>
+
+    <h3>Session Token (Magic Link)</h3>
+    <p>For browser-based access, use the magic link flow:</p>
+    <ol>
+      <li>Send <code>POST /api/auth/magic-link</code> with your email</li>
+      <li>Click the link in your email (contains a 15-minute token)</li>
+      <li>The token is verified via <code>POST /api/auth/verify</code></li>
+      <li>You receive a 30-day session token</li>
+    </ol>
+
+    <!-- ═══════════ QUICKSTART ═══════════ -->
+    <h2 id="quickstart">Quickstart</h2>
+
+    <p>Get from zero to a protected AI agent in 4 commands.</p>
+
+    <h3>1. Create an account</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>curl -X POST https://sammasuit.com/api/billing/checkout \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "you@example.com",
+    "tier": "pro",
+    "success_url": "https://sammasuit.com/dashboard.html"
+  }'
+
+# Response: { "checkout_url": "...", "api_key": "samma_..." }</code></pre>
+    </div>
+
+    <h3>2. Create an agent</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>curl -X POST https://sammasuit.com/api/agents \
+  -H "Authorization: Bearer samma_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "my-first-agent",
+    "monthly_budget_usd": 50.00
+  }'
+
+# Response: { "agent": { "id": "...", "name": "my-first-agent", ... } }</code></pre>
+    </div>
+
+    <h3>3. Send a request through the gateway</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>curl -X POST https://sammasuit.com/api/agents/AGENT_ID/gateway \
+  -H "Authorization: Bearer samma_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "messages": [
+      { "role": "user", "content": "Hello, agent!" }
+    ]
+  }'
+
+# All 8 Samma layers enforced on every request</code></pre>
+    </div>
+
+    <h3>4. Check the audit log</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">bash</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>curl https://sammasuit.com/api/agents/AGENT_ID/audit?limit=10 \
+  -H "Authorization: Bearer samma_YOUR_KEY"
+
+# Every gateway call is logged with layers enforced, tokens, and cost</code></pre>
+    </div>
+
+    <!-- ═══════════ THE 8 LAYERS ═══════════ -->
+    <h2 id="layers">The 8 Layers</h2>
+
+    <p>Every request through the Samma Suit gateway passes through all 8 layers. Each layer addresses a specific class of vulnerability exploited in the wild.</p>
+
+    <div class="layer-doc fade-in">
+      <div class="layer-header">
+        <div class="layer-num" style="background:var(--purple)">1</div>
+        <div>
+          <h4 style="color:var(--purple)">SUTRA</h4>
+          <span style="font-size:13px;color:var(--gray)">Gateway</span>
+        </div>
+      </div>
+      <p>The outermost defense. Validates request origins, enforces TLS 1.3, authenticates WebSocket connections, and applies rate limiting. Prevents the class of attacks demonstrated by CVE-2026-25253.</p>
+      <p><strong>Prevents:</strong> Origin hijacking, replay attacks, DDoS, unauthorized gateway access</p>
+      <div class="layer-error">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">json — 429 rate limit</span></div>
+          <pre><code>{ "detail": "Rate limit exceeded", "layer": "SUTRA" }</code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">json — 403 origin</span></div>
+          <pre><code>{ "detail": "Origin not allowed", "layer": "SUTRA" }</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="layer-doc fade-in">
+      <div class="layer-header">
+        <div class="layer-num" style="background:var(--green)">2</div>
+        <div>
+          <h4 style="color:var(--green)">DHARMA</h4>
+          <span style="font-size:13px;color:var(--gray)">Permissions</span>
+        </div>
+      </div>
+      <p>Role-based access control for agents. Each agent is scoped to specific capabilities — an email agent cannot access the shell, a file agent cannot send messages. Prevents privilege escalation and lateral movement within agent roles.</p>
+      <p><strong>Prevents:</strong> Privilege escalation, unauthorized model access, scope creep</p>
+      <div class="layer-error">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">json — 403 model not allowed</span></div>
+          <pre><code>{ "detail": "Model 'claude-opus-4-6' not allowed for this agent role", "layer": "DHARMA" }</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="layer-doc fade-in">
+      <div class="layer-header">
+        <div class="layer-num" style="background:var(--cyan);color:var(--bg)">3</div>
+        <div>
+          <h4 style="color:var(--cyan)">SANGHA</h4>
+          <span style="font-size:13px;color:var(--gray)">Skill Vetting</span>
+        </div>
+      </div>
+      <p>Curated skill marketplace with mandatory vetting. Every skill is scanned for malware, sandboxed, and reviewed before it can be installed. Directly addresses the ClawHavoc campaign that delivered 341 malicious skills.</p>
+      <p><strong>Prevents:</strong> Malware injection, credential theft, supply chain attacks</p>
+      <div class="layer-error">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">json — 403 unvetted skill</span></div>
+          <pre><code>{ "detail": "Skill not approved for installation", "layer": "SANGHA" }</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="layer-doc fade-in">
+      <div class="layer-header">
+        <div class="layer-num" style="background:var(--gold);color:var(--bg)">4</div>
+        <div>
+          <h4 style="color:var(--gold)">KARMA</h4>
+          <span style="font-size:13px;color:var(--gray)">Cost Controls</span>
+        </div>
+      </div>
+      <p>Per-agent budget enforcement with token optimization. Prevents the $750/month runaway costs seen with uncontrolled heartbeat jobs. Each agent has a hard monthly budget cap that cannot be exceeded.</p>
+      <p><strong>Prevents:</strong> Runaway API costs, budget overruns, token waste</p>
+      <div class="layer-error">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">json — 402 budget exceeded</span></div>
+          <pre><code>{ "detail": "Monthly budget exceeded ($50.00/$50.00)", "layer": "KARMA" }</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="layer-doc fade-in">
+      <div class="layer-header">
+        <div class="layer-num" style="background:var(--orange)">5</div>
+        <div>
+          <h4 style="color:var(--orange)">SILA</h4>
+          <span style="font-size:13px;color:var(--gray)">Audit Trail</span>
+        </div>
+      </div>
+      <p>Complete activity logging for every agent action. Records timestamps, tokens used, cost, IP addresses, and which layers were enforced. Provides the accountability that OpenClaw's zero-governance model completely lacks.</p>
+      <p><strong>Prevents:</strong> Undetected rogue behavior, compliance gaps, forensic blind spots</p>
+      <div class="layer-error">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">json — 500 audit failure</span></div>
+          <pre><code>{ "detail": "Audit log write failed — request blocked", "layer": "SILA" }</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="layer-doc fade-in">
+      <div class="layer-header">
+        <div class="layer-num" style="background:var(--pink);color:var(--bg)">6</div>
+        <div>
+          <h4 style="color:var(--pink)">METTA</h4>
+          <span style="font-size:13px;color:var(--gray)">Identity</span>
+        </div>
+      </div>
+      <p>Cryptographic agent identity using Ed25519 key pairs. Every agent gets a unique keypair at creation. Responses are signed so you can verify they came from your agent and not an impersonator.</p>
+      <p><strong>Prevents:</strong> Agent spoofing, impersonation, man-in-the-middle attacks</p>
+      <div class="layer-error">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">json — response fields</span></div>
+          <pre><code>{
+  "response": "...",
+  "metta_signature": "a1b2c3d4...",
+  "metta_public_key": "ed25519:..."
+}</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="layer-doc fade-in">
+      <div class="layer-header">
+        <div class="layer-num" style="background:var(--blue)">7</div>
+        <div>
+          <h4 style="color:var(--blue)">BODHI</h4>
+          <span style="font-size:13px;color:var(--gray)">Isolation</span>
+        </div>
+      </div>
+      <p>Process-level sandboxing for agent execution. Each agent runs in isolation with no lateral movement between agents. Egress allowlists prevent unauthorized network access. Enforces execution timeouts.</p>
+      <p><strong>Prevents:</strong> Lateral movement, container escape, unauthorized network access</p>
+      <div class="layer-error">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">json — 504 timeout</span></div>
+          <pre><code>{ "detail": "Agent execution timed out (30s)", "layer": "BODHI" }</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="layer-doc fade-in">
+      <div class="layer-header">
+        <div class="layer-num" style="background:var(--red)">8</div>
+        <div>
+          <h4 style="color:var(--red)">NIRVANA</h4>
+          <span style="font-size:13px;color:var(--gray)">Recovery</span>
+        </div>
+      </div>
+      <p>The last line of defense. State snapshots, 1-click rollback, and kill switches. If an agent goes rogue, NIRVANA lets you immediately terminate it and restore to a known-good state. Includes dead man's switch for unresponsive agents.</p>
+      <p><strong>Prevents:</strong> Uncontrolled rogue agents, state corruption, irreversible damage</p>
+      <div class="layer-error">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">json — 400 agent terminated</span></div>
+          <pre><code>{ "detail": "Agent has been terminated via kill switch", "layer": "NIRVANA" }</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ API REFERENCE ═══════════ -->
+    <h2 id="api-reference">API Reference</h2>
+
+    <p>Base URL: <code>https://sammasuit.com/api</code> (production) or <code>http://localhost:8001/api</code> (local dev). All endpoints require authentication unless noted.</p>
+
+    <!-- Auth -->
+    <h3>Authentication</h3>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="endpoint-method method-post">POST</span>
+        <span class="endpoint-path">/api/auth/magic-link</span>
+      </div>
+      <div class="endpoint-desc">Send a magic link to the customer's email. Auto-creates a free-tier account if the customer doesn't exist.</div>
+      <details class="endpoint-details">
+        <summary>Request / Response</summary>
+        <div class="code-block" style="margin-top:12px">
+          <div class="code-header"><span class="code-lang">json — request</span></div>
+          <pre><code>{ "email": "you@example.com" }</code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">json — response</span></div>
+          <pre><code>{ "success": true, "message": "Magic link sent" }</code></pre>
+        </div>
+      </details>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="endpoint-method method-post">POST</span>
+        <span class="endpoint-path">/api/auth/verify</span>
+      </div>
+      <div class="endpoint-desc">Validate a magic link token and create a 30-day session.</div>
+      <details class="endpoint-details">
+        <summary>Request / Response</summary>
+        <div class="code-block" style="margin-top:12px">
+          <div class="code-header"><span class="code-lang">json — request</span></div>
+          <pre><code>{ "token": "abc123..." }</code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">json — response</span></div>
+          <pre><code>{
+  "success": true,
+  "token": "session_token_here",
+  "customer": {
+    "id": "...",
+    "email": "you@example.com",
+    "tier": "pro"
+  }
+}</code></pre>
+        </div>
+      </details>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="endpoint-method method-get">GET</span>
+        <span class="endpoint-path">/api/auth/me</span>
+      </div>
+      <div class="endpoint-desc">Return the current authenticated customer's profile, tier, and agent counts.</div>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="endpoint-method method-post">POST</span>
+        <span class="endpoint-path">/api/auth/logout</span>
+      </div>
+      <div class="endpoint-desc">Delete the current session.</div>
+    </div>
+
+    <!-- Agents -->
+    <h3>Agents</h3>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="endpoint-method method-post">POST</span>
+        <span class="endpoint-path">/api/agents</span>
+      </div>
+      <div class="endpoint-desc">Create a new agent. Checks tier limits and generates an Ed25519 keypair.</div>
+      <details class="endpoint-details">
+        <summary>Request / Response</summary>
+        <div class="code-block" style="margin-top:12px">
+          <div class="code-header"><span class="code-lang">json — request</span></div>
+          <pre><code>{
+  "name": "my-agent",
+  "description": "An email assistant",
+  "monthly_budget_usd": 50.00,
+  "samma_config": {}
+}</code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">json — response</span></div>
+          <pre><code>{
+  "agent": {
+    "id": "uuid",
+    "name": "my-agent",
+    "status": "active",
+    "metta_public_key": "ed25519:...",
+    "monthly_budget_usd": 50.00,
+    "created_at": "2026-02-01T..."
+  }
+}</code></pre>
+        </div>
+      </details>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="endpoint-method method-get">GET</span>
+        <span class="endpoint-path">/api/agents</span>
+      </div>
+      <div class="endpoint-desc">List all agents for the authenticated customer.</div>
+      <details class="endpoint-details">
+        <summary>Response</summary>
+        <div class="code-block" style="margin-top:12px">
+          <div class="code-header"><span class="code-lang">json</span></div>
+          <pre><code>{
+  "agents": [ { "id": "...", "name": "...", "status": "active", ... } ],
+  "total": 3,
+  "max": 5
+}</code></pre>
+        </div>
+      </details>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="endpoint-method method-get">GET</span>
+        <span class="endpoint-path">/api/agents/{agent_id}</span>
+      </div>
+      <div class="endpoint-desc">Get full agent detail including Samma configuration.</div>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="endpoint-method method-put">PUT</span>
+        <span class="endpoint-path">/api/agents/{agent_id}</span>
+      </div>
+      <div class="endpoint-desc">Update agent name, description, budget, or Samma config.</div>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="endpoint-method method-delete">DELETE</span>
+        <span class="endpoint-path">/api/agents/{agent_id}</span>
+      </div>
+      <div class="endpoint-desc">Soft-delete (terminate) an agent.</div>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="endpoint-method method-post">POST</span>
+        <span class="endpoint-path">/api/agents/{agent_id}/pause</span>
+      </div>
+      <div class="endpoint-desc">Pause an active agent. Cannot pause terminated agents.</div>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="endpoint-method method-post">POST</span>
+        <span class="endpoint-path">/api/agents/{agent_id}/resume</span>
+      </div>
+      <div class="endpoint-desc">Resume a paused agent.</div>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="endpoint-method method-post">POST</span>
+        <span class="endpoint-path">/api/agents/{agent_id}/kill</span>
+      </div>
+      <div class="endpoint-desc">NIRVANA kill switch — immediately and permanently terminate an agent.</div>
+      <details class="endpoint-details">
+        <summary>Response</summary>
+        <div class="code-block" style="margin-top:12px">
+          <div class="code-header"><span class="code-lang">json</span></div>
+          <pre><code>{ "success": true, "message": "Agent terminated", "layer": "NIRVANA" }</code></pre>
+        </div>
+      </details>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="endpoint-method method-post">POST</span>
+        <span class="endpoint-path">/api/agents/{agent_id}/gateway</span>
+      </div>
+      <div class="endpoint-desc">Core product endpoint. Proxies messages to Claude API with full 8-layer Samma pipeline enforcement. Logs IP, user-agent, tokens, and cost.</div>
+      <details class="endpoint-details">
+        <summary>Request / Response</summary>
+        <div class="code-block" style="margin-top:12px">
+          <div class="code-header"><span class="code-lang">json — request</span></div>
+          <pre><code>{
+  "messages": [
+    { "role": "user", "content": "Summarize today's news" }
+  ],
+  "model": "claude-sonnet-4-5-20250929",
+  "max_tokens": 1024,
+  "system": "You are a helpful assistant."
+}</code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">json — response</span></div>
+          <pre><code>{
+  "content": "Here is today's summary...",
+  "model": "claude-sonnet-4-5-20250929",
+  "tokens_used": 342,
+  "cost_usd": 0.0051,
+  "layers_enforced": ["SUTRA","DHARMA","SANGHA","KARMA","SILA","METTA","BODHI","NIRVANA"],
+  "metta_signature": "a1b2c3..."
+}</code></pre>
+        </div>
+      </details>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="endpoint-method method-get">GET</span>
+        <span class="endpoint-path">/api/agents/{agent_id}/audit</span>
+      </div>
+      <div class="endpoint-desc">Paginated audit log for a specific agent. Params: <code>limit</code> (max 100, default 50), <code>offset</code>.</div>
+      <details class="endpoint-details">
+        <summary>Response</summary>
+        <div class="code-block" style="margin-top:12px">
+          <div class="code-header"><span class="code-lang">json</span></div>
+          <pre><code>{
+  "audit": [
+    {
+      "id": "...",
+      "action": "gateway",
+      "agent_name": "my-agent",
+      "tokens_used": 342,
+      "cost_usd": 0.0051,
+      "layers_enforced": ["SUTRA","DHARMA","SANGHA","KARMA","SILA","METTA","BODHI","NIRVANA"],
+      "created_at": "2026-02-01T12:00:00Z"
+    }
+  ],
+  "total": 47
+}</code></pre>
+        </div>
+      </details>
+    </div>
+
+    <!-- Dashboard -->
+    <h3>Dashboard</h3>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="endpoint-method method-get">GET</span>
+        <span class="endpoint-path">/api/dashboard/overview</span>
+      </div>
+      <div class="endpoint-desc">Top-level dashboard data: tier, agent counts, monthly usage, and the last 10 audit entries.</div>
+      <details class="endpoint-details">
+        <summary>Response</summary>
+        <div class="code-block" style="margin-top:12px">
+          <div class="code-header"><span class="code-lang">json</span></div>
+          <pre><code>{
+  "tier": "pro",
+  "agents": { "active": 3, "total": 4, "max": 5 },
+  "usage": {
+    "total_cost_usd": 12.45,
+    "monthly_budget_usd": 500,
+    "total_calls": 1847
+  },
+  "recent_audit": [ ... ]
+}</code></pre>
+        </div>
+      </details>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="endpoint-method method-get">GET</span>
+        <span class="endpoint-path">/api/dashboard/billing</span>
+      </div>
+      <div class="endpoint-desc">Payment history and subscription details. Params: <code>limit</code> (max 100, default 20), <code>offset</code>.</div>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="endpoint-method method-get">GET</span>
+        <span class="endpoint-path">/api/dashboard/costs</span>
+      </div>
+      <div class="endpoint-desc">Per-agent cost breakdown for the current month with budget tracking.</div>
+    </div>
+
+    <!-- Billing -->
+    <h3>Billing</h3>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="endpoint-method method-post">POST</span>
+        <span class="endpoint-path">/api/billing/checkout</span>
+      </div>
+      <div class="endpoint-desc">Create a Stripe Checkout session for a subscription. Auto-creates customer and returns API key if new.</div>
+      <details class="endpoint-details">
+        <summary>Request / Response</summary>
+        <div class="code-block" style="margin-top:12px">
+          <div class="code-header"><span class="code-lang">json — request</span></div>
+          <pre><code>{
+  "email": "you@example.com",
+  "tier": "pro",
+  "success_url": "https://sammasuit.com/dashboard.html",
+  "cancel_url": "https://sammasuit.com/"
+}</code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">json — response</span></div>
+          <pre><code>{
+  "checkout_url": "https://checkout.stripe.com/...",
+  "session_id": "cs_...",
+  "customer_id": "uuid",
+  "api_key": "samma_a1b2c3..."
+}</code></pre>
+        </div>
+      </details>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="endpoint-method method-get">GET</span>
+        <span class="endpoint-path">/api/billing/portal</span>
+      </div>
+      <div class="endpoint-desc">Create a Stripe Billing Portal session for managing subscriptions.</div>
+      <details class="endpoint-details">
+        <summary>Response</summary>
+        <div class="code-block" style="margin-top:12px">
+          <div class="code-header"><span class="code-lang">json</span></div>
+          <pre><code>{ "portal_url": "https://billing.stripe.com/..." }</code></pre>
+        </div>
+      </details>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="endpoint-method method-get">GET</span>
+        <span class="endpoint-path">/api/billing/status</span>
+      </div>
+      <div class="endpoint-desc">Current subscription info, tier limits, and Stripe customer details.</div>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="endpoint-method method-post">POST</span>
+        <span class="endpoint-path">/api/billing/link-wallet</span>
+      </div>
+      <div class="endpoint-desc">Link a Polygon wallet via EIP-191 signature verification for SUTRA token payments.</div>
+      <details class="endpoint-details">
+        <summary>Request</summary>
+        <div class="code-block" style="margin-top:12px">
+          <div class="code-header"><span class="code-lang">json</span></div>
+          <pre><code>{ "wallet_address": "0x...", "signature": "0x..." }</code></pre>
+        </div>
+      </details>
+    </div>
+
+    <!-- Marketplace -->
+    <h3>Marketplace</h3>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="endpoint-method method-get">GET</span>
+        <span class="endpoint-path">/api/marketplace/skills</span>
+      </div>
+      <div class="endpoint-desc">Browse approved skills. Params: <code>q</code> (search), <code>free_only</code>, <code>status</code>, <code>limit</code>, <code>offset</code>.</div>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="endpoint-method method-get">GET</span>
+        <span class="endpoint-path">/api/marketplace/skills/{skill_id}</span>
+      </div>
+      <div class="endpoint-desc">Get skill detail with full vetting status and manifest.</div>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="endpoint-method method-post">POST</span>
+        <span class="endpoint-path">/api/marketplace/skills</span>
+      </div>
+      <div class="endpoint-desc">Submit a new skill for SANGHA review. Validates manifest automatically.</div>
+      <details class="endpoint-details">
+        <summary>Request</summary>
+        <div class="code-block" style="margin-top:12px">
+          <div class="code-header"><span class="code-lang">json</span></div>
+          <pre><code>{
+  "name": "Email Summarizer",
+  "description": "Summarizes email threads",
+  "package_url": "https://github.com/...",
+  "manifest": { "permissions": ["email.read"] },
+  "version": "1.0.0",
+  "price_usd": 0
+}</code></pre>
+        </div>
+      </details>
+    </div>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="endpoint-method method-post">POST</span>
+        <span class="endpoint-path">/api/marketplace/agents/{agent_id}/skills/{skill_id}/install</span>
+      </div>
+      <div class="endpoint-desc">Install an approved skill on an agent. Checks ownership and prevents duplicates.</div>
+    </div>
+
+    <!-- ═══════════ CONFIGURATION ═══════════ -->
+    <h2 id="configuration">Configuration</h2>
+
+    <p>Samma Suit is configured via environment variables. All variables use the <code>SAMMA_</code> prefix.</p>
+
+    <table class="env-table">
+      <thead>
+        <tr>
+          <th>Variable</th>
+          <th>Required</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>ANTHROPIC_API_KEY</td>
+          <td>Yes</td>
+          <td>API key for Claude. Used by the gateway to proxy requests.</td>
+        </tr>
+        <tr>
+          <td>SAMMA_STRIPE_SECRET_KEY</td>
+          <td>Yes</td>
+          <td>Stripe secret key for billing and subscription management.</td>
+        </tr>
+        <tr>
+          <td>SAMMA_STRIPE_WEBHOOK_SECRET</td>
+          <td>Yes</td>
+          <td>Stripe webhook signing secret for verifying webhook events.</td>
+        </tr>
+        <tr>
+          <td>SAMMA_STRIPE_PRO_PRICE_ID</td>
+          <td>Yes</td>
+          <td>Stripe Price ID for the Pro tier ($29/mo).</td>
+        </tr>
+        <tr>
+          <td>SAMMA_STRIPE_TEAM_PRICE_ID</td>
+          <td>Yes</td>
+          <td>Stripe Price ID for the Team tier ($99/mo).</td>
+        </tr>
+        <tr>
+          <td>SAMMA_FROM_EMAIL</td>
+          <td>Yes</td>
+          <td>Sender email for magic links (e.g., <code>noreply@sammasuit.com</code>).</td>
+        </tr>
+        <tr>
+          <td>SAMMA_FRONTEND_URL</td>
+          <td>Yes</td>
+          <td>Frontend URL for magic link redirects (e.g., <code>https://sammasuit.com</code>).</td>
+        </tr>
+        <tr>
+          <td>RESEND_API_KEY</td>
+          <td>Yes</td>
+          <td>Resend API key for sending magic link emails.</td>
+        </tr>
+        <tr>
+          <td>DATABASE_URL</td>
+          <td>No</td>
+          <td>PostgreSQL connection string. Defaults to SQLite for local dev.</td>
+        </tr>
+        <tr>
+          <td>SAMMA_RATE_LIMIT</td>
+          <td>No</td>
+          <td>SUTRA layer rate limit per minute. Default: <code>60</code>.</td>
+        </tr>
+        <tr>
+          <td>SAMMA_ALLOWED_ORIGINS</td>
+          <td>No</td>
+          <td>Comma-separated allowed origins for SUTRA validation.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- ═══════════ FAQ ═══════════ -->
+    <h2 id="faq">FAQ</h2>
+
+    <details class="faq-item">
+      <summary>Is Samma Suit a fork of OpenClaw?</summary>
+      <div class="faq-body">No. Samma Suit is built from scratch on a completely different architecture. OpenClaw's security problems are architectural — they can't be patched, they have to be redesigned. That's what Samma Suit does.</div>
+    </details>
+
+    <details class="faq-item">
+      <summary>Can I self-host Samma Suit?</summary>
+      <div class="faq-body">Yes. The Samma Suit SDK is open source and free forever. You can run all 8 layers on your own infrastructure. The paid tiers (Pro, Team, Enterprise) add managed hosting, a vetted skill marketplace, and premium support.</div>
+    </details>
+
+    <details class="faq-item">
+      <summary>What models does the gateway support?</summary>
+      <div class="faq-body">The gateway currently proxies to Anthropic's Claude API. The default model is <code>claude-sonnet-4-5-20250929</code>. The DHARMA layer controls which models each agent role is allowed to use. Multi-provider support is on the roadmap.</div>
+    </details>
+
+    <details class="faq-item">
+      <summary>What is the SUTRA token?</summary>
+      <div class="faq-body">SUTRA is an ERC-20 token on Polygon (contract: <code>0x0b3f81d3e1fa01e911a8b4e49048eea0ddf2a896</code>). It powers OneZeroEight's music promotion economy and will extend into Samma Suit for subscription payments (20% discount), identity staking (METTA layer), skill developer rewards, and governance voting.</div>
+    </details>
+
+    <details class="faq-item">
+      <summary>How are the 8 layers enforced?</summary>
+      <div class="faq-body">Every request through the <code>/api/agents/{id}/gateway</code> endpoint passes through all 8 layers sequentially. Layers 1-2 (SUTRA + DHARMA) are fully production-hardened. Layers 3-8 are enforced with baseline implementations, with production-hardened versions shipping Q1-Q2 2026. No layer can be skipped or disabled.</div>
+    </details>
+
+    <details class="faq-item">
+      <summary>What happens if my agent exceeds its budget?</summary>
+      <div class="faq-body">The KARMA layer enforces a hard budget cap. When an agent's monthly spend reaches its budget limit, all subsequent gateway requests return a <code>402</code> error. You can increase the budget via the dashboard or API at any time.</div>
+    </details>
+
+    <details class="faq-item">
+      <summary>How do kill switches work?</summary>
+      <div class="faq-body">The NIRVANA layer provides immediate agent termination via <code>POST /api/agents/{id}/kill</code> or the Kill button in the dashboard. Terminated agents cannot be resumed — this is intentional. The kill switch is designed for emergency situations where an agent must be stopped immediately and permanently.</div>
+    </details>
+
+  </main>
+</div>
+
+<script>
+// ── SCROLL SPY ──
+const sections = document.querySelectorAll('.docs-content h2[id]');
+const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      sidebarLinks.forEach(link => link.classList.remove('active'));
+      const id = entry.target.getAttribute('id');
+      const activeLink = document.querySelector(`.sidebar-link[href="#${id}"]`);
+      if (activeLink) activeLink.classList.add('active');
+    }
+  });
+}, {
+  rootMargin: '-80px 0px -60% 0px',
+  threshold: 0
+});
+
+sections.forEach(section => observer.observe(section));
+
+// ── FADE IN ON SCROLL ──
+const fadeObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade-in').forEach(el => fadeObserver.observe(el));
+
+// ── COPY TO CLIPBOARD ──
+function copyCode(btn) {
+  const code = btn.closest('.code-block').querySelector('pre code');
+  navigator.clipboard.writeText(code.textContent).then(() => {
+    btn.textContent = 'Copied!';
+    btn.style.color = 'var(--green)';
+    btn.style.borderColor = 'var(--green)';
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.style.color = '';
+      btn.style.borderColor = '';
+    }, 2000);
+  });
+}
+
+// ── MOBILE SIDEBAR TOGGLE ──
+const toggle = document.getElementById('sidebar-toggle');
+const sidebar = document.getElementById('docs-sidebar');
+
+toggle.addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+});
+
+// Close sidebar when clicking a link on mobile
+sidebarLinks.forEach(link => {
+  link.addEventListener('click', () => {
+    if (window.innerWidth <= 900) {
+      sidebar.classList.remove('open');
+    }
+  });
+});
+</script>
+
+</body>
+</html>

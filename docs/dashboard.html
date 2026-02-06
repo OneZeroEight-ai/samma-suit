@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard | Samma Suit by OneZeroEight</title>
+<meta name="description" content="Samma Suit Dashboard — Manage your AI agents, monitor costs, and review audit logs.">
+<link rel="icon" type="image/x-icon" href="images/agents/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #06060E;
+  --bg2: #0C0C1A;
+  --card: #111126;
+  --card-border: #1E1E3A;
+  --purple: #7C3AED;
+  --purple-glow: rgba(124, 58, 237, 0.3);
+  --purple-dim: rgba(124, 58, 237, 0.08);
+  --cyan: #00D4FF;
+  --cyan-glow: rgba(0, 212, 255, 0.2);
+  --gold: #FFD700;
+  --red: #DC2626;
+  --green: #059669;
+  --orange: #EA580C;
+  --pink: #FF6B9D;
+  --blue: #0EA5E9;
+  --white: #F0EFF4;
+  --gray: #8888AA;
+  --gray-dim: #4D4D66;
+  --font-display: 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: var(--font-display);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 3px; }
+
+.grid-bg {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(124,58,237,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124,58,237,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 16px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(20px);
+  background: rgba(6,6,14,0.8);
+  border-bottom: 1px solid var(--card-border);
+}
+
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--white);
+  letter-spacing: 0;
+}
+.nav-logo span { color: var(--purple); }
+.nav-logo a { color: inherit; text-decoration: none; }
+
+.nav-links { display: flex; gap: 32px; align-items: center; }
+.nav-links a {
+  color: var(--gray);
+  text-decoration: none;
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: color 0.3s;
+}
+.nav-links a:hover { color: var(--cyan); }
+.nav-links a.active { color: var(--cyan); }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  border-radius: 8px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-primary {
+  background: var(--purple);
+  color: white;
+  box-shadow: 0 0 30px var(--purple-glow);
+}
+.btn-primary:hover {
+  background: #8B5CF6;
+  box-shadow: 0 0 50px var(--purple-glow);
+  transform: translateY(-2px);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--gray);
+  border: 1px solid var(--card-border);
+}
+.btn-ghost:hover {
+  color: var(--white);
+  border-color: var(--gray);
+}
+
+.btn-kill {
+  background: rgba(220,38,38,0.1);
+  color: var(--red);
+  border: 1px solid rgba(220,38,38,0.3);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-kill:hover {
+  background: rgba(220,38,38,0.2);
+  border-color: var(--red);
+}
+
+.btn-sm {
+  padding: 8px 18px;
+  font-size: 13px;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ── LOGIN ── */
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding-top: 80px;
+  position: relative;
+  z-index: 1;
+}
+
+.login-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 48px;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+  animation: fadeIn 0.6s ease-out;
+}
+
+.login-card .login-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 2px solid var(--purple);
+  box-shadow: 0 0 30px var(--purple-glow);
+  margin-bottom: 24px;
+}
+
+.login-card h2 {
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.login-card p {
+  color: var(--gray);
+  font-size: 14px;
+  margin-bottom: 32px;
+}
+
+.login-input {
+  width: 100%;
+  padding: 14px 18px;
+  background: var(--bg2);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  color: var(--white);
+  font-family: var(--font-display);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.3s;
+  margin-bottom: 16px;
+}
+
+.login-input:focus {
+  border-color: var(--purple);
+  box-shadow: 0 0 20px var(--purple-glow);
+}
+
+.login-input::placeholder { color: var(--gray-dim); }
+
+.login-card .btn { width: 100%; justify-content: center; }
+
+.login-success {
+  color: var(--green);
+  font-size: 14px;
+  margin-top: 16px;
+  display: none;
+}
+
+.login-error {
+  color: var(--red);
+  font-size: 14px;
+  margin-top: 16px;
+  display: none;
+}
+
+/* ── DASHBOARD ── */
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 100px 40px 60px;
+  position: relative;
+  z-index: 1;
+  display: none;
+}
+
+/* Header bar */
+.dash-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.dash-user {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.dash-user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--purple);
+}
+
+.dash-user-info .dash-email {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.dash-user-info .dash-tier {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-top: 2px;
+}
+
+.tier-free { background: rgba(136,136,170,0.15); color: var(--gray); }
+.tier-pro { background: var(--purple-dim); color: var(--purple); }
+.tier-team { background: rgba(0,212,255,0.1); color: var(--cyan); }
+.tier-enterprise { background: rgba(255,215,0,0.1); color: var(--gold); }
+
+.dash-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Overview cards */
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.overview-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 24px;
+  transition: all 0.3s;
+}
+
+.overview-card:hover {
+  border-color: var(--purple);
+  transform: translateY(-2px);
+}
+
+.overview-card .oc-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--gray);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.overview-card .oc-value {
+  font-size: 32px;
+  font-weight: 800;
+}
+
+.overview-card .oc-sub {
+  font-size: 13px;
+  color: var(--gray-dim);
+  margin-top: 4px;
+}
+
+.overview-card .oc-bar {
+  margin-top: 12px;
+  height: 4px;
+  background: var(--bg2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.overview-card .oc-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--purple);
+  transition: width 0.5s ease;
+}
+
+/* Section headers */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.section-header h3 {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* Agents table */
+.agents-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 40px;
+}
+
+.agents-table thead th {
+  background: var(--bg2);
+  padding: 12px 16px;
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--gray);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.agents-table thead th:first-child { border-radius: 8px 0 0 0; }
+.agents-table thead th:last-child { border-radius: 0 8px 0 0; }
+
+.agents-table tbody tr {
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.agents-table tbody tr:hover {
+  background: var(--purple-dim);
+}
+
+.agents-table tbody td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--card-border);
+  font-size: 14px;
+}
+
+.agents-table tbody td:first-child { font-weight: 600; }
+
+.status-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 1px;
+  padding: 3px 10px;
+  border-radius: 100px;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+.status-badge.active {
+  background: rgba(5,150,105,0.15);
+  color: var(--green);
+}
+
+.status-badge.paused {
+  background: rgba(255,215,0,0.1);
+  color: var(--gold);
+}
+
+.status-badge.terminated {
+  background: rgba(220,38,38,0.1);
+  color: var(--red);
+}
+
+.budget-bar {
+  width: 80px;
+  height: 4px;
+  background: var(--bg2);
+  border-radius: 2px;
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+.budget-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--green);
+  transition: width 0.5s ease;
+}
+
+.budget-bar-fill.warning { background: var(--gold); }
+.budget-bar-fill.danger { background: var(--red); }
+
+/* Audit table */
+.audit-section {
+  margin-top: 8px;
+}
+
+.audit-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.audit-table thead th {
+  background: var(--bg2);
+  padding: 10px 14px;
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--gray);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.audit-table thead th:first-child { border-radius: 8px 0 0 0; }
+.audit-table thead th:last-child { border-radius: 0 8px 0 0; }
+
+.audit-table tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--card-border);
+  font-size: 13px;
+  color: var(--gray);
+}
+
+.audit-table .audit-ts {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--gray-dim);
+  white-space: nowrap;
+}
+
+.audit-scroll {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+}
+
+/* Layer badges */
+.layer-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  display: inline-block;
+  margin: 1px 2px;
+}
+
+.layer-badge.sutra { background: rgba(124,58,237,0.15); color: var(--purple); }
+.layer-badge.dharma { background: rgba(5,150,105,0.15); color: var(--green); }
+.layer-badge.sangha { background: rgba(0,212,255,0.1); color: var(--cyan); }
+.layer-badge.karma { background: rgba(255,215,0,0.1); color: var(--gold); }
+.layer-badge.sila { background: rgba(234,88,12,0.1); color: var(--orange); }
+.layer-badge.metta { background: rgba(255,107,157,0.1); color: var(--pink); }
+.layer-badge.bodhi { background: rgba(14,165,233,0.1); color: var(--blue); }
+.layer-badge.nirvana { background: rgba(220,38,38,0.1); color: var(--red); }
+
+/* ── MODALS ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6,6,14,0.85);
+  backdrop-filter: blur(8px);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay.open {
+  display: flex;
+}
+
+.modal-content {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 36px;
+  max-width: 560px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content.kill-modal {
+  border-color: rgba(220,38,38,0.4);
+  box-shadow: 0 0 60px rgba(220,38,38,0.1);
+}
+
+.modal-content h3 {
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.modal-content p {
+  font-size: 14px;
+  color: var(--gray);
+  margin-bottom: 20px;
+}
+
+.modal-content .login-input {
+  margin-bottom: 12px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--gray);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Agent detail in modal */
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--card-border);
+  font-size: 14px;
+}
+
+.detail-row .detail-label {
+  color: var(--gray);
+}
+
+.detail-row .detail-value {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+/* ── SPINNER ── */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--card-border);
+  border-top-color: var(--purple);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  display: inline-block;
+}
+
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  gap: 12px;
+  color: var(--gray);
+}
+
+/* ── TOAST ── */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toast {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 14px 20px;
+  font-size: 14px;
+  animation: fadeIn 0.3s ease-out;
+  max-width: 360px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.toast.success { border-left: 3px solid var(--green); }
+.toast.error { border-left: 3px solid var(--red); }
+.toast .toast-icon { font-size: 16px; }
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  text-align: center;
+  padding: 48px;
+  color: var(--gray);
+}
+
+.empty-state p { margin-bottom: 16px; font-size: 15px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .overview-grid { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+  .dash-header { flex-direction: column; gap: 16px; align-items: flex-start; }
+  .agents-table { font-size: 12px; }
+  .agents-table thead th,
+  .agents-table tbody td { padding: 10px 8px; }
+}
+
+@media (max-width: 600px) {
+  nav { padding: 16px 20px; }
+  .dashboard-container { padding: 80px 16px 40px; }
+  .login-card { padding: 32px 24px; margin: 0 16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo"><a href="index.html"><span>One</span>ZeroEight</a></div>
+  <div class="nav-links">
+    <a href="index.html#armor">Armor</a>
+    <a href="index.html#features">Features</a>
+    <a href="index.html#pricing">Pricing</a>
+    <a href="getting-started.html">Docs</a>
+    <a href="dashboard.html" class="active">Dashboard</a>
+    <a href="https://discord.gg/4A6ExTnKnK">Discord</a>
+  </div>
+</nav>
+
+<!-- LOGIN VIEW -->
+<div id="login-view" class="login-container">
+  <div class="login-card">
+    <img src="images/agents/pulse_avatar.png" alt="Samma Suit" class="login-avatar">
+    <h2>Welcome Back</h2>
+    <p>Sign in to your Samma Suit dashboard</p>
+    <form id="login-form">
+      <input type="email" class="login-input" id="login-email" placeholder="you@example.com" required autocomplete="email">
+      <button type="submit" class="btn btn-primary" id="login-btn">Send Magic Link</button>
+    </form>
+    <div class="login-success" id="login-success">Check your email for a magic link to sign in.</div>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<!-- DASHBOARD VIEW -->
+<div id="dashboard-view" class="dashboard-container">
+  <!-- Header -->
+  <div class="dash-header">
+    <div class="dash-user">
+      <img src="images/agents/pulse_avatar.png" alt="Avatar" class="dash-user-avatar">
+      <div class="dash-user-info">
+        <div class="dash-email" id="dash-email">—</div>
+        <span class="dash-tier tier-free" id="dash-tier">FREE</span>
+      </div>
+    </div>
+    <div class="dash-actions">
+      <button class="btn btn-ghost btn-sm" id="btn-billing">Manage Billing</button>
+      <button class="btn btn-ghost btn-sm" id="btn-logout">Logout</button>
+    </div>
+  </div>
+
+  <!-- Overview Cards -->
+  <div class="overview-grid" id="overview-grid">
+    <div class="overview-card">
+      <div class="oc-label">Agents</div>
+      <div class="oc-value" id="oc-agents">—</div>
+      <div class="oc-sub" id="oc-agents-sub">loading...</div>
+      <div class="oc-bar"><div class="oc-bar-fill" id="oc-agents-bar" style="width:0%"></div></div>
+    </div>
+    <div class="overview-card">
+      <div class="oc-label">Monthly Spend</div>
+      <div class="oc-value" id="oc-spend">—</div>
+      <div class="oc-sub" id="oc-spend-sub">loading...</div>
+      <div class="oc-bar"><div class="oc-bar-fill" id="oc-spend-bar" style="width:0%"></div></div>
+    </div>
+    <div class="overview-card">
+      <div class="oc-label">Gateway Calls</div>
+      <div class="oc-value" id="oc-calls">—</div>
+      <div class="oc-sub" id="oc-calls-sub">this month</div>
+    </div>
+  </div>
+
+  <!-- Agents Table -->
+  <div class="section-header">
+    <h3>Agents</h3>
+    <button class="btn btn-primary btn-sm" id="btn-create-agent">Create Agent</button>
+  </div>
+  <div id="agents-container">
+    <div class="loading-state"><div class="spinner"></div> Loading agents...</div>
+  </div>
+
+  <!-- Audit Log -->
+  <div class="audit-section">
+    <div class="section-header" style="margin-top:32px;">
+      <h3>Recent Audit Log</h3>
+    </div>
+    <div id="audit-container">
+      <div class="loading-state"><div class="spinner"></div> Loading audit log...</div>
+    </div>
+  </div>
+</div>
+
+<!-- CREATE AGENT MODAL -->
+<div class="modal-overlay" id="modal-create">
+  <div class="modal-content">
+    <h3>Create Agent</h3>
+    <p>Deploy a new AI agent protected by the Samma Suit.</p>
+    <form id="create-agent-form">
+      <input type="text" class="login-input" id="agent-name" placeholder="Agent name" required>
+      <input type="number" class="login-input" id="agent-budget" placeholder="Monthly budget (USD)" step="0.01" min="0">
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost btn-sm" onclick="closeModal('modal-create')">Cancel</button>
+        <button type="submit" class="btn btn-primary btn-sm">Create Agent</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- KILL CONFIRM MODAL -->
+<div class="modal-overlay" id="modal-kill">
+  <div class="modal-content kill-modal">
+    <h3 style="color:var(--red)">Kill Agent</h3>
+    <p>This will immediately terminate <strong id="kill-agent-name">—</strong>. This action cannot be undone.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-kill')">Cancel</button>
+      <button class="btn btn-kill" id="btn-confirm-kill" style="padding:10px 24px;font-size:14px;">Kill Agent</button>
+    </div>
+  </div>
+</div>
+
+<!-- AGENT DETAIL MODAL -->
+<div class="modal-overlay" id="modal-detail">
+  <div class="modal-content" style="max-width:640px">
+    <h3 id="detail-agent-name">Agent Detail</h3>
+    <div id="detail-body">
+      <div class="loading-state"><div class="spinner"></div></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-detail')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+// ── STATE ──
+const state = {
+  token: sessionStorage.getItem('samma_token') || null,
+  customer: null,
+  overview: null,
+  agents: null,
+  selectedAgent: null
+};
+
+// ── API BASE ──
+const API_BASE = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+  ? `${location.protocol}//${location.hostname}:8001`
+  : 'https://onezeroeight-backend-production.up.railway.app';
+
+let refreshInterval = null;
+
+// ── API HELPER ──
+async function api(method, path, body) {
+  const opts = {
+    method,
+    headers: { 'Content-Type': 'application/json' }
+  };
+  if (state.token) {
+    opts.headers['Authorization'] = `Bearer ${state.token}`;
+  }
+  if (body) {
+    opts.body = JSON.stringify(body);
+  }
+  const res = await fetch(`${API_BASE}${path}`, opts);
+  if (res.status === 401) {
+    state.token = null;
+    sessionStorage.removeItem('samma_token');
+    showView('login');
+    toast('Session expired. Please sign in again.', 'error');
+    throw new Error('Unauthorized');
+  }
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || err.message || `Request failed (${res.status})`);
+  }
+  return res.json();
+}
+
+// ── VIEW SWITCHER ──
+function showView(view) {
+  const loginView = document.getElementById('login-view');
+  const dashView = document.getElementById('dashboard-view');
+  if (view === 'login') {
+    loginView.style.display = 'flex';
+    dashView.style.display = 'none';
+    if (refreshInterval) { clearInterval(refreshInterval); refreshInterval = null; }
+  } else {
+    loginView.style.display = 'none';
+    dashView.style.display = 'block';
+    loadDashboard();
+  }
+}
+
+// ── LOAD DASHBOARD ──
+async function loadDashboard() {
+  try {
+    const [meRes, overviewRes, agentsRes] = await Promise.all([
+      api('GET', '/api/auth/me'),
+      api('GET', '/api/dashboard/overview'),
+      api('GET', '/api/agents')
+    ]);
+    state.customer = meRes.customer;
+    state.overview = overviewRes;
+    state.agents = agentsRes;
+    renderDashboard();
+
+    // Auto-refresh overview every 30s
+    if (refreshInterval) clearInterval(refreshInterval);
+    refreshInterval = setInterval(async () => {
+      try {
+        const ov = await api('GET', '/api/dashboard/overview');
+        state.overview = ov;
+        renderOverview();
+      } catch (e) { /* silent */ }
+    }, 30000);
+  } catch (e) {
+    if (e.message !== 'Unauthorized') {
+      toast('Failed to load dashboard: ' + e.message, 'error');
+    }
+  }
+}
+
+// ── RENDER DASHBOARD ──
+function renderDashboard() {
+  renderHeader();
+  renderOverview();
+  renderAgents();
+  renderAuditLog();
+}
+
+function renderHeader() {
+  const c = state.customer;
+  if (!c) return;
+  document.getElementById('dash-email').textContent = c.email || '—';
+  const tierEl = document.getElementById('dash-tier');
+  const tier = (c.tier || 'free').toLowerCase();
+  tierEl.textContent = tier.toUpperCase();
+  tierEl.className = 'dash-tier tier-' + tier;
+}
+
+function renderOverview() {
+  const ov = state.overview;
+  if (!ov) return;
+
+  const agents = ov.agents || {};
+  const usage = ov.usage || {};
+
+  const agentCount = agents.active || 0;
+  const agentMax = agents.max || 1;
+  document.getElementById('oc-agents').textContent = agentCount;
+  document.getElementById('oc-agents-sub').textContent = `of ${agentMax} max`;
+  document.getElementById('oc-agents-bar').style.width = Math.min((agentCount / agentMax) * 100, 100) + '%';
+
+  const spend = usage.total_cost_usd || 0;
+  const budget = usage.monthly_budget_usd || 0;
+  document.getElementById('oc-spend').textContent = '$' + spend.toFixed(2);
+  document.getElementById('oc-spend-sub').textContent = budget > 0 ? `of $${budget.toFixed(0)} budget` : 'no budget set';
+  const spendPct = budget > 0 ? Math.min((spend / budget) * 100, 100) : 0;
+  const spendBar = document.getElementById('oc-spend-bar');
+  spendBar.style.width = spendPct + '%';
+  spendBar.style.background = spendPct > 90 ? 'var(--red)' : spendPct > 70 ? 'var(--gold)' : 'var(--purple)';
+
+  document.getElementById('oc-calls').textContent = (usage.total_calls || 0).toLocaleString();
+}
+
+function renderAgents() {
+  const container = document.getElementById('agents-container');
+  const agentList = state.agents?.agents || [];
+
+  if (agentList.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <p>No agents yet. Create your first agent to get started.</p>
+        <button class="btn btn-primary btn-sm" onclick="openModal('modal-create')">Create Agent</button>
+      </div>`;
+    return;
+  }
+
+  let html = `
+    <table class="agents-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Status</th>
+          <th>Budget</th>
+          <th>Calls</th>
+          <th>Created</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>`;
+
+  for (const a of agentList) {
+    const status = (a.status || 'active').toLowerCase();
+    const budgetPct = a.monthly_budget_usd > 0
+      ? Math.min(((a.total_cost_usd || 0) / a.monthly_budget_usd) * 100, 100)
+      : 0;
+    const budgetClass = budgetPct > 90 ? 'danger' : budgetPct > 70 ? 'warning' : '';
+    const created = a.created_at ? new Date(a.created_at).toLocaleDateString() : '—';
+
+    html += `
+      <tr onclick="openAgentDetail('${a.id}')">
+        <td>${esc(a.name)}</td>
+        <td><span class="status-badge ${status}">${status}</span></td>
+        <td>
+          <span class="budget-bar"><span class="budget-bar-fill ${budgetClass}" style="width:${budgetPct}%"></span></span>
+          ${budgetPct.toFixed(0)}%
+        </td>
+        <td>${(a.total_calls || 0).toLocaleString()}</td>
+        <td style="color:var(--gray-dim);font-size:12px">${created}</td>
+        <td>
+          ${status !== 'terminated' ? `<button class="btn-kill" onclick="event.stopPropagation();confirmKill('${a.id}','${esc(a.name)}')">Kill</button>` : ''}
+        </td>
+      </tr>`;
+  }
+
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+function renderAuditLog() {
+  const container = document.getElementById('audit-container');
+  const entries = state.overview?.recent_audit || [];
+
+  if (entries.length === 0) {
+    container.innerHTML = '<div class="empty-state"><p>No audit entries yet.</p></div>';
+    return;
+  }
+
+  let html = `
+    <div class="audit-scroll">
+    <table class="audit-table">
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>Agent</th>
+          <th>Action</th>
+          <th>Layers</th>
+          <th>Tokens</th>
+          <th>Cost</th>
+        </tr>
+      </thead>
+      <tbody>`;
+
+  for (const e of entries) {
+    const ts = e.created_at ? new Date(e.created_at).toLocaleString() : '—';
+    const layers = (e.layers_enforced || []).map(l => {
+      const ln = l.toLowerCase();
+      return `<span class="layer-badge ${ln}">${l}</span>`;
+    }).join('');
+
+    html += `
+      <tr>
+        <td class="audit-ts">${ts}</td>
+        <td>${esc(e.agent_name || '—')}</td>
+        <td>${esc(e.action || '—')}</td>
+        <td>${layers || '—'}</td>
+        <td style="font-family:var(--font-mono);font-size:12px">${e.tokens_used != null ? e.tokens_used.toLocaleString() : '—'}</td>
+        <td style="font-family:var(--font-mono);font-size:12px">${e.cost_usd != null ? '$' + e.cost_usd.toFixed(4) : '—'}</td>
+      </tr>`;
+  }
+
+  html += '</tbody></table></div>';
+  container.innerHTML = html;
+}
+
+// ── AGENT DETAIL ──
+async function openAgentDetail(agentId) {
+  openModal('modal-detail');
+  document.getElementById('detail-agent-name').textContent = 'Loading...';
+  document.getElementById('detail-body').innerHTML = '<div class="loading-state"><div class="spinner"></div></div>';
+
+  try {
+    const [agentRes, auditRes] = await Promise.all([
+      api('GET', `/api/agents/${agentId}`),
+      api('GET', `/api/agents/${agentId}/audit?limit=10`)
+    ]);
+
+    const a = agentRes.agent;
+    document.getElementById('detail-agent-name').textContent = a.name;
+
+    const pubKey = a.metta_public_key || a.public_key || '—';
+    const truncKey = pubKey.length > 24 ? pubKey.slice(0, 12) + '...' + pubKey.slice(-8) : pubKey;
+
+    const budgetPct = a.monthly_budget_usd > 0
+      ? Math.min(((a.total_cost_usd || 0) / a.monthly_budget_usd) * 100, 100)
+      : 0;
+    const budgetClass = budgetPct > 90 ? 'danger' : budgetPct > 70 ? 'warning' : '';
+
+    let html = `
+      <div class="detail-row">
+        <span class="detail-label">Agent ID</span>
+        <span class="detail-value">${a.id}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Status</span>
+        <span><span class="status-badge ${(a.status||'active').toLowerCase()}">${(a.status||'active').toUpperCase()}</span></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Public Key</span>
+        <span class="detail-value" title="${esc(pubKey)}">${esc(truncKey)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Budget Used</span>
+        <span>
+          <span class="budget-bar" style="width:120px"><span class="budget-bar-fill ${budgetClass}" style="width:${budgetPct}%"></span></span>
+          <span style="font-size:13px;margin-left:8px">$${(a.total_cost_usd||0).toFixed(2)} / $${(a.monthly_budget_usd||0).toFixed(2)}</span>
+        </span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Total Calls</span>
+        <span class="detail-value">${(a.total_calls||0).toLocaleString()}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Created</span>
+        <span class="detail-value">${a.created_at ? new Date(a.created_at).toLocaleString() : '—'}</span>
+      </div>`;
+
+    // Mini audit table
+    const auditEntries = auditRes.audit || [];
+    if (auditEntries.length > 0) {
+      html += '<h4 style="margin-top:24px;margin-bottom:12px;font-size:14px;color:var(--gray)">Recent Activity</h4>';
+      html += '<div class="audit-scroll" style="max-height:250px"><table class="audit-table"><thead><tr><th>Time</th><th>Action</th><th>Layers</th><th>Cost</th></tr></thead><tbody>';
+      for (const e of auditEntries) {
+        const ts = e.created_at ? new Date(e.created_at).toLocaleString() : '—';
+        const layers = (e.layers_enforced || []).map(l =>
+          `<span class="layer-badge ${l.toLowerCase()}">${l}</span>`
+        ).join('');
+        html += `<tr>
+          <td class="audit-ts">${ts}</td>
+          <td>${esc(e.action || '—')}</td>
+          <td>${layers || '—'}</td>
+          <td style="font-family:var(--font-mono);font-size:12px">${e.cost_usd != null ? '$'+e.cost_usd.toFixed(4) : '—'}</td>
+        </tr>`;
+      }
+      html += '</tbody></table></div>';
+    }
+
+    document.getElementById('detail-body').innerHTML = html;
+  } catch (e) {
+    document.getElementById('detail-body').innerHTML = `<p style="color:var(--red)">Failed to load: ${esc(e.message)}</p>`;
+  }
+}
+
+// ── MODALS ──
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', (e) => {
+    if (e.target === m) m.classList.remove('open');
+  });
+});
+
+// Close modals on Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+  }
+});
+
+// ── CREATE AGENT ──
+document.getElementById('create-agent-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const name = document.getElementById('agent-name').value.trim();
+  const budget = parseFloat(document.getElementById('agent-budget').value) || undefined;
+  if (!name) return;
+
+  try {
+    const body = { name };
+    if (budget != null && budget > 0) body.monthly_budget_usd = budget;
+    await api('POST', '/api/agents', body);
+    closeModal('modal-create');
+    document.getElementById('agent-name').value = '';
+    document.getElementById('agent-budget').value = '';
+    toast('Agent created successfully', 'success');
+    loadDashboard();
+  } catch (e) {
+    toast('Failed to create agent: ' + e.message, 'error');
+  }
+});
+
+// ── KILL AGENT ──
+let killTargetId = null;
+
+function confirmKill(agentId, agentName) {
+  killTargetId = agentId;
+  document.getElementById('kill-agent-name').textContent = agentName;
+  openModal('modal-kill');
+}
+
+document.getElementById('btn-confirm-kill').addEventListener('click', async () => {
+  if (!killTargetId) return;
+  try {
+    await api('POST', `/api/agents/${killTargetId}/kill`);
+    closeModal('modal-kill');
+    toast('Agent terminated via NIRVANA kill switch', 'success');
+    killTargetId = null;
+    loadDashboard();
+  } catch (e) {
+    toast('Failed to kill agent: ' + e.message, 'error');
+  }
+});
+
+// ── LOGIN FLOW ──
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('login-email').value.trim();
+  if (!email) return;
+
+  const btn = document.getElementById('login-btn');
+  const successEl = document.getElementById('login-success');
+  const errorEl = document.getElementById('login-error');
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+  successEl.style.display = 'none';
+  errorEl.style.display = 'none';
+
+  try {
+    await api('POST', '/api/auth/magic-link', { email });
+    successEl.style.display = 'block';
+  } catch (err) {
+    errorEl.textContent = err.message;
+    errorEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Send Magic Link';
+  }
+});
+
+// ── TOKEN VERIFY ON PAGE LOAD ──
+async function checkToken() {
+  const params = new URLSearchParams(window.location.search);
+  const urlToken = params.get('token');
+
+  if (urlToken) {
+    try {
+      const res = await api('POST', '/api/auth/verify', { token: urlToken });
+      state.token = res.token;
+      sessionStorage.setItem('samma_token', res.token);
+      // Clean URL
+      window.history.replaceState({}, '', window.location.pathname);
+      showView('dashboard');
+      return;
+    } catch (e) {
+      toast('Invalid or expired magic link', 'error');
+    }
+  }
+
+  if (state.token) {
+    try {
+      await api('GET', '/api/auth/me');
+      showView('dashboard');
+    } catch (e) {
+      showView('login');
+    }
+  } else {
+    showView('login');
+  }
+}
+
+// ── BILLING ──
+document.getElementById('btn-billing').addEventListener('click', async () => {
+  try {
+    const res = await api('GET', '/api/billing/portal');
+    if (res.portal_url) {
+      window.open(res.portal_url, '_blank');
+    }
+  } catch (e) {
+    toast('Failed to open billing portal: ' + e.message, 'error');
+  }
+});
+
+// ── LOGOUT ──
+document.getElementById('btn-logout').addEventListener('click', async () => {
+  try {
+    await api('POST', '/api/auth/logout');
+  } catch (e) { /* ignore */ }
+  state.token = null;
+  state.customer = null;
+  state.overview = null;
+  state.agents = null;
+  sessionStorage.removeItem('samma_token');
+  showView('login');
+  toast('Signed out', 'success');
+});
+
+// ── CREATE AGENT BUTTON ──
+document.getElementById('btn-create-agent').addEventListener('click', () => {
+  openModal('modal-create');
+});
+
+// ── TOAST ──
+function toast(message, type = 'success') {
+  const container = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.innerHTML = `<span class="toast-icon">${type === 'success' ? '\u2713' : '\u2717'}</span> ${esc(message)}`;
+  container.appendChild(el);
+  setTimeout(() => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateX(20px)';
+    el.style.transition = 'all 0.3s';
+    setTimeout(() => el.remove(), 300);
+  }, 4000);
+}
+
+// ── HELPERS ──
+function esc(str) {
+  const div = document.createElement('div');
+  div.textContent = str || '';
+  return div.innerHTML;
+}
+
+// ── INIT ──
+checkToken();
+</script>
+
+</body>
+</html>
