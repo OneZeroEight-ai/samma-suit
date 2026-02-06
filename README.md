@@ -1,12 +1,26 @@
-# Samma Suit SDK
+<p align="center">
+    <img src="pulse_avatar.png" alt="Sammā Suit" width="200" height="200" style="border-radius: 50%;">
+</p>
 
-[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](https://python.org)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![Tests: 60 passing](https://img.shields.io/badge/tests-60%20passing-brightgreen)]()
+<h1 align="center">Sammā Suit</h1>
+<p align="center"><em>Eight layers of Right Protection for autonomous AI agents</em></p>
+<p align="center">
+    <a href="https://sammasuit.com">sammasuit.com</a> ·
+    <a href="https://discord.gg/4A6ExTnKnK">Discord</a> ·
+    <a href="https://x.com/OneZeroEight_ai">@OneZeroEight_ai</a>
+</p>
+
+<p align="center">
+    <a href="https://python.org"><img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python 3.10+"></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="License: MIT"></a>
+    <img src="https://img.shields.io/badge/tests-60%20passing-brightgreen" alt="Tests: 60 passing">
+</p>
+
+---
 
 **Eight layers of Right Protection for autonomous AI agents.**
 
-The Samma Suit (Pali: *Samma* — "right, proper") is an open-source security framework that gives AI agent systems rate limiting, permissions, cost controls, audit trails, identity verification, sandboxing, and recovery — out of the box.
+The Sammā Suit (Pali: *Sammā* — "right, proper") is an open-source security framework that gives AI agent systems rate limiting, permissions, cost controls, audit trails, identity verification, sandboxing, and recovery — out of the box.
 
 [sammasuit.com](https://sammasuit.com) | [Discord](https://discord.gg/4A6ExTnKnK) | [Docs](docs/)
 
