@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DOORMAN — Sammā Suit | sammasuit.com | Eight-Layer Agent Armor by OneZeroEight</title>
+<meta name="description" content="DOORMAN — Eight layers of Right Protection for autonomous AI agents. The Sammā Suit security framework by OneZeroEight.">
+<meta property="og:title" content="DOORMAN — Sammā Suit by OneZeroEight">
+<meta property="og:description" content="Eight layers of Right Protection for autonomous AI agents. Open-source security framework.">
+<meta property="og:url" content="https://sammasuit.com">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@OneZeroEight_ai">
+<meta name="twitter:title" content="DOORMAN — Sammā Suit">
+<meta name="twitter:description" content="Eight layers of Right Protection for autonomous AI agents.">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #06060E;
+  --bg2: #0C0C1A;
+  --card: #111126;
+  --card-border: #1E1E3A;
+  --purple: #7C3AED;
+  --purple-glow: rgba(124, 58, 237, 0.3);
+  --purple-dim: rgba(124, 58, 237, 0.08);
+  --cyan: #00D4FF;
+  --cyan-glow: rgba(0, 212, 255, 0.2);
+  --gold: #FFD700;
+  --red: #DC2626;
+  --green: #059669;
+  --orange: #EA580C;
+  --pink: #FF6B9D;
+  --blue: #0EA5E9;
+  --white: #F0EFF4;
+  --gray: #8888AA;
+  --gray-dim: #4D4D66;
+  --font-display: 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: var(--font-display);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── NOISE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 3px; }
+
+/* ── GRID BACKGROUND ── */
+.grid-bg {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(124,58,237,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124,58,237,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── SECTIONS ── */
+section {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 16px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(20px);
+  background: rgba(6,6,14,0.8);
+  border-bottom: 1px solid var(--card-border);
+}
+
+.nav-logo {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--gray);
+  letter-spacing: 2px;
+}
+
+.nav-logo span { color: var(--purple); font-weight: 700; }
+
+.nav-links { display: flex; gap: 32px; }
+.nav-links a {
+  color: var(--gray);
+  text-decoration: none;
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: color 0.3s;
+}
+.nav-links a:hover { color: var(--cyan); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 80px;
+  position: relative;
+}
+
+.hero-glow {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, var(--purple-glow) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: var(--purple-dim);
+  border: 1px solid rgba(124,58,237,0.2);
+  border-radius: 100px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--purple);
+  letter-spacing: 1px;
+  margin-bottom: 32px;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.hero-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.hero h1 {
+  font-size: clamp(60px, 10vw, 120px);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -3px;
+  margin-bottom: 8px;
+  animation: fadeIn 0.8s ease-out 0.1s both;
+}
+
+.hero h1 .accent { color: var(--cyan); }
+
+.hero-sub {
+  font-size: clamp(18px, 2.5vw, 28px);
+  font-weight: 300;
+  color: var(--gray);
+  margin-bottom: 48px;
+  max-width: 700px;
+  animation: fadeIn 0.8s ease-out 0.2s both;
+}
+
+.hero-sub strong { color: var(--white); font-weight: 600; }
+
+.hero-cta {
+  display: flex;
+  gap: 16px;
+  animation: fadeIn 0.8s ease-out 0.3s both;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  border-radius: 8px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-primary {
+  background: var(--purple);
+  color: white;
+  box-shadow: 0 0 30px var(--purple-glow);
+}
+.btn-primary:hover {
+  background: #8B5CF6;
+  box-shadow: 0 0 50px var(--purple-glow);
+  transform: translateY(-2px);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--gray);
+  border: 1px solid var(--card-border);
+}
+.btn-ghost:hover {
+  color: var(--white);
+  border-color: var(--gray);
+}
+
+/* ── THREAT TICKER ── */
+.threat-ticker {
+  margin-top: 80px;
+  padding: 20px 0;
+  border-top: 1px solid var(--card-border);
+  border-bottom: 1px solid var(--card-border);
+  overflow: hidden;
+  animation: fadeIn 0.8s ease-out 0.5s both;
+}
+
+.ticker-track {
+  display: flex;
+  gap: 48px;
+  animation: scroll 30s linear infinite;
+  width: max-content;
+}
+
+.ticker-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.ticker-item .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--red);
+  animation: pulse-dot 1.5s infinite;
+}
+
+.ticker-item .label { color: var(--red); font-weight: 700; }
+.ticker-item .desc { color: var(--gray); }
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ── PROBLEM SECTION ── */
+.problem {
+  padding: 120px 40px;
+}
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.section-label.red { color: var(--red); }
+.section-label.green { color: var(--green); }
+.section-label.purple { color: var(--purple); }
+.section-label.cyan { color: var(--cyan); }
+.section-label.gold { color: var(--gold); }
+
+.section-title {
+  font-size: clamp(32px, 4vw, 48px);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 24px;
+  max-width: 800px;
+}
+
+.section-desc {
+  font-size: 18px;
+  color: var(--gray);
+  max-width: 600px;
+  margin-bottom: 48px;
+  font-weight: 300;
+}
+
+.threat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.threat-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 28px;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.threat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--red);
+  opacity: 0.6;
+}
+
+.threat-card:hover {
+  border-color: rgba(220,38,38,0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(220,38,38,0.1);
+}
+
+.threat-card .tc-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--red);
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.threat-card h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.threat-card p {
+  font-size: 14px;
+  color: var(--gray);
+  line-height: 1.5;
+}
+
+.threat-card .source {
+  margin-top: 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--gray-dim);
+}
+
+/* ── ARMOR SECTION ── */
+.armor {
+  padding: 120px 40px;
+}
+
+.armor-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 48px;
+}
+
+.armor-layer {
+  display: grid;
+  grid-template-columns: 60px 140px 1fr 1fr;
+  gap: 0;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.4s;
+  cursor: default;
+}
+
+.armor-layer:hover {
+  border-color: var(--purple);
+  box-shadow: 0 0 30px var(--purple-glow);
+  transform: scale(1.01);
+}
+
+.armor-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--bg);
+  min-height: 80px;
+}
+
+.armor-name {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 16px 20px;
+  border-right: 1px solid var(--card-border);
+}
+
+.armor-name h3 {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.armor-name .sub {
+  font-size: 11px;
+  color: var(--gray);
+  margin-top: 2px;
+}
+
+.armor-protects {
+  display: flex;
+  align-items: center;
+  padding: 16px 24px;
+  font-size: 14px;
+  color: var(--gray);
+  border-right: 1px solid var(--card-border);
+}
+
+.armor-samus {
+  display: flex;
+  align-items: center;
+  padding: 16px 24px;
+  font-size: 13px;
+  color: var(--gray-dim);
+  font-style: italic;
+}
+
+/* Layer-specific colors */
+.layer-1 .armor-num { background: var(--purple); }
+.layer-2 .armor-num { background: var(--green); }
+.layer-3 .armor-num { background: var(--cyan); color: var(--bg); }
+.layer-4 .armor-num { background: var(--gold); color: var(--bg); }
+.layer-5 .armor-num { background: var(--orange); }
+.layer-6 .armor-num { background: var(--pink); color: var(--bg); }
+.layer-7 .armor-num { background: var(--blue); }
+.layer-8 .armor-num { background: var(--red); }
+
+.layer-1 .armor-name h3 { color: var(--purple); }
+.layer-2 .armor-name h3 { color: var(--green); }
+.layer-3 .armor-name h3 { color: var(--cyan); }
+.layer-4 .armor-name h3 { color: var(--gold); }
+.layer-5 .armor-name h3 { color: var(--orange); }
+.layer-6 .armor-name h3 { color: var(--pink); }
+.layer-7 .armor-name h3 { color: var(--blue); }
+.layer-8 .armor-name h3 { color: var(--red); }
+
+/* ── FEATURES COMPARISON ── */
+.features {
+  padding: 120px 40px;
+}
+
+.compare-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 48px;
+  font-size: 14px;
+}
+
+.compare-table thead th {
+  background: var(--card);
+  padding: 16px 20px;
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: var(--gray);
+  border-bottom: 2px solid var(--purple);
+}
+
+.compare-table thead th:nth-child(2),
+.compare-table thead th:nth-child(3) { text-align: center; width: 80px; }
+
+.compare-table tbody td {
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--card-border);
+  color: var(--gray);
+}
+
+.compare-table tbody tr:hover td {
+  background: var(--purple-dim);
+}
+
+.compare-table tbody td:nth-child(2),
+.compare-table tbody td:nth-child(3) { text-align: center; font-size: 18px; }
+
+.check { color: var(--green); }
+.cross { color: var(--red); opacity: 0.5; }
+.armor-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--purple-dim);
+  color: var(--purple);
+  white-space: nowrap;
+}
+
+/* ── PRICING ── */
+.pricing {
+  padding: 120px 40px;
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 48px;
+}
+
+.price-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s;
+}
+
+.price-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--purple);
+}
+
+.price-card.featured {
+  border-color: var(--purple);
+  box-shadow: 0 0 40px var(--purple-glow);
+  position: relative;
+}
+
+.price-card.featured::after {
+  content: 'MOST POPULAR';
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--purple);
+  color: white;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  padding: 4px 14px;
+  border-radius: 100px;
+}
+
+.price-card .tier-name {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--gray);
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+
+.price-card .price {
+  font-size: 36px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.price-card .price-sub {
+  font-size: 13px;
+  color: var(--gray-dim);
+  margin-bottom: 24px;
+}
+
+.price-card .sutra-discount {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--gold);
+  background: rgba(255,215,0,0.08);
+  border: 1px solid rgba(255,215,0,0.15);
+  padding: 4px 10px;
+  border-radius: 6px;
+  margin-bottom: 24px;
+}
+
+.price-card ul {
+  list-style: none;
+  flex: 1;
+}
+
+.price-card ul li {
+  padding: 6px 0;
+  font-size: 14px;
+  color: var(--gray);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.price-card ul li::before {
+  content: '→';
+  color: var(--purple);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.price-card .btn {
+  width: 100%;
+  justify-content: center;
+  margin-top: 24px;
+  font-size: 13px;
+}
+
+/* ── CREDIBILITY ── */
+.credibility {
+  padding: 120px 40px;
+}
+
+.cred-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 48px;
+}
+
+.cred-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 32px 24px;
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.cred-card:hover {
+  border-color: var(--cyan);
+  transform: translateY(-2px);
+}
+
+.cred-card .num {
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--cyan);
+  font-family: var(--font-mono);
+}
+
+.cred-card .label {
+  font-size: 14px;
+  color: var(--gray);
+  margin-top: 4px;
+}
+
+/* ── QUOTE ── */
+.quote-block {
+  margin: 80px 0;
+  padding: 48px;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-left: 4px solid var(--red);
+  border-radius: 0 12px 12px 0;
+}
+
+.quote-block blockquote {
+  font-size: 24px;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--white);
+  margin-bottom: 12px;
+}
+
+.quote-block cite {
+  font-size: 14px;
+  color: var(--gray);
+  font-style: normal;
+}
+
+/* ── CTA SECTION ── */
+.final-cta {
+  padding: 120px 40px;
+  text-align: center;
+}
+
+.final-cta h2 {
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 800;
+  margin-bottom: 16px;
+}
+
+.final-cta p {
+  font-size: 18px;
+  color: var(--gray);
+  max-width: 500px;
+  margin: 0 auto 40px;
+  font-weight: 300;
+}
+
+.final-cta .btn-group {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+/* ── FOOTER ── */
+footer {
+  padding: 48px 40px;
+  border-top: 1px solid var(--card-border);
+  text-align: center;
+}
+
+footer .footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-bottom: 16px;
+}
+
+footer a {
+  color: var(--gray);
+  text-decoration: none;
+  font-size: 13px;
+  transition: color 0.3s;
+}
+
+footer a:hover { color: var(--cyan); }
+
+footer .copy {
+  font-size: 12px;
+  color: var(--gray-dim);
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s ease-out;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .armor-layer { grid-template-columns: 50px 1fr; }
+  .armor-protects, .armor-samus { display: none; }
+  .pricing-grid { grid-template-columns: 1fr 1fr; }
+  .cred-grid { grid-template-columns: 1fr 1fr; }
+  .nav-links { display: none; }
+  .threat-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  .pricing-grid { grid-template-columns: 1fr; }
+  section { padding-left: 20px; padding-right: 20px; }
+  nav { padding: 16px 20px; }
+}
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo"><span>108</span> ONEZEROEIGHT</div>
+  <div class="nav-links">
+    <a href="#armor">Armor</a>
+    <a href="#features">Features</a>
+    <a href="#pricing">Pricing</a>
+    <a href="https://onezeroeight.ai">Platform</a>
+    <a href="https://discord.gg/4A6ExTnKnK">Discord</a>
+    <a href="https://sammasuit.com" class="btn btn-primary" style="padding:8px 16px;font-size:0.85rem;">sammasuit.com</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-badge">PRODUCT CONCEPT • FEBRUARY 2026</div>
+  <h1>DOOR<span class="accent">MAN</span></h1>
+  <p class="hero-sub">
+    <strong>The Sammā Suit</strong> — eight layers of Right Protection for autonomous AI agents.
+    Every feature OpenClaw offers — messaging, memory, proactive tasks, skills, system access —
+    rebuilt with security, cost controls, and identity <strong>built in from day one</strong>.
+  </p>
+  <div class="hero-cta">
+    <a href="#armor" class="btn btn-primary">See the Sammā Suit →</a>
+    <a href="#pricing" class="btn btn-ghost">View Pricing</a>
+  </div>
+
+  <!-- THREAT TICKER -->
+  <div class="threat-ticker">
+    <div class="ticker-track">
+      <div class="ticker-item"><span class="dot"></span><span class="label">CVE-2026-25253</span><span class="desc">1-click RCE via WebSocket hijack</span></div>
+      <div class="ticker-item"><span class="dot"></span><span class="label">341 MALICIOUS SKILLS</span><span class="desc">Credential-stealing malware on ClawHub</span></div>
+      <div class="ticker-item"><span class="dot"></span><span class="label">$750/MO WASTE</span><span class="desc">Uncontrolled heartbeat API costs</span></div>
+      <div class="ticker-item"><span class="dot"></span><span class="label">GARTNER WARNING</span><span class="desc">"Unacceptable cybersecurity risk"</span></div>
+      <div class="ticker-item"><span class="dot"></span><span class="label">CHINA NVDB ALERT</span><span class="desc">Government regulator flags OpenClaw</span></div>
+      <div class="ticker-item"><span class="dot"></span><span class="label">1.5M AGENTS / 17K HUMANS</span><span class="desc">No identity verification on Moltbook</span></div>
+      <!-- duplicate for seamless scroll -->
+      <div class="ticker-item"><span class="dot"></span><span class="label">CVE-2026-25253</span><span class="desc">1-click RCE via WebSocket hijack</span></div>
+      <div class="ticker-item"><span class="dot"></span><span class="label">341 MALICIOUS SKILLS</span><span class="desc">Credential-stealing malware on ClawHub</span></div>
+      <div class="ticker-item"><span class="dot"></span><span class="label">$750/MO WASTE</span><span class="desc">Uncontrolled heartbeat API costs</span></div>
+      <div class="ticker-item"><span class="dot"></span><span class="label">GARTNER WARNING</span><span class="desc">"Unacceptable cybersecurity risk"</span></div>
+      <div class="ticker-item"><span class="dot"></span><span class="label">CHINA NVDB ALERT</span><span class="desc">Government regulator flags OpenClaw</span></div>
+      <div class="ticker-item"><span class="dot"></span><span class="label">1.5M AGENTS / 17K HUMANS</span><span class="desc">No identity verification on Moltbook</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="problem" id="problem">
+  <div class="section-label red">THE PROBLEM</div>
+  <h2 class="section-title">OpenClaw proved the demand.<br>Then it proved the danger.</h2>
+  <p class="section-desc">100,000+ GitHub stars. 1.5M autonomous agents. And a security posture that one industry leader called "a dumpster fire."</p>
+
+  <div class="threat-grid">
+    <div class="threat-card fade-in">
+      <div class="tc-label">CVE-2026-25253</div>
+      <h3>1-Click Remote Code Execution</h3>
+      <p>Control UI trusts gatewayUrl from query strings without validation. A single malicious link gives an attacker operator-level access to your gateway — disabling sandbox, modifying config, executing arbitrary code.</p>
+      <div class="source">Source: DepthFirst / The Hacker News • Feb 2026</div>
+    </div>
+    <div class="threat-card fade-in">
+      <div class="tc-label">CLAWHAVOC CAMPAIGN</div>
+      <h3>341 Malicious Skills</h3>
+      <p>Koi Security found 335 skills delivering Atomic Stealer malware via fake crypto tools. ClawHub's only barrier: a GitHub account one week old. Stolen: API keys, wallet keys, SSH credentials, browser passwords.</p>
+      <div class="source">Source: Koi Security / The Hacker News • Feb 2026</div>
+    </div>
+    <div class="threat-card fade-in">
+      <div class="tc-label">COST OVERRUN</div>
+      <h3>$20/Night While You Sleep</h3>
+      <p>Heartbeat cron jobs sending 120,000 tokens of context per time check. $0.75 per check, 25 checks per night. Projected $750/month — just for reminders. No budget caps, no throttling, no alerts.</p>
+      <div class="source">Source: Benjamin De Kraker / The Register • Feb 2026</div>
+    </div>
+    <div class="threat-card fade-in">
+      <div class="tc-label">ZERO GOVERNANCE</div>
+      <h3>No Permissions, No Audit, No Rollback</h3>
+      <p>One monolithic agent with full system access. No role separation, no activity logging, no state snapshots. If your agent goes rogue at 3 AM, you find out when the damage is done.</p>
+      <div class="source">Source: Gartner, China NVDB, IBM • Feb 2026</div>
+    </div>
+  </div>
+
+  <div class="quote-block fade-in">
+    <blockquote>"OpenClaw is a security dumpster fire."</blockquote>
+    <cite>— Laurie Voss, Head of DevRel at Arize, Founding CTO of npm</cite>
+  </div>
+</section>
+
+<!-- ARMOR -->
+<section class="armor" id="armor">
+  <div class="section-label purple">THE SAMMĀ SUIT</div>
+  <h2 class="section-title">Eight Layers of Right Protection.<br>Always on. Never optional.</h2>
+  <p class="section-desc">Named for the Pali word at the heart of the Noble Eightfold Path. Inspired by Samus Aran's armor. Every layer protects against a specific class of vulnerability that OpenClaw leaves exposed.</p>
+
+  <div class="armor-stack">
+    <div class="armor-layer layer-1 fade-in">
+      <div class="armor-num">1</div>
+      <div class="armor-name"><h3>SUTRA</h3><div class="sub">Gateway</div></div>
+      <div class="armor-protects">Origin validation, TLS 1.3, WebSocket auth, rate limiting</div>
+      <div class="armor-samus">⬡ Power Suit — base armor</div>
+    </div>
+    <div class="armor-layer layer-2 fade-in">
+      <div class="armor-num">2</div>
+      <div class="armor-name"><h3>DHARMA</h3><div class="sub">Permissions</div></div>
+      <div class="armor-protects">Role-based agent scoping — email ≠ shell ≠ browser ≠ files</div>
+      <div class="armor-samus">⬡ Varia Suit — environmental protection</div>
+    </div>
+    <div class="armor-layer layer-3 fade-in">
+      <div class="armor-num">3</div>
+      <div class="armor-name"><h3>SANGHA</h3><div class="sub">Skill Vetting</div></div>
+      <div class="armor-protects">Curated marketplace — scan, sandbox, review before install</div>
+      <div class="armor-samus">⬡ Gravity Suit — pressure resistance</div>
+    </div>
+    <div class="armor-layer layer-4 fade-in">
+      <div class="armor-num">4</div>
+      <div class="armor-name"><h3>KARMA</h3><div class="sub">Cost Controls</div></div>
+      <div class="armor-protects">Per-agent budgets, token optimization, outcome-based billing</div>
+      <div class="armor-samus">⬡ Energy Tanks — resource management</div>
+    </div>
+    <div class="armor-layer layer-5 fade-in">
+      <div class="armor-num">5</div>
+      <div class="armor-name"><h3>SILA</h3><div class="sub">Audit Trail</div></div>
+      <div class="armor-protects">Full activity logging, anomaly detection, memory integrity</div>
+      <div class="armor-samus">⬡ Scan Visor — full awareness</div>
+    </div>
+    <div class="armor-layer layer-6 fade-in">
+      <div class="armor-num">6</div>
+      <div class="armor-name"><h3>METTA</h3><div class="sub">Identity</div></div>
+      <div class="armor-protects">Cryptographic agent signing, no spoofing, verified communication</div>
+      <div class="armor-samus">⬡ Morph Ball — controlled transformation</div>
+    </div>
+    <div class="armor-layer layer-7 fade-in">
+      <div class="armor-num">7</div>
+      <div class="armor-name"><h3>BODHI</h3><div class="sub">Isolation</div></div>
+      <div class="armor-protects">Process-level sandboxing, no lateral movement, egress allowlists</div>
+      <div class="armor-samus">⬡ Screw Attack — offense + defense</div>
+    </div>
+    <div class="armor-layer layer-8 fade-in">
+      <div class="armor-num">8</div>
+      <div class="armor-name"><h3>NIRVANA</h3><div class="sub">Recovery</div></div>
+      <div class="armor-protects">State snapshots, 1-click rollback, kill switches, dead man's switch</div>
+      <div class="armor-samus">⬡ Reserve Tank — last resort</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES COMPARISON -->
+<section class="features" id="features">
+  <div class="section-label cyan">FEATURE PARITY</div>
+  <h2 class="section-title">Everything OpenClaw does.<br>Plus everything it doesn't.</h2>
+  <p class="section-desc">Every capability matched. Eight capabilities added.</p>
+
+  <table class="compare-table fade-in">
+    <thead>
+      <tr>
+        <th>Feature</th>
+        <th>OC</th>
+        <th>DM</th>
+        <th>Armor Layer</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Multi-channel messaging</td><td class="check">✓</td><td class="check">✓</td><td><span class="armor-tag">SUTRA</span></td></tr>
+      <tr><td>System access (files, shell, browser)</td><td class="check">✓</td><td class="check">✓</td><td><span class="armor-tag">DHARMA</span></td></tr>
+      <tr><td>Persistent long-term memory</td><td class="check">✓</td><td class="check">✓</td><td><span class="armor-tag">SILA</span></td></tr>
+      <tr><td>Proactive heartbeat / cron</td><td class="check">✓</td><td class="check">✓</td><td><span class="armor-tag">KARMA</span></td></tr>
+      <tr><td>Extensible skill ecosystem</td><td class="check">✓</td><td class="check">✓</td><td><span class="armor-tag">SANGHA</span></td></tr>
+      <tr><td>Self-improving / auto-skills</td><td class="check">✓</td><td class="check">✓</td><td><span class="armor-tag">BODHI</span></td></tr>
+      <tr><td>Model agnostic</td><td class="check">✓</td><td class="check">✓</td><td>—</td></tr>
+      <tr><td>50+ integrations</td><td class="check">✓</td><td class="check">✓</td><td><span class="armor-tag">DHARMA</span></td></tr>
+      <tr><td>Developer tools (CI/CD, Sentry)</td><td class="check">✓</td><td class="check">✓</td><td><span class="armor-tag">DHARMA</span></td></tr>
+      <tr><td>Self-hosted / privacy-first</td><td class="check">✓</td><td class="check">✓</td><td>—</td></tr>
+      <tr style="background:var(--purple-dim)"><td><strong>Agent identity verification</strong></td><td class="cross">✗</td><td class="check">✓</td><td><span class="armor-tag">METTA</span></td></tr>
+      <tr style="background:var(--purple-dim)"><td><strong>Role-based permissions</strong></td><td class="cross">✗</td><td class="check">✓</td><td><span class="armor-tag">DHARMA</span></td></tr>
+      <tr style="background:var(--purple-dim)"><td><strong>Skill vetting / malware scanning</strong></td><td class="cross">✗</td><td class="check">✓</td><td><span class="armor-tag">SANGHA</span></td></tr>
+      <tr style="background:var(--purple-dim)"><td><strong>Cost controls / budget caps</strong></td><td class="cross">✗</td><td class="check">✓</td><td><span class="armor-tag">KARMA</span></td></tr>
+      <tr style="background:var(--purple-dim)"><td><strong>Activity audit trail</strong></td><td class="cross">✗</td><td class="check">✓</td><td><span class="armor-tag">SILA</span></td></tr>
+      <tr style="background:var(--purple-dim)"><td><strong>Process isolation</strong></td><td class="cross">✗</td><td class="check">✓</td><td><span class="armor-tag">BODHI</span></td></tr>
+      <tr style="background:var(--purple-dim)"><td><strong>State rollback / kill switch</strong></td><td class="cross">✗</td><td class="check">✓</td><td><span class="armor-tag">NIRVANA</span></td></tr>
+      <tr style="background:var(--purple-dim)"><td><strong>WebSocket origin hardening</strong></td><td class="cross">✗</td><td class="check">✓</td><td><span class="armor-tag">SUTRA</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- CREDIBILITY -->
+<section class="credibility">
+  <div class="section-label green">WHY ONEZEROEIGHT</div>
+  <h2 class="section-title">We already run governed AI agents in production.</h2>
+  <p class="section-desc">16 genre-specialized agents. Real outcomes. Real accountability. Since day one.</p>
+
+  <div class="cred-grid fade-in">
+    <div class="cred-card">
+      <div class="num">16</div>
+      <div class="label">Genre Agents in Production</div>
+    </div>
+    <div class="cred-card">
+      <div class="num">3,000+</div>
+      <div class="label">Verified Playlists</div>
+    </div>
+    <div class="cred-card">
+      <div class="num">48M+</div>
+      <div class="label">Combined Follower Reach</div>
+    </div>
+    <div class="cred-card">
+      <div class="num">108M</div>
+      <div class="label">SUTRA Tokens on Polygon</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="section-label gold">PRICING</div>
+  <h2 class="section-title">Choose your armor tier.</h2>
+  <p class="section-desc">Every tier includes the full Sammā Suit. Pay for scale, not security.</p>
+
+  <div class="pricing-grid fade-in">
+    <div class="price-card">
+      <div class="tier-name">FREE / OSS</div>
+      <div class="price">$0</div>
+      <div class="price-sub">forever</div>
+      <ul>
+        <li>Open-source Sammā Suit SDK</li>
+        <li>Eight-layer reference implementation</li>
+        <li>Community support</li>
+        <li>Self-managed infrastructure</li>
+      </ul>
+      <a href="https://github.com/OneZeroEight-ai/samma-suit" class="btn btn-ghost">View on GitHub</a>
+    </div>
+    <div class="price-card featured">
+      <div class="tier-name">PRO</div>
+      <div class="price">$29<span style="font-size:18px;font-weight:300">/mo</span></div>
+      <div class="price-sub">per instance</div>
+      <div class="sutra-discount">🪷 20% off with SUTRA → $23/mo</div>
+      <ul>
+        <li>Managed Sammā Suit (all 8 layers)</li>
+        <li>Vetted skill marketplace</li>
+        <li>Cost control dashboard</li>
+        <li>Audit log viewer + alerts</li>
+        <li>Up to 5 agents</li>
+        <li>Email support</li>
+      </ul>
+      <a href="https://sammasuit.com" class="btn btn-primary">Get Started</a>
+    </div>
+    <div class="price-card">
+      <div class="tier-name">TEAM</div>
+      <div class="price">$99<span style="font-size:18px;font-weight:300">/mo</span></div>
+      <div class="price-sub">per workspace</div>
+      <div class="sutra-discount">🪷 20% off with SUTRA → $79/mo</div>
+      <ul>
+        <li>Everything in Pro</li>
+        <li>Shared governance policies</li>
+        <li>Centralized admin dashboard</li>
+        <li>Up to 25 agents</li>
+        <li>Priority support</li>
+      </ul>
+      <a href="mailto:info@sammasuit.com" class="btn btn-ghost">Contact Us</a>
+    </div>
+    <div class="price-card">
+      <div class="tier-name">ENTERPRISE</div>
+      <div class="price">Custom</div>
+      <div class="price-sub">talk to us</div>
+      <div class="sutra-discount">🪷 SUTRA token integration included</div>
+      <ul>
+        <li>Everything in Team</li>
+        <li>SSO / SAML</li>
+        <li>Compliance reporting</li>
+        <li>Custom policy engines</li>
+        <li>Unlimited agents</li>
+        <li>Dedicated SLA</li>
+      </ul>
+      <a href="mailto:info@sammasuit.com?subject=DOORMAN%20Enterprise%20Inquiry" class="btn btn-ghost">Talk to Sales</a>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <h2>Same firepower.<br>Built-in <span style="color:var(--cyan)">protection</span>.</h2>
+  <p>The market wants powerful AI agents. It doesn't want to be its own security team.</p>
+  <div class="btn-group">
+    <a href="https://github.com/OneZeroEight-ai/samma-suit" class="btn btn-primary">View on GitHub</a>
+    <a href="https://discord.gg/4A6ExTnKnK" class="btn btn-ghost">Join the Discord</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-links">
+    <a href="https://sammasuit.com">sammasuit.com</a>
+    <a href="https://onezeroeight.ai">onezeroeight.ai</a>
+    <a href="mailto:info@sammasuit.com">info@sammasuit.com</a>
+    <a href="https://discord.gg/4A6ExTnKnK">Discord</a>
+    <a href="https://x.com/OneZeroEight_ai">@OneZeroEight_ai</a>
+  </div>
+  <div class="copy">© 2026 OneZeroEight.ai — DOORMAN powered by the Sammā Suit</div>
+</footer>
+
+<!-- SCROLL ANIMATIONS -->
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
