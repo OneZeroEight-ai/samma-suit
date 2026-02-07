@@ -1187,9 +1187,13 @@ function renderAgents() {
     const budgetClass = budgetPct > 90 ? 'danger' : budgetPct > 70 ? 'warning' : '';
     const created = a.created_at ? new Date(a.created_at).toLocaleDateString() : '—';
 
+    const promptPreview = a.system_prompt
+      ? (a.system_prompt.length > 60 ? a.system_prompt.slice(0, 60) + '...' : a.system_prompt)
+      : '';
+
     html += `
       <tr onclick="openAgentDetail('${a.id}')">
-        <td>${esc(a.name)}</td>
+        <td>${esc(a.name)}${promptPreview ? `<div style="font-weight:400;font-size:12px;color:var(--gray-dim);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px">${esc(promptPreview)}</div>` : ''}</td>
         <td><span class="status-badge ${status}">${status}</span></td>
         <td>
           <span class="budget-bar"><span class="budget-bar-fill ${budgetClass}" style="width:${budgetPct}%"></span></span>
