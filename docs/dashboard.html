@@ -157,6 +157,22 @@ nav {
   background: rgba(220,38,38,0.2);
   border-color: var(--red);
 }
+.btn-revive {
+  background: rgba(5,150,105,0.1);
+  color: var(--green);
+  border: 1px solid rgba(5,150,105,0.3);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-revive:hover {
+  background: rgba(5,150,105,0.2);
+  border-color: var(--green);
+}
 .btn-chat {
   background: rgba(6,182,212,0.1);
   color: var(--cyan);
@@ -1204,6 +1220,7 @@ function renderAgents() {
         <td style="display:flex;gap:6px;align-items:center">
           ${status === 'active' ? `<button class="btn-chat" onclick="event.stopPropagation();openChat('${a.id}','${esc(a.name)}')">Chat</button>` : ''}
           ${status !== 'terminated' ? `<button class="btn-kill" onclick="event.stopPropagation();confirmKill('${a.id}','${esc(a.name)}')">Kill</button>` : ''}
+          ${status === 'terminated' ? `<button class="btn-revive" onclick="event.stopPropagation();reviveAgent('${a.id}','${esc(a.name)}')">Revive</button>` : ''}
         </td>
       </tr>`;
   }
@@ -1719,6 +1736,18 @@ document.getElementById('btn-confirm-kill').addEventListener('click', async () =
     toast('Failed to kill agent: ' + e.message, 'error');
   }
 });
+
+// ── REVIVE AGENT ──
+async function reviveAgent(agentId, agentName) {
+  if (!confirm(`Revive agent "${agentName}"?`)) return;
+  try {
+    await api('POST', `/api/agents/${agentId}/revive`);
+    toast(`Agent "${agentName}" revived via NIRVANA`, 'success');
+    loadDashboard();
+  } catch (e) {
+    toast('Failed to revive agent: ' + e.message, 'error');
+  }
+}
 
 // ── LOGIN FLOW ──
 document.getElementById('login-form').addEventListener('submit', async (e) => {
