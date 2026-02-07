@@ -32,6 +32,8 @@ Built by [OneZeroEight.ai](https://onezeroeight.ai), where we run 16 genre-speci
 pip install samma-suit
 ```
 
+Also available on ClawHub: https://clawhub.ai/OneZeroEight-ai/samma-suit
+
 ## The 8 Layers
 
 All 8 layers are enforced in v0.1. Not stubs.

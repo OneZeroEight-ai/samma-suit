@@ -277,48 +277,6 @@ nav {
   border-color: var(--gray);
 }
 
-/* ── THREAT TICKER ── */
-.threat-ticker {
-  margin-top: 80px;
-  padding: 20px 0;
-  border-top: 1px solid var(--card-border);
-  border-bottom: 1px solid var(--card-border);
-  overflow: hidden;
-  animation: fadeIn 0.8s ease-out 0.5s both;
-}
-
-.ticker-track {
-  display: flex;
-  gap: 48px;
-  animation: scroll 30s linear infinite;
-  width: max-content;
-}
-
-.ticker-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  white-space: nowrap;
-  font-family: var(--font-mono);
-  font-size: 13px;
-}
-
-.ticker-item .dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--red);
-  animation: pulse-dot 1.5s infinite;
-}
-
-.ticker-item .label { color: var(--red); font-weight: 700; }
-.ticker-item .desc { color: var(--gray); }
-
-@keyframes scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
 /* ── PROBLEM SECTION ── */
 .problem {
   padding: 120px 40px;
@@ -513,56 +471,120 @@ nav {
 .layer-7 .armor-name h3 { color: var(--blue); }
 .layer-8 .armor-name h3 { color: var(--red); }
 
-/* ── FEATURES COMPARISON ── */
-.features {
+/* ── USE IT YOUR WAY ── */
+.use-it {
   padding: 120px 40px;
 }
 
-.compare-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
+.use-it-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
   margin-top: 48px;
-  font-size: 14px;
 }
 
-.compare-table thead th {
+.use-card {
   background: var(--card);
-  padding: 16px 20px;
-  text-align: left;
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 36px 28px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s;
+}
+
+.use-card:hover {
+  border-color: var(--purple);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px var(--purple-glow);
+}
+
+.use-card .use-icon {
+  font-size: 36px;
+  margin-bottom: 16px;
+}
+
+.use-card h3 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.use-card .use-tagline {
+  font-size: 16px;
+  color: var(--gray);
+  margin-bottom: 16px;
+  font-weight: 300;
+}
+
+.use-card .use-desc {
+  font-size: 14px;
+  color: var(--gray);
+  line-height: 1.6;
+  flex: 1;
+}
+
+.use-card .use-desc p {
+  margin-bottom: 12px;
+}
+
+.use-card .code-block {
+  background: var(--bg);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--cyan);
+  margin: 16px 0;
+  overflow-x: auto;
+}
+
+.use-card .use-verified {
   font-family: var(--font-mono);
   font-size: 12px;
-  letter-spacing: 1px;
-  color: var(--gray);
-  border-bottom: 2px solid var(--purple);
+  color: var(--green);
+  margin: 12px 0;
 }
 
-.compare-table thead th:nth-child(2),
-.compare-table thead th:nth-child(3) { text-align: center; width: 80px; }
-
-.compare-table tbody td {
-  padding: 12px 20px;
-  border-bottom: 1px solid var(--card-border);
-  color: var(--gray);
+.use-card .use-link {
+  display: inline-block;
+  margin-top: 16px;
+  color: var(--cyan);
+  font-size: 14px;
+  text-decoration: none;
+  transition: color 0.3s;
 }
 
-.compare-table tbody tr:hover td {
-  background: var(--purple-dim);
+.use-card .use-link:hover {
+  color: var(--white);
 }
 
-.compare-table tbody td:nth-child(2),
-.compare-table tbody td:nth-child(3) { text-align: center; font-size: 18px; }
-
-.check { color: var(--green); }
-.cross { color: var(--red); opacity: 0.5; }
-.armor-tag {
+.use-card .use-coming-soon {
   font-family: var(--font-mono);
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 4px;
-  background: var(--purple-dim);
-  color: var(--purple);
-  white-space: nowrap;
+  font-size: 12px;
+  color: var(--gold);
+  margin: 12px 0;
+  letter-spacing: 1px;
+}
+
+/* ── CREDIBILITY LINE ── */
+.credibility-line {
+  padding: 80px 40px;
+  text-align: center;
+}
+
+.credibility-line p {
+  font-size: 18px;
+  color: var(--gray);
+  font-weight: 300;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.credibility-line strong {
+  color: var(--white);
+  font-weight: 600;
 }
 
 /* ── PRICING ── */
@@ -648,7 +670,7 @@ nav {
 }
 
 .price-card ul li::before {
-  content: '→';
+  content: '\2192';
   color: var(--purple);
   font-weight: 700;
   flex-shrink: 0;
@@ -660,7 +682,6 @@ nav {
   margin-top: 24px;
   font-size: 13px;
 }
-
 
 /* ── QUOTE ── */
 .quote-block {
@@ -762,7 +783,7 @@ footer .copy {
   .armor-layer { grid-template-columns: 50px 1fr; }
   .armor-protects, .armor-samus { display: none; }
   .pricing-grid { grid-template-columns: 1fr 1fr; }
-  .cred-grid { grid-template-columns: 1fr 1fr; }
+  .use-it-grid { grid-template-columns: 1fr; }
   .nav-links { display: none; }
   .threat-grid { grid-template-columns: 1fr; }
 }
@@ -771,6 +792,7 @@ footer .copy {
   .pricing-grid { grid-template-columns: 1fr; }
   section { padding-left: 20px; padding-right: 20px; }
   nav { padding: 16px 20px; }
+  .hero-cta { flex-direction: column; }
 }
 </style>
 </head>
@@ -783,7 +805,7 @@ footer .copy {
   <div class="nav-logo"><a href="index.html" style="color:inherit;text-decoration:none;"><span>Samma</span>Suit</a></div>
   <div class="nav-links">
     <a href="#armor">Armor</a>
-    <a href="#features">Features</a>
+    <a href="#deploy">Deploy</a>
     <a href="#pricing">Pricing</a>
     <a href="getting-started.html">Docs</a>
     <a href="dashboard.html">Dashboard</a>
@@ -795,37 +817,18 @@ footer .copy {
 <section class="hero">
   <div class="hero-glow"></div>
   <div class="hero-avatar">
-    <img src="images/agents/pulse_avatar.png" alt="Sammā Suit" width="280" height="280">
+    <img src="images/agents/pulse_avatar.png" alt="Samm&#x101; Suit" width="280" height="280">
   </div>
-  <div class="hero-badge">v0.1 — ALL 8 LAYERS ENFORCED</div>
-  <h1>SAMMĀ <span class="accent">SUIT</span></h1>
+  <div class="hero-badge">v0.1 &#8212; ALL 8 LAYERS ENFORCED &#8226; 84 TESTS PASSING</div>
+  <h1>SAMM&#x100; <span class="accent">SUIT</span></h1>
   <p class="hero-sub">
-    <strong>The Sammā Suit</strong> — eight layers of Right Protection for autonomous AI agents.
-    A security layer for any agent platform — framework-agnostic, works alongside
-    existing tools with cost controls and identity <strong>built in from day one</strong>.
+    <strong>Security architecture for autonomous AI agents.</strong>
+    Gateway protection, permissions, cost controls, audit trails, identity verification,
+    skill vetting, process isolation, and kill switches &#8212; out of the box. Open source.
   </p>
   <div class="hero-cta">
-    <a href="#armor" class="btn btn-primary">See the Sammā Suit →</a>
-    <a href="#pricing" class="btn btn-ghost">View Pricing</a>
-  </div>
-
-  <!-- THREAT TICKER -->
-  <div class="threat-ticker">
-    <div class="ticker-track">
-      <div class="ticker-item"><span class="dot"></span><span class="label">CVE-2026-25253</span><span class="desc">1-click RCE via WebSocket hijack</span></div>
-      <div class="ticker-item"><span class="dot"></span><span class="label">341 MALICIOUS SKILLS</span><span class="desc">Credential-stealing malware on ClawHub</span></div>
-      <div class="ticker-item"><span class="dot"></span><span class="label">$750/MO WASTE</span><span class="desc">Uncontrolled heartbeat API costs</span></div>
-      <div class="ticker-item"><span class="dot"></span><span class="label">GARTNER WARNING</span><span class="desc">"Unacceptable cybersecurity risk"</span></div>
-      <div class="ticker-item"><span class="dot"></span><span class="label">CHINA NVDB ALERT</span><span class="desc">Government regulator flags OpenClaw</span></div>
-      <div class="ticker-item"><span class="dot"></span><span class="label">1.5M AGENTS / 17K HUMANS</span><span class="desc">No identity verification on Moltbook</span></div>
-      <!-- duplicate for seamless scroll -->
-      <div class="ticker-item"><span class="dot"></span><span class="label">CVE-2026-25253</span><span class="desc">1-click RCE via WebSocket hijack</span></div>
-      <div class="ticker-item"><span class="dot"></span><span class="label">341 MALICIOUS SKILLS</span><span class="desc">Credential-stealing malware on ClawHub</span></div>
-      <div class="ticker-item"><span class="dot"></span><span class="label">$750/MO WASTE</span><span class="desc">Uncontrolled heartbeat API costs</span></div>
-      <div class="ticker-item"><span class="dot"></span><span class="label">GARTNER WARNING</span><span class="desc">"Unacceptable cybersecurity risk"</span></div>
-      <div class="ticker-item"><span class="dot"></span><span class="label">CHINA NVDB ALERT</span><span class="desc">Government regulator flags OpenClaw</span></div>
-      <div class="ticker-item"><span class="dot"></span><span class="label">1.5M AGENTS / 17K HUMANS</span><span class="desc">No identity verification on Moltbook</span></div>
-    </div>
+    <a href="#armor" class="btn btn-primary">See the Samm&#x101; Suit &#8594;</a>
+    <a href="https://github.com/OneZeroEight-ai/samma-suit" class="btn btn-ghost">View on GitHub</a>
   </div>
 </section>
 
@@ -839,141 +842,149 @@ footer .copy {
     <div class="threat-card fade-in">
       <div class="tc-label">CVE-2026-25253</div>
       <h3>1-Click Remote Code Execution</h3>
-      <p>Control UI trusts gatewayUrl from query strings without validation. A single malicious link gives an attacker operator-level access to your gateway — disabling sandbox, modifying config, executing arbitrary code.</p>
-      <div class="source">Source: DepthFirst / The Hacker News • Feb 2026</div>
+      <p>Control UI trusts gatewayUrl from query strings without validation. A single malicious link gives an attacker operator-level access to your gateway &#8212; disabling sandbox, modifying config, executing arbitrary code.</p>
+      <div class="source">Source: DepthFirst / The Hacker News &#8226; Feb 2026</div>
     </div>
     <div class="threat-card fade-in">
       <div class="tc-label">CLAWHAVOC CAMPAIGN</div>
       <h3>341 Malicious Skills</h3>
       <p>Koi Security found 335 skills delivering Atomic Stealer malware via fake utility tools. ClawHub's only barrier: a GitHub account one week old. Stolen: API keys, wallet keys, SSH credentials, browser passwords.</p>
-      <div class="source">Source: Koi Security / The Hacker News • Feb 2026</div>
+      <div class="source">Source: Koi Security / The Hacker News &#8226; Feb 2026</div>
     </div>
     <div class="threat-card fade-in">
       <div class="tc-label">COST OVERRUN</div>
       <h3>$20/Night While You Sleep</h3>
-      <p>Heartbeat cron jobs sending 120,000 tokens of context per time check. $0.75 per check, 25 checks per night. Projected $750/month — just for reminders. No budget caps, no throttling, no alerts.</p>
-      <div class="source">Source: Benjamin De Kraker / The Register • Feb 2026</div>
+      <p>Heartbeat cron jobs sending 120,000 tokens of context per time check. $0.75 per check, 25 checks per night. Projected $750/month &#8212; just for reminders. No budget caps, no throttling, no alerts.</p>
+      <div class="source">Source: Benjamin De Kraker / The Register &#8226; Feb 2026</div>
     </div>
     <div class="threat-card fade-in">
       <div class="tc-label">ZERO GOVERNANCE</div>
       <h3>No Permissions, No Audit, No Rollback</h3>
       <p>One monolithic agent with full system access. No role separation, no activity logging, no state snapshots. If your agent goes rogue at 3 AM, you find out when the damage is done.</p>
-      <div class="source">Source: Gartner, China NVDB, IBM • Feb 2026</div>
+      <div class="source">Source: Gartner, China NVDB, IBM &#8226; Feb 2026</div>
     </div>
   </div>
 
   <div class="quote-block fade-in">
     <blockquote>"OpenClaw is a security dumpster fire."</blockquote>
-    <cite>— Laurie Voss, Head of DevRel at Arize, Founding CTO of npm</cite>
-    <a href="https://medium.com/@onezeroeight/your-ai-agent-has-no-armor-a-technical-security-analysis-of-openclaw-3a49a913cd81" target="_blank" style="display:inline-block;margin-top:16px;color:var(--cyan);font-size:14px;text-decoration:none;font-style:normal;transition:color 0.3s;">Read the full technical analysis →</a>
+    <cite>&#8212; Laurie Voss, Head of DevRel at Arize, Founding CTO of npm</cite>
+    <a href="https://medium.com/@onezeroeight/your-ai-agent-has-no-armor-a-technical-security-analysis-of-openclaw-3a49a913cd81" target="_blank" style="display:inline-block;margin-top:16px;color:var(--cyan);font-size:14px;text-decoration:none;font-style:normal;transition:color 0.3s;">Read the full technical analysis &#8594;</a>
   </div>
 </section>
 
 <!-- ARMOR -->
 <section class="armor" id="armor">
-  <div class="section-label purple">THE SAMMĀ SUIT</div>
+  <div class="section-label purple">THE SAMM&#x100; SUIT</div>
   <div class="armor-avatar">
-    <img src="images/agents/pulse_avatar.png" alt="Sammā Suit Sentinel" width="180" height="180">
+    <img src="images/agents/pulse_avatar.png" alt="Samm&#x101; Suit Sentinel" width="180" height="180">
   </div>
   <h2 class="section-title">Eight Layers of Right Protection.<br>Always on. Never optional.</h2>
-  <p class="section-desc">All 8 layers enforced. Production-hardened versions shipping Q1–Q2 2026.</p>
+  <p class="section-desc">All 8 layers enforced. Production-hardened versions shipping Q1&#8211;Q2 2026.</p>
 
   <div class="armor-stack">
     <div class="armor-layer layer-1 fade-in">
       <div class="armor-num">1</div>
       <div class="armor-name"><h3>SUTRA</h3><div class="sub">Gateway</div></div>
       <div class="armor-protects">Origin validation, TLS 1.3, WebSocket auth, rate limiting</div>
-      <div class="armor-samus">⬡ Power Suit — base armor <span style="color: var(--green); font-size: 0.8rem; margin-left: 8px;">Enforced</span></div>
+      <div class="armor-samus">&#x2B21; Power Suit &#8212; base armor <span style="color: var(--green); font-size: 0.8rem; margin-left: 8px;">Enforced</span></div>
     </div>
     <div class="armor-layer layer-2 fade-in">
       <div class="armor-num">2</div>
       <div class="armor-name"><h3>DHARMA</h3><div class="sub">Permissions</div></div>
-      <div class="armor-protects">Role-based agent scoping — email ≠ shell ≠ browser ≠ files</div>
-      <div class="armor-samus">⬡ Varia Suit — environmental protection <span style="color: var(--green); font-size: 0.8rem; margin-left: 8px;">Enforced</span></div>
+      <div class="armor-protects">Role-based agent scoping &#8212; email &#8800; shell &#8800; browser &#8800; files</div>
+      <div class="armor-samus">&#x2B21; Varia Suit &#8212; environmental protection <span style="color: var(--green); font-size: 0.8rem; margin-left: 8px;">Enforced</span></div>
     </div>
     <div class="armor-layer layer-3 fade-in">
       <div class="armor-num">3</div>
       <div class="armor-name"><h3>SANGHA</h3><div class="sub">Skill Vetting</div></div>
-      <div class="armor-protects">Allowlist-based skill gating — only vetted skills execute</div>
-      <div class="armor-samus">⬡ Gravity Suit — pressure resistance <span style="color: var(--green); font-size: 0.8rem; margin-left: 8px;">Enforced</span></div>
+      <div class="armor-protects">Allowlist-based skill gating with AST static analysis for dangerous imports</div>
+      <div class="armor-samus">&#x2B21; Gravity Suit &#8212; pressure resistance <span style="color: var(--green); font-size: 0.8rem; margin-left: 8px;">Enforced</span></div>
     </div>
     <div class="armor-layer layer-4 fade-in">
       <div class="armor-num">4</div>
       <div class="armor-name"><h3>KARMA</h3><div class="sub">Cost Controls</div></div>
-      <div class="armor-protects">Per-agent budgets, token optimization, outcome-based billing</div>
-      <div class="armor-samus">⬡ Energy Tanks — resource management <span style="color: var(--green); font-size: 0.8rem; margin-left: 8px;">Enforced</span></div>
+      <div class="armor-protects">Per-agent monthly budgets with hard ceiling, pre-call budget checks, spend tracking</div>
+      <div class="armor-samus">&#x2B21; Energy Tanks &#8212; resource management <span style="color: var(--green); font-size: 0.8rem; margin-left: 8px;">Enforced</span></div>
     </div>
     <div class="armor-layer layer-5 fade-in">
       <div class="armor-num">5</div>
       <div class="armor-name"><h3>SILA</h3><div class="sub">Audit Trail</div></div>
-      <div class="armor-protects">Full activity logging, anomaly detection, memory integrity</div>
-      <div class="armor-samus">⬡ Scan Visor — full awareness <span style="color: var(--green); font-size: 0.8rem; margin-left: 8px;">Enforced</span></div>
+      <div class="armor-protects">Full activity logging with token counts, cost tracking, and layer enforcement trace</div>
+      <div class="armor-samus">&#x2B21; Scan Visor &#8212; full awareness <span style="color: var(--green); font-size: 0.8rem; margin-left: 8px;">Enforced</span></div>
     </div>
     <div class="armor-layer layer-6 fade-in">
       <div class="armor-num">6</div>
       <div class="armor-name"><h3>METTA</h3><div class="sub">Identity</div></div>
       <div class="armor-protects">Cryptographic agent signing, no spoofing, verified communication</div>
-      <div class="armor-samus">⬡ Morph Ball — controlled transformation <span style="color: var(--green); font-size: 0.8rem; margin-left: 8px;">Enforced</span></div>
+      <div class="armor-samus">&#x2B21; Morph Ball &#8212; controlled transformation <span style="color: var(--green); font-size: 0.8rem; margin-left: 8px;">Enforced</span></div>
     </div>
     <div class="armor-layer layer-7 fade-in">
       <div class="armor-num">7</div>
       <div class="armor-name"><h3>BODHI</h3><div class="sub">Isolation</div></div>
-      <div class="armor-protects">Request containment — 30s hard timeout, 4096 token cap per request. Full process sandboxing shipping Q1 2026.</div>
-      <div class="armor-samus">⬡ Screw Attack — offense + defense <span style="color: var(--green); font-size: 0.8rem; margin-left: 8px;">Enforced</span></div>
+      <div class="armor-protects">Per-agent resource limits, subprocess sandboxing, egress allowlists with wildcard support</div>
+      <div class="armor-samus">&#x2B21; Screw Attack &#8212; offense + defense <span style="color: var(--green); font-size: 0.8rem; margin-left: 8px;">Enforced</span></div>
     </div>
     <div class="armor-layer layer-8 fade-in">
       <div class="armor-num">8</div>
       <div class="armor-name"><h3>NIRVANA</h3><div class="sub">Recovery</div></div>
-      <div class="armor-protects">State snapshots, 1-click rollback, kill switches, dead man's switch</div>
-      <div class="armor-samus">⬡ Reserve Tank — last resort <span style="color: var(--green); font-size: 0.8rem; margin-left: 8px;">Enforced</span></div>
+      <div class="armor-protects">State snapshots, 1-click rollback, kill switch with auto-snapshot on termination</div>
+      <div class="armor-samus">&#x2B21; Reserve Tank &#8212; last resort <span style="color: var(--green); font-size: 0.8rem; margin-left: 8px;">Enforced</span></div>
     </div>
   </div>
 </section>
 
-<!-- FEATURES COMPARISON -->
-<section class="features" id="features">
-  <div class="section-label cyan">SECURITY COVERAGE</div>
-  <h2 class="section-title">What your agent framework<br>is missing.</h2>
-  <p class="section-desc">Sammā Suit adds eight security layers to any agent platform.</p>
+<!-- USE IT YOUR WAY -->
+<section class="use-it" id="deploy">
+  <div class="section-label cyan">USE IT YOUR WAY</div>
+  <h2 class="section-title">Three ways to deploy.<br>Same eight layers.</h2>
+  <p class="section-desc">Drop it into your existing stack, run it standalone, or let us handle everything.</p>
 
-  <table class="compare-table fade-in">
-    <thead>
-      <tr>
-        <th>Feature</th>
-        <th>Typical</th>
-        <th>With SS</th>
-        <th>Armor Layer</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td>Multi-channel messaging</td><td class="check">✓</td><td class="check">✓</td><td><span class="armor-tag">SUTRA</span></td></tr>
-      <tr><td>System access (files, shell, browser)</td><td class="check">✓</td><td class="check">✓</td><td><span class="armor-tag">DHARMA</span></td></tr>
-      <tr><td>Persistent long-term memory</td><td class="check">✓</td><td class="check">✓</td><td><span class="armor-tag">SILA</span></td></tr>
-      <tr><td>Proactive heartbeat / cron</td><td class="check">✓</td><td class="check">✓</td><td><span class="armor-tag">KARMA</span></td></tr>
-      <tr><td>Extensible skill ecosystem</td><td class="check">✓</td><td class="check">✓</td><td><span class="armor-tag">SANGHA</span></td></tr>
-      <tr><td>Self-improving / auto-skills</td><td class="check">✓</td><td class="check">✓</td><td><span class="armor-tag">BODHI</span></td></tr>
-      <tr><td>Model agnostic</td><td class="check">✓</td><td class="check">✓</td><td>—</td></tr>
-      <tr><td>50+ integrations</td><td class="check">✓</td><td class="check">✓</td><td><span class="armor-tag">DHARMA</span></td></tr>
-      <tr><td>Developer tools (CI/CD, Sentry)</td><td class="check">✓</td><td class="check">✓</td><td><span class="armor-tag">DHARMA</span></td></tr>
-      <tr><td>Self-hosted / privacy-first</td><td class="check">✓</td><td class="check">✓</td><td>—</td></tr>
-      <tr style="background:var(--purple-dim)"><td><strong>Agent identity verification</strong></td><td class="cross">✗</td><td class="check">✓</td><td><span class="armor-tag">METTA</span></td></tr>
-      <tr style="background:var(--purple-dim)"><td><strong>Role-based permissions</strong></td><td class="cross">✗</td><td class="check">✓</td><td><span class="armor-tag">DHARMA</span></td></tr>
-      <tr style="background:var(--purple-dim)"><td><strong>Skill vetting / allowlist gating</strong></td><td class="cross">✗</td><td class="check">✓</td><td><span class="armor-tag">SANGHA</span></td></tr>
-      <tr style="background:var(--purple-dim)"><td><strong>Cost controls / budget caps</strong></td><td class="cross">✗</td><td class="check">✓</td><td><span class="armor-tag">KARMA</span></td></tr>
-      <tr style="background:var(--purple-dim)"><td><strong>Activity audit trail</strong></td><td class="cross">✗</td><td class="check">✓</td><td><span class="armor-tag">SILA</span></td></tr>
-      <tr style="background:var(--purple-dim)"><td><strong>Request containment (timeout + token cap)</strong></td><td class="cross">✗</td><td class="check">✓</td><td><span class="armor-tag">BODHI</span></td></tr>
-      <tr style="background:var(--purple-dim)"><td><strong>State rollback / kill switch</strong></td><td class="cross">✗</td><td class="check">✓</td><td><span class="armor-tag">NIRVANA</span></td></tr>
-      <tr style="background:var(--purple-dim)"><td><strong>WebSocket origin hardening</strong></td><td class="cross">✗</td><td class="check">✓</td><td><span class="armor-tag">SUTRA</span></td></tr>
-    </tbody>
-  </table>
+  <div class="use-it-grid fade-in">
+    <div class="use-card">
+      <div class="use-icon">&#x1F50C;</div>
+      <h3>OpenClaw Plugin</h3>
+      <div class="use-tagline">Already using OpenClaw? Add Samm&#x101; Suit as a plugin.</div>
+      <div class="code-block">openclaw plugins install samma-suit</div>
+      <div class="use-desc">
+        <p>Adds governance layers (budget, permissions, audit, kill switch) to your existing deployment. SANGHA, KARMA, DHARMA, SILA, METTA, BODHI, and NIRVANA &#8212; as OpenClaw lifecycle hooks.</p>
+      </div>
+      <div class="use-verified">&#x2713; Verified compatible: openclaw plugins doctor</div>
+      <a href="getting-started.html" class="use-link">Plugin docs &#8594;</a>
+      <a href="https://clawhub.ai/OneZeroEight-ai/samma-suit" class="use-link">View on ClawHub &#8594;</a>
+    </div>
+    <div class="use-card">
+      <div class="use-icon">&#x1F6E1;&#xFE0F;</div>
+      <h3>Standalone Platform</h3>
+      <div class="use-tagline">Full security stack. Gateway to kill switch.</div>
+      <div class="use-desc">
+        <p>Everything the plugin does, plus: SUTRA gateway protection, managed dashboard, skill marketplace, hosted infrastructure, and Stripe billing.</p>
+      </div>
+      <div class="code-block">pip install samma-suit</div>
+      <a href="getting-started.html" class="use-link">Quick start &#8594;</a>
+    </div>
+    <div class="use-card">
+      <div class="use-icon">&#x1F1EE;&#x1F1F8;</div>
+      <h3>Managed Hosting</h3>
+      <div class="use-tagline">We run it for you. Iceland.</div>
+      <div class="use-desc">
+        <p>All 8 layers managed. GDPR jurisdiction. Geothermal powered. Outside US CLOUD Act reach. Dashboard, alerts, and support included.</p>
+      </div>
+      <div class="use-coming-soon">COMING SOON &#8212; JOIN WAITLIST</div>
+      <a href="mailto:info@sammasuit.com?subject=Managed%20Hosting%20Waitlist" class="use-link">info@sammasuit.com &#8594;</a>
+    </div>
+  </div>
 </section>
 
+<!-- CREDIBILITY -->
+<section class="credibility-line fade-in">
+  <p>Built by <strong>OneZeroEight.ai</strong> &#8212; 16 AI agents in production. We built Samm&#x101; Suit because we needed it.</p>
+</section>
 
 <!-- PRICING -->
 <section class="pricing" id="pricing">
   <div class="section-label gold">PRICING</div>
   <h2 class="section-title">Choose your armor tier.</h2>
-  <p class="section-desc">Every tier includes the full Sammā Suit. Pay for scale, not security.</p>
+  <p class="section-desc">Every tier includes the full Samm&#x101; Suit. Pay for scale, not security.</p>
 
   <div class="pricing-grid fade-in">
     <div class="price-card">
@@ -981,7 +992,7 @@ footer .copy {
       <div class="price">$0</div>
       <div class="price-sub">forever</div>
       <ul>
-        <li>Open-source Sammā Suit SDK</li>
+        <li>Open-source Samm&#x101; Suit SDK</li>
         <li>Eight-layer reference implementation</li>
         <li>Community support</li>
         <li>Self-managed infrastructure</li>
@@ -992,24 +1003,22 @@ footer .copy {
       <div class="tier-name">PRO</div>
       <div class="price">$29<span style="font-size:18px;font-weight:300">/mo</span></div>
       <div class="price-sub">per instance</div>
-      <span style="color: var(--gold); font-size: 0.85rem;">Hosted platform launching soon</span>
-      <div style="color: var(--cyan); font-size: 0.85rem; margin-top: 0.5rem;">&#127470;&#127480; Hosted in Iceland · GDPR protected · 100% renewable energy</div>
+      <div style="color: var(--cyan); font-size: 0.85rem; margin-bottom: 12px;">&#x1F1EE;&#x1F1F8; Hosted in Iceland &#8226; GDPR protected &#8226; 100% renewable energy</div>
       <ul>
-        <li>Managed Sammā Suit (all 8 layers)</li>
+        <li>Managed Samm&#x101; Suit (all 8 layers)</li>
         <li>Allowlist-based skill gating</li>
         <li>Cost control dashboard</li>
         <li>Audit log viewer + alerts</li>
         <li>Up to 5 agents</li>
         <li>Email support</li>
       </ul>
-      <a href="mailto:info@sammasuit.com?subject=Samma%20Suit%20Pro%20Waitlist" class="btn btn-ghost">Join Waitlist</a>
+      <a href="https://api.sammasuit.com/docs" class="btn btn-primary">Get Started</a>
     </div>
     <div class="price-card">
       <div class="tier-name">TEAM</div>
       <div class="price">$99<span style="font-size:18px;font-weight:300">/mo</span></div>
       <div class="price-sub">per workspace</div>
-      <span style="color: var(--gold); font-size: 0.85rem;">Hosted platform launching soon</span>
-      <div style="color: var(--cyan); font-size: 0.85rem; margin-top: 0.5rem;">&#127470;&#127480; Hosted in Iceland · GDPR protected · 100% renewable energy</div>
+      <div style="color: var(--cyan); font-size: 0.85rem; margin-bottom: 12px;">&#x1F1EE;&#x1F1F8; Hosted in Iceland &#8226; GDPR protected &#8226; 100% renewable energy</div>
       <ul>
         <li>Everything in Pro</li>
         <li>Shared governance policies</li>
@@ -1017,7 +1026,7 @@ footer .copy {
         <li>Up to 25 agents</li>
         <li>Priority support</li>
       </ul>
-      <a href="mailto:info@sammasuit.com?subject=Samma%20Suit%20Team%20Waitlist" class="btn btn-ghost">Join Waitlist</a>
+      <a href="https://api.sammasuit.com/docs" class="btn btn-primary">Get Started</a>
     </div>
     <div class="price-card">
       <div class="tier-name">ENTERPRISE</div>
@@ -1039,8 +1048,7 @@ footer .copy {
 <!-- FINAL CTA -->
 <section class="final-cta">
   <h2>Open source.<br>Built-in <span style="color:var(--cyan)">protection</span>.</h2>
-  <p>The Sammā Suit SDK is free and open source. Hosted platform coming soon.</p>
-  <p style="color: var(--gray); font-size: 0.95rem; max-width: 600px; margin: 0 auto 1.5rem;">Your agents' data will be stored in Iceland — GDPR jurisdiction, geothermal powered, outside US CLOUD Act reach.</p>
+  <p>The Samm&#x101; Suit SDK is free and open source. Deploy it your way.</p>
   <div class="btn-group">
     <a href="https://github.com/OneZeroEight-ai/samma-suit" class="btn btn-primary">View on GitHub</a>
     <a href="https://discord.gg/4A6ExTnKnK" class="btn btn-ghost">Join the Discord</a>
@@ -1051,12 +1059,11 @@ footer .copy {
 <footer>
   <div class="footer-links">
     <a href="https://sammasuit.com">sammasuit.com</a>
-    <a href="https://onezeroeight.ai">onezeroeight.ai</a>
     <a href="mailto:info@sammasuit.com">info@sammasuit.com</a>
     <a href="https://discord.gg/4A6ExTnKnK">Discord</a>
     <a href="https://x.com/OneZeroEight_ai">@OneZeroEight_ai</a>
   </div>
-  <div class="copy">© 2026 OneZeroEight.ai — Powered by the Sammā Suit</div>
+  <div class="copy">&copy; 2026 OneZeroEight.ai &#8212; Powered by the Samm&#x101; Suit</div>
 </footer>
 
 <!-- SCROLL ANIMATIONS -->
