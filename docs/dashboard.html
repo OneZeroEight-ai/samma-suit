@@ -966,7 +966,7 @@ nav {
     <p>Deploy a new AI agent protected by the Samma Suit.</p>
     <form id="create-agent-form">
       <input type="text" class="login-input" id="agent-name" placeholder="Agent name" required>
-      <textarea class="login-input" id="agent-system-prompt" placeholder="System prompt (optional) — defines agent personality and behavior" rows="3" style="resize:vertical;font-family:var(--font-mono);font-size:13px;line-height:1.5"></textarea>
+      <textarea class="login-input" id="agent-system-prompt" placeholder="Tell this agent how to behave, what tone to use, and what rules to follow." rows="3" style="resize:vertical;font-family:var(--font-mono);font-size:13px;line-height:1.5"></textarea>
       <input type="number" class="login-input" id="agent-budget" placeholder="Monthly budget (USD)" step="0.01" min="0">
       <div class="modal-actions">
         <button type="button" class="btn btn-ghost btn-sm" onclick="closeModal('modal-create')">Cancel</button>
@@ -1424,10 +1424,10 @@ async function openAgentDetail(agentId) {
       </div>
       <div style="padding:12px 0;border-bottom:1px solid var(--card-border)">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-          <span style="color:var(--gray);font-size:14px">System Prompt</span>
+          <span style="color:var(--gray);font-size:14px">Agent Instructions</span>
           <button class="btn btn-ghost" style="padding:4px 12px;font-size:11px" id="btn-edit-prompt" onclick="togglePromptEdit('${a.id}')">Edit</button>
         </div>
-        <div id="detail-system-prompt" data-value="${esc(a.system_prompt || '').replace(/"/g, '&quot;')}" style="width:100%;padding:10px 14px;background:var(--bg2);border:1px solid var(--card-border);border-radius:8px;color:var(--white);font-family:var(--font-mono);font-size:13px;line-height:1.5;min-height:60px;white-space:pre-wrap;word-wrap:break-word">${esc(a.system_prompt || '') || '<span style="color:var(--gray-dim)">No system prompt set</span>'}</div>
+        <div id="detail-system-prompt" data-value="${esc(a.system_prompt || '').replace(/"/g, '&quot;')}" style="width:100%;padding:10px 14px;background:var(--bg2);border:1px solid var(--card-border);border-radius:8px;color:var(--white);font-family:var(--font-mono);font-size:13px;line-height:1.5;min-height:60px;white-space:pre-wrap;word-wrap:break-word">${esc(a.system_prompt || '') || '<span style="color:var(--gray-dim)">No instructions set</span>'}</div>
         <button class="btn btn-primary" style="padding:6px 16px;font-size:12px;margin-top:8px;display:none" id="btn-save-prompt" onclick="savePrompt('${a.id}')">Save</button>
       </div>
       <div class="detail-row">
@@ -1504,7 +1504,7 @@ function togglePromptEdit(agentId) {
     div.dataset.value = promptOriginalValue;
     div.style.cssText = 'width:100%;padding:10px 14px;background:var(--bg2);border:1px solid var(--card-border);border-radius:8px;color:var(--white);font-family:var(--font-mono);font-size:13px;line-height:1.5;min-height:60px;white-space:pre-wrap;word-wrap:break-word';
     div.textContent = promptOriginalValue || '';
-    if (!promptOriginalValue) div.innerHTML = '<span style="color:var(--gray-dim)">No system prompt set</span>';
+    if (!promptOriginalValue) div.innerHTML = '<span style="color:var(--gray-dim)">No instructions set</span>';
     el.replaceWith(div);
     editBtn.textContent = 'Edit';
     saveBtn.style.display = 'none';
@@ -1522,11 +1522,11 @@ async function savePrompt(agentId) {
     div.dataset.value = val;
     div.style.cssText = 'width:100%;padding:10px 14px;background:var(--bg2);border:1px solid var(--card-border);border-radius:8px;color:var(--white);font-family:var(--font-mono);font-size:13px;line-height:1.5;min-height:60px;white-space:pre-wrap;word-wrap:break-word';
     div.textContent = val || '';
-    if (!val) div.innerHTML = '<span style="color:var(--gray-dim)">No system prompt set</span>';
+    if (!val) div.innerHTML = '<span style="color:var(--gray-dim)">No instructions set</span>';
     el.replaceWith(div);
     document.getElementById('btn-edit-prompt').textContent = 'Edit';
     document.getElementById('btn-save-prompt').style.display = 'none';
-    toast('System prompt updated', 'success');
+    toast('Agent instructions updated', 'success');
   } catch (e) {
     toast('Failed to save: ' + e.message, 'error');
   }
