@@ -1423,7 +1423,7 @@ async function openAgentDetail(agentId) {
           <span style="color:var(--gray);font-size:14px">System Prompt</span>
           <button class="btn btn-ghost" style="padding:4px 12px;font-size:11px" id="btn-edit-prompt" onclick="togglePromptEdit('${a.id}')">Edit</button>
         </div>
-        <textarea id="detail-system-prompt" readonly rows="3" style="width:100%;padding:10px 14px;background:var(--bg2);border:1px solid var(--card-border);border-radius:8px;color:var(--white);font-family:var(--font-mono);font-size:13px;line-height:1.5;resize:vertical;outline:none">${esc(a.system_prompt || '')}</textarea>
+        <div id="detail-system-prompt" data-value="${esc(a.system_prompt || '').replace(/"/g, '&quot;')}" style="width:100%;padding:10px 14px;background:var(--bg2);border:1px solid var(--card-border);border-radius:8px;color:var(--white);font-family:var(--font-mono);font-size:13px;line-height:1.5;min-height:60px;white-space:pre-wrap;word-wrap:break-word">${esc(a.system_prompt || '') || '<span style="color:var(--gray-dim)">No system prompt set</span>'}</div>
         <button class="btn btn-primary" style="padding:6px 16px;font-size:12px;margin-top:8px;display:none" id="btn-save-prompt" onclick="savePrompt('${a.id}')">Save</button>
       </div>
       <div class="detail-row">
@@ -1473,31 +1473,53 @@ async function openAgentDetail(agentId) {
 }
 
 // ── SYSTEM PROMPT EDIT ──
+// Uses div→textarea swap so iOS Safari shows the keyboard on tap
+let promptOriginalValue = '';
+
 function togglePromptEdit(agentId) {
-  const ta = document.getElementById('detail-system-prompt');
+  const el = document.getElementById('detail-system-prompt');
   const editBtn = document.getElementById('btn-edit-prompt');
   const saveBtn = document.getElementById('btn-save-prompt');
-  if (ta.readOnly) {
-    ta.readOnly = false;
-    ta.style.borderColor = 'var(--purple)';
+
+  if (el.tagName === 'DIV') {
+    // Swap div → textarea (iOS needs a fresh textarea from user gesture)
+    promptOriginalValue = el.dataset.value || el.textContent || '';
+    const ta = document.createElement('textarea');
+    ta.id = 'detail-system-prompt';
+    ta.rows = 3;
+    ta.style.cssText = 'width:100%;padding:10px 14px;background:var(--bg2);border:1px solid var(--purple);border-radius:8px;color:var(--white);font-family:var(--font-mono);font-size:13px;line-height:1.5;resize:vertical;outline:none';
+    ta.value = promptOriginalValue;
+    el.replaceWith(ta);
     ta.focus();
     editBtn.textContent = 'Cancel';
     saveBtn.style.display = 'inline-flex';
   } else {
-    ta.readOnly = true;
-    ta.style.borderColor = 'var(--card-border)';
+    // Cancel — swap textarea → div (restore original)
+    const div = document.createElement('div');
+    div.id = 'detail-system-prompt';
+    div.dataset.value = promptOriginalValue;
+    div.style.cssText = 'width:100%;padding:10px 14px;background:var(--bg2);border:1px solid var(--card-border);border-radius:8px;color:var(--white);font-family:var(--font-mono);font-size:13px;line-height:1.5;min-height:60px;white-space:pre-wrap;word-wrap:break-word';
+    div.textContent = promptOriginalValue || '';
+    if (!promptOriginalValue) div.innerHTML = '<span style="color:var(--gray-dim)">No system prompt set</span>';
+    el.replaceWith(div);
     editBtn.textContent = 'Edit';
     saveBtn.style.display = 'none';
   }
 }
 
 async function savePrompt(agentId) {
-  const ta = document.getElementById('detail-system-prompt');
-  const val = ta.value;
+  const el = document.getElementById('detail-system-prompt');
+  const val = el.tagName === 'TEXTAREA' ? el.value : (el.dataset.value || el.textContent || '');
   try {
     await api('PUT', `/api/agents/${agentId}`, { system_prompt: val });
-    ta.readOnly = true;
-    ta.style.borderColor = 'var(--card-border)';
+    // Swap textarea → div
+    const div = document.createElement('div');
+    div.id = 'detail-system-prompt';
+    div.dataset.value = val;
+    div.style.cssText = 'width:100%;padding:10px 14px;background:var(--bg2);border:1px solid var(--card-border);border-radius:8px;color:var(--white);font-family:var(--font-mono);font-size:13px;line-height:1.5;min-height:60px;white-space:pre-wrap;word-wrap:break-word';
+    div.textContent = val || '';
+    if (!val) div.innerHTML = '<span style="color:var(--gray-dim)">No system prompt set</span>';
+    el.replaceWith(div);
     document.getElementById('btn-edit-prompt').textContent = 'Edit';
     document.getElementById('btn-save-prompt').style.display = 'none';
     toast('System prompt updated', 'success');
