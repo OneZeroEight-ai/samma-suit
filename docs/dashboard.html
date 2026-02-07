@@ -612,6 +612,73 @@ nav {
   border-radius: 8px;
 }
 
+/* ── BILLING SECTION ── */
+.billing-section { margin-top: 32px; }
+.billing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.billing-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 28px;
+}
+.billing-card h4 {
+  font-size: 12px;
+  font-family: var(--font-mono);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-bottom: 16px;
+}
+.billing-plan-name {
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+.billing-price {
+  font-size: 15px;
+  color: var(--gray);
+  margin-bottom: 16px;
+}
+.billing-features {
+  list-style: none;
+  padding: 0;
+}
+.billing-features li {
+  padding: 6px 0;
+  font-size: 14px;
+  color: var(--gray);
+  border-bottom: 1px solid var(--card-border);
+}
+.billing-features li:last-child { border-bottom: none; }
+.billing-features li span {
+  float: right;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--white);
+}
+.billing-status-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--card-border);
+  font-size: 14px;
+}
+.billing-status-row:last-child { border-bottom: none; }
+.billing-status-row .bsr-label { color: var(--gray); }
+.billing-status-row .bsr-value {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+.billing-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
 /* Layer badges */
 .layer-badge {
   font-family: var(--font-mono);
@@ -777,6 +844,7 @@ nav {
 /* ── RESPONSIVE ── */
 @media (max-width: 900px) {
   .overview-grid { grid-template-columns: 1fr; }
+  .billing-grid { grid-template-columns: 1fr; }
   .nav-links { display: none; }
   .dash-header { flex-direction: column; gap: 16px; align-items: flex-start; }
   .agents-table { font-size: 12px; }
@@ -877,6 +945,16 @@ nav {
     </div>
     <div id="audit-container">
       <div class="loading-state"><div class="spinner"></div> Loading audit log...</div>
+    </div>
+  </div>
+
+  <!-- Billing Section -->
+  <div class="billing-section">
+    <div class="section-header" style="margin-top:32px;">
+      <h3>Billing</h3>
+    </div>
+    <div id="billing-container">
+      <div class="loading-state"><div class="spinner"></div> Loading billing...</div>
     </div>
   </div>
 </div>
@@ -1013,6 +1091,7 @@ async function loadDashboard() {
     state.overview = overviewRes;
     state.agents = agentsRes;
     renderDashboard();
+    loadBillingStatus();
 
     // Auto-refresh overview every 30s
     if (refreshInterval) clearInterval(refreshInterval);
@@ -1173,6 +1252,133 @@ function renderAuditLog() {
 
   html += '</tbody></table></div>';
   container.innerHTML = html;
+}
+
+// ── BILLING ──
+const TIER_INFO = {
+  free:       { name: 'Free',       price: '$0/mo',   maxAgents: '1',         budget: '$0' },
+  pro:        { name: 'Pro',        price: '$29/mo',  maxAgents: '5',         budget: '$500' },
+  team:       { name: 'Team',       price: '$99/mo',  maxAgents: '20',        budget: '$5,000' },
+  enterprise: { name: 'Enterprise', price: 'Custom',  maxAgents: 'Unlimited', budget: 'Custom' },
+};
+
+async function loadBillingStatus() {
+  try {
+    const data = await api('GET', '/api/billing/status');
+    state.billing = data;
+    renderBilling();
+  } catch (e) {
+    document.getElementById('billing-container').innerHTML =
+      `<div class="empty-state"><p>Unable to load billing info.</p></div>`;
+  }
+}
+
+function renderBilling() {
+  const container = document.getElementById('billing-container');
+  const b = state.billing;
+  if (!b) { container.innerHTML = '<div class="empty-state"><p>No billing info available.</p></div>'; return; }
+
+  const tier = (b.tier || 'free').toLowerCase();
+  const info = TIER_INFO[tier] || TIER_INFO.free;
+  const sub = b.subscription;
+
+  // Plan card
+  let planHtml = `
+    <div class="billing-card">
+      <h4>Current Plan</h4>
+      <div class="billing-plan-name" style="color:${tier === 'free' ? 'var(--gray)' : tier === 'pro' ? 'var(--purple)' : tier === 'team' ? 'var(--cyan)' : 'var(--gold)'}">${esc(info.name)}</div>
+      <div class="billing-price">${info.price}</div>
+      <ul class="billing-features">
+        <li>Max Agents <span>${info.maxAgents}</span></li>
+        <li>Monthly Budget <span>${info.budget}</span></li>
+        <li>Gateway Access <span>All 8 Layers</span></li>
+        <li>Audit Logging <span>Included</span></li>
+      </ul>
+      <div class="billing-actions">`;
+
+  if (tier === 'free') {
+    planHtml += `<button class="btn btn-primary btn-sm" onclick="upgradePlan('pro')">Upgrade to Pro</button>`;
+    planHtml += `<button class="btn btn-ghost btn-sm" onclick="upgradePlan('team')">Upgrade to Team</button>`;
+  } else {
+    planHtml += `<button class="btn btn-ghost btn-sm" onclick="openBillingPortal()">Manage Subscription</button>`;
+  }
+  planHtml += `</div></div>`;
+
+  // Subscription status card
+  let statusHtml = `<div class="billing-card">
+    <h4>Subscription Status</h4>`;
+
+  if (sub) {
+    const statusLabel = sub.status === 'active' ? 'Active' : sub.status === 'past_due' ? 'Past Due' : sub.status === 'canceled' ? 'Canceled' : sub.status;
+    const statusColor = sub.status === 'active' ? 'var(--green)' : sub.status === 'past_due' ? 'var(--gold)' : 'var(--red)';
+    const renewDate = sub.current_period_end ? new Date(sub.current_period_end * 1000).toLocaleDateString() : '—';
+    const cancelling = sub.cancel_at_period_end;
+
+    statusHtml += `
+      <div class="billing-status-row">
+        <span class="bsr-label">Status</span>
+        <span class="bsr-value" style="color:${statusColor}">${statusLabel}${cancelling ? ' (cancelling)' : ''}</span>
+      </div>
+      <div class="billing-status-row">
+        <span class="bsr-label">${cancelling ? 'Access Until' : 'Renews On'}</span>
+        <span class="bsr-value">${renewDate}</span>
+      </div>
+      <div class="billing-status-row">
+        <span class="bsr-label">Stripe Customer</span>
+        <span class="bsr-value">${esc(b.stripe_customer_id || '—')}</span>
+      </div>`;
+  } else {
+    statusHtml += `
+      <div class="billing-status-row">
+        <span class="bsr-label">Status</span>
+        <span class="bsr-value" style="color:var(--gray)">No active subscription</span>
+      </div>
+      <div class="billing-status-row">
+        <span class="bsr-label">Plan</span>
+        <span class="bsr-value">Free Tier</span>
+      </div>`;
+  }
+
+  statusHtml += `
+    <div class="billing-status-row">
+      <span class="bsr-label">Email</span>
+      <span class="bsr-value">${esc(b.email || '—')}</span>
+    </div>
+    <div class="billing-status-row">
+      <span class="bsr-label">Customer ID</span>
+      <span class="bsr-value" style="font-size:11px">${esc(b.customer_id || '—')}</span>
+    </div>
+  </div>`;
+
+  container.innerHTML = `<div class="billing-grid">${planHtml}${statusHtml}</div>`;
+}
+
+async function upgradePlan(tier) {
+  const email = state.customer?.email;
+  if (!email) { toast('Not logged in', 'error'); return; }
+  try {
+    const res = await api('POST', '/api/billing/checkout', {
+      email: email,
+      tier: tier,
+      name: state.customer?.name || '',
+    });
+    if (res.checkout_url) {
+      window.location.href = res.checkout_url;
+    }
+  } catch (e) {
+    toast('Failed to start checkout: ' + e.message, 'error');
+  }
+}
+
+async function openBillingPortal() {
+  try {
+    const res = await api('GET', '/api/billing/portal');
+    if (res.portal_url) {
+      window.open(res.portal_url, '_blank');
+    }
+  } catch (e) {
+    toast('Failed to open billing portal: ' + e.message, 'error');
+  }
 }
 
 // ── AGENT DETAIL ──
@@ -1563,15 +1769,11 @@ async function checkToken() {
   }
 }
 
-// ── BILLING ──
-document.getElementById('btn-billing').addEventListener('click', async () => {
-  try {
-    const res = await api('GET', '/api/billing/portal');
-    if (res.portal_url) {
-      window.open(res.portal_url, '_blank');
-    }
-  } catch (e) {
-    toast('Failed to open billing portal: ' + e.message, 'error');
+// ── BILLING HEADER BUTTON ──
+document.getElementById('btn-billing').addEventListener('click', () => {
+  const billingSection = document.querySelector('.billing-section');
+  if (billingSection) {
+    billingSection.scrollIntoView({ behavior: 'smooth' });
   }
 });
 
