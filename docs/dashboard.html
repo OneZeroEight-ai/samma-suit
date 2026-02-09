@@ -243,7 +243,7 @@ nav {
 }
 .chat-new-convo:hover { background: var(--purple-dim); }
 .chat-messages {
-  flex: 1; overflow-y: auto; padding: 20px;
+  flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 160px;
   display: flex; flex-direction: column; gap: 14px;
 }
 .chat-msg {
@@ -288,6 +288,8 @@ nav {
 .chat-token-count { font-family: var(--font-mono); font-size: 10px; color: var(--gray-dim); margin-top: 4px; }
 .chat-input-bar {
   display: flex; gap: 8px; padding: 14px 20px;
+  padding-bottom: env(safe-area-inset-bottom, 80px);
+  margin-bottom: 80px;
   background: var(--bg); border-top: 1px solid var(--card-border);
 }
 .chat-input-bar input {
