@@ -2172,9 +2172,11 @@ function renderBilling() {
         <span class="credit-mode-badge ${keyMode}">${keyMode === 'credits' ? 'Credit Mode' : 'BYOK Mode'}</span>
       </div>
       <div class="credit-actions">
-        ${keyMode === 'byok'
+        ${keyMode === 'byok' && creditBal > 0
           ? `<button class="btn btn-primary btn-sm" onclick="switchKeyMode('credits')">Switch to Credits</button>`
-          : `<button class="btn btn-ghost btn-sm" onclick="switchKeyMode('byok')">Switch to BYOK</button>`
+          : keyMode === 'credits'
+            ? `<button class="btn btn-ghost btn-sm" onclick="switchKeyMode('byok')">Switch to BYOK</button>`
+            : ''
         }
         <button class="btn btn-primary btn-sm" onclick="showCreditPacks()">Buy Credits</button>
       </div>
@@ -2223,33 +2225,39 @@ async function loadCreditTransactions() {
   }
 }
 
-async function showCreditPacks() {
+const CREDIT_PACKS = [
+  { id: 'starter',    amount: 5,   label: 'Starter' },
+  { id: 'standard',   amount: 25,  label: 'Standard' },
+  { id: 'pro',        amount: 100, label: 'Pro' },
+  { id: 'enterprise', amount: 500, label: 'Enterprise' },
+];
+
+function showCreditPacks() {
   const section = document.getElementById('credit-packs-section');
   if (!section) return;
   section.style.display = '';
   const grid = document.getElementById('credit-packs-grid');
-  try {
-    const data = await api('GET', '/api/billing/credits/packs');
-    const packs = data.packs || [];
-    grid.innerHTML = packs.map(p => `
-      <div class="credit-pack" onclick="buyCredits('${esc(p.id)}')">
-        <div class="credit-pack-amount">$${p.amount_usd}</div>
-        <div class="credit-pack-label">${esc(p.label)}</div>
-      </div>
-    `).join('');
-  } catch (e) {
-    grid.innerHTML = '<div class="empty-state"><p>Failed to load packs.</p></div>';
-  }
+  grid.innerHTML = CREDIT_PACKS.map(p => `
+    <div class="credit-pack" onclick="buyCredits('${p.id}')">
+      <div class="credit-pack-amount">$${p.amount}</div>
+      <div class="credit-pack-label">${p.label}</div>
+    </div>
+  `).join('');
+  section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 async function buyCredits(pack) {
+  toast('Starting checkout...', 'info');
   try {
     const res = await api('POST', '/api/billing/credits/purchase', { pack });
     if (res.checkout_url) {
       window.location.href = res.checkout_url;
+    } else {
+      toast('No checkout URL returned. Is Stripe configured?', 'error');
     }
   } catch (e) {
-    toast('Failed to start checkout: ' + e.message, 'error');
+    const msg = e.message || 'Unknown error';
+    toast('Credit purchase failed: ' + msg, 'error');
   }
 }
 
