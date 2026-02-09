@@ -2698,9 +2698,9 @@ async function checkToken() {
   const urlToken = params.get('token');
 
   if (urlToken) {
-    // PWA token bypass — if the token starts with "sk-" or is an API key,
-    // store it directly and skip magic link verification
-    if (urlToken.startsWith('sk-') || urlToken.length >= 40) {
+    // API key bypass — if the token is a Samma API key, store directly
+    // (magic link tokens must go through /api/auth/verify first)
+    if (urlToken.startsWith('samma_')) {
       state.token = urlToken;
       localStorage.setItem('samma_token', urlToken);
       sessionStorage.setItem('samma_token', urlToken);
@@ -2709,7 +2709,7 @@ async function checkToken() {
       return;
     }
 
-    // Otherwise treat as magic link token
+    // Otherwise treat as magic link token — verify with backend
     try {
       const res = await api('POST', '/api/auth/verify', { token: urlToken });
       state.token = res.token;
