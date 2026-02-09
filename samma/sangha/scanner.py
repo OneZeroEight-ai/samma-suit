@@ -65,7 +65,7 @@ DANGEROUS_PATTERNS: list[tuple[str, Severity, str]] = [
     # Code execution
     (r"\beval\s*\(", Severity.CRITICAL, "eval() — arbitrary code execution"),
     (r"\bexec\s*\(", Severity.CRITICAL, "exec() — arbitrary code execution"),
-    (r"\bcompile\s*\(", Severity.HIGH, "compile() — dynamic code compilation"),
+    (r"(?<!re\.)\bcompile\s*\(", Severity.HIGH, "compile() — dynamic code compilation"),
     (r"\b__import__\s*\(", Severity.HIGH, "__import__() — dynamic import"),
 
     # Shell execution
@@ -173,11 +173,25 @@ def verify_manifest(path: Path) -> ScanResult:
 
 # ── Core scanning ──
 
+def _is_string_literal_line(line: str) -> bool:
+    """Check if the line is primarily a string/regex definition (not executable code)."""
+    stripped = line.strip()
+    # Tuple entries in pattern lists: (r"...", ...)
+    if stripped.startswith("(r\"") or stripped.startswith("(r'"):
+        return True
+    # Raw string assignments: FOO = r"..."
+    if re.match(r"^\w+\s*=\s*r[\"']", stripped):
+        return True
+    return False
+
+
 def _scan_source(source: str, filename: str, result: ScanResult) -> None:
     """Scan a source string for dangerous patterns."""
     for line_num, line in enumerate(source.splitlines(), start=1):
         stripped = line.strip()
         if stripped.startswith("#"):
+            continue
+        if _is_string_literal_line(stripped):
             continue
         for pattern, severity, description in DANGEROUS_PATTERNS:
             if re.search(pattern, line):
