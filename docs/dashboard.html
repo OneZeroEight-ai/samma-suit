@@ -1604,7 +1604,7 @@ html.light .grid-bg { opacity: 0.3; }
 <script>
 // ── STATE ──
 const state = {
-  token: sessionStorage.getItem('samma_token') || null,
+  token: localStorage.getItem('samma_token') || sessionStorage.getItem('samma_token') || null,
   customer: null,
   overview: null,
   agents: null,
@@ -1633,6 +1633,7 @@ async function api(method, path, body) {
   const res = await fetch(`${API_BASE}${path}`, opts);
   if (res.status === 401) {
     state.token = null;
+    localStorage.removeItem('samma_token');
     sessionStorage.removeItem('samma_token');
     showView('login');
     toast('Session expired. Please sign in again.', 'error');
@@ -2350,7 +2351,7 @@ async function sendChatMsg() {
     if (state.token) opts.headers['Authorization'] = `Bearer ${state.token}`;
 
     const res = await fetch(`${API_BASE}/api/agents/${chatAgentId}/gateway`, opts);
-    if (res.status === 401) { state.token = null; sessionStorage.removeItem('samma_token'); showView('login'); throw new Error('Unauthorized'); }
+    if (res.status === 401) { state.token = null; localStorage.removeItem('samma_token'); sessionStorage.removeItem('samma_token'); showView('login'); throw new Error('Unauthorized'); }
     if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.detail || `Request failed (${res.status})`); }
 
     const contentType = res.headers.get('content-type') || '';
@@ -2556,6 +2557,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
     if (res.token) {
       // Local dev bypass — logged in directly
       state.token = res.token;
+      localStorage.setItem('samma_token', res.token);
       sessionStorage.setItem('samma_token', res.token);
       showView('dashboard');
     } else {
@@ -2576,9 +2578,22 @@ async function checkToken() {
   const urlToken = params.get('token');
 
   if (urlToken) {
+    // PWA token bypass — if the token starts with "sk-" or is an API key,
+    // store it directly and skip magic link verification
+    if (urlToken.startsWith('sk-') || urlToken.length >= 40) {
+      state.token = urlToken;
+      localStorage.setItem('samma_token', urlToken);
+      sessionStorage.setItem('samma_token', urlToken);
+      window.history.replaceState({}, '', window.location.pathname);
+      showView('dashboard');
+      return;
+    }
+
+    // Otherwise treat as magic link token
     try {
       const res = await api('POST', '/api/auth/verify', { token: urlToken });
       state.token = res.token;
+      localStorage.setItem('samma_token', res.token);
       sessionStorage.setItem('samma_token', res.token);
       // Clean URL
       window.history.replaceState({}, '', window.location.pathname);
@@ -2626,6 +2641,7 @@ document.getElementById('btn-logout').addEventListener('click', async () => {
   state.customer = null;
   state.overview = null;
   state.agents = null;
+  localStorage.removeItem('samma_token');
   sessionStorage.removeItem('samma_token');
   showView('login');
   toast('Signed out', 'success');
