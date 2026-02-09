@@ -1068,6 +1068,29 @@ footer .copy {
   </div>
 </section>
 
+<!-- CHEATSHEET -->
+<section id="cheatsheet-section" style="max-width: 1200px; margin: 60px auto; padding: 0 20px;">
+  <h2 style="font-family: 'Outfit', sans-serif; font-size: 28px; text-align: center; margin-bottom: 8px; color: #E2E8F0;">
+    <span style="color: #8B5CF6;">Mega</span> Cheatsheet
+  </h2>
+  <p style="text-align: center; color: #64748B; margin-bottom: 24px; font-size: 14px;">
+    Every endpoint, layer, shortcut, and config — one page.
+  </p>
+  <div id="cheatsheet-preview" onclick="document.getElementById('cheatsheet-full').style.display = document.getElementById('cheatsheet-full').style.display === 'none' ? 'block' : 'none'; this.style.display = 'none';" style="cursor: pointer; border: 1px solid rgba(139,92,246,0.2); border-radius: 12px; overflow: hidden; position: relative; max-height: 400px; transition: max-height 0.3s;">
+    <img src="images/samma-suit-cheatsheet.png" alt="Sammā Suit Cheatsheet" style="width: 100%; display: block; opacity: 0.85;">
+    <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 200px; background: linear-gradient(transparent, #06060E); display: flex; align-items: flex-end; justify-content: center; padding-bottom: 30px;">
+      <span style="background: #8B5CF6; color: white; padding: 10px 28px; border-radius: 8px; font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 15px;">Click to expand ↓</span>
+    </div>
+  </div>
+  <div id="cheatsheet-full" style="display: none;">
+    <iframe src="cheatsheet.html" style="width: 100%; height: 1750px; border: 1px solid rgba(139,92,246,0.15); border-radius: 12px;" frameborder="0"></iframe>
+    <div style="text-align: center; margin-top: 16px;">
+      <a href="images/samma-suit-cheatsheet.png" download style="color: #8B5CF6; margin-right: 20px; text-decoration: none; font-family: 'Outfit', sans-serif;">⬇ Download PNG</a>
+      <a href="cheatsheet.html" target="_blank" style="color: #8B5CF6; text-decoration: none; font-family: 'Outfit', sans-serif;">↗ Open full page</a>
+    </div>
+  </div>
+</section>
+
 <!-- FOOTER -->
 <footer>
   <div class="footer-links">
