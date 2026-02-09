@@ -1602,6 +1602,16 @@ html.light .grid-bg { opacity: 0.3; }
 <div class="toast-container" id="toast-container"></div>
 
 <script>
+// ── DEMO MODE ──
+(function() {
+  const p = new URLSearchParams(window.location.search);
+  if (p.get('demo') === 'true') {
+    localStorage.setItem('samma_demo', 'true');
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+})();
+const DEMO_MODE = localStorage.getItem('samma_demo') === 'true';
+
 // ── STATE ──
 const state = {
   token: localStorage.getItem('samma_token') || sessionStorage.getItem('samma_token') || null,
@@ -1624,6 +1634,9 @@ async function api(method, path, body) {
     method,
     headers: { 'Content-Type': 'application/json' }
   };
+  if (DEMO_MODE) {
+    opts.headers['X-Samma-Demo'] = 'true';
+  }
   if (state.token) {
     opts.headers['Authorization'] = `Bearer ${state.token}`;
   }
@@ -1632,6 +1645,7 @@ async function api(method, path, body) {
   }
   const res = await fetch(`${API_BASE}${path}`, opts);
   if (res.status === 401) {
+    if (DEMO_MODE) { throw new Error('Demo auth failed'); }
     state.token = null;
     localStorage.removeItem('samma_token');
     sessionStorage.removeItem('samma_token');
@@ -2348,6 +2362,7 @@ async function sendChatMsg() {
       headers: { 'Content-Type': 'application/json', 'Accept': 'text/event-stream, application/json' },
       body: JSON.stringify(body)
     };
+    if (DEMO_MODE) opts.headers['X-Samma-Demo'] = 'true';
     if (state.token) opts.headers['Authorization'] = `Bearer ${state.token}`;
 
     const res = await fetch(`${API_BASE}/api/agents/${chatAgentId}/gateway`, opts);
@@ -2574,6 +2589,12 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
 
 // ── TOKEN VERIFY ON PAGE LOAD ──
 async function checkToken() {
+  // Demo mode — skip login entirely
+  if (DEMO_MODE) {
+    showView('dashboard');
+    return;
+  }
+
   const params = new URLSearchParams(window.location.search);
   const urlToken = params.get('token');
 
