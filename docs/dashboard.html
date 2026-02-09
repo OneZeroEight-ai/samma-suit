@@ -891,6 +891,44 @@ select.audit-filter {
   gap: 12px;
   margin-top: 20px;
 }
+.credit-banner {
+  background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(0,212,255,0.10));
+  border: 1px solid var(--purple);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.credit-balance-label { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--gray); font-family: var(--font-mono); }
+.credit-balance-value { font-size: 28px; font-weight: 800; font-family: var(--font-mono); color: var(--cyan); }
+.credit-balance-value.low { color: var(--gold); }
+.credit-balance-value.empty { color: var(--red); }
+.credit-mode-badge { display: inline-block; font-size: 11px; font-family: var(--font-mono); padding: 3px 10px; border-radius: 20px; letter-spacing: 1px; text-transform: uppercase; }
+.credit-mode-badge.credits { background: rgba(0,212,255,0.15); color: var(--cyan); border: 1px solid rgba(0,212,255,0.3); }
+.credit-mode-badge.byok { background: rgba(124,58,237,0.15); color: var(--purple); border: 1px solid rgba(124,58,237,0.3); }
+.credit-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.credit-packs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 12px; }
+.credit-pack {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.credit-pack:hover { border-color: var(--purple); background: rgba(124,58,237,0.08); transform: translateY(-2px); }
+.credit-pack-amount { font-size: 22px; font-weight: 800; font-family: var(--font-mono); color: var(--white); }
+.credit-pack-label { font-size: 11px; color: var(--gray); margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+.credit-txn-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+.credit-txn-table th { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--gray); font-family: var(--font-mono); padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--card-border); }
+.credit-txn-table td { padding: 8px 10px; font-size: 13px; border-bottom: 1px solid rgba(30,30,58,0.5); }
+.credit-txn-table .txn-positive { color: var(--green); }
+.credit-txn-table .txn-negative { color: var(--gray); }
 
 /* Layer badges */
 .layer-badge {
@@ -1258,6 +1296,8 @@ html.light .grid-bg { opacity: 0.3; }
   .overview-grid { grid-template-columns: repeat(2, 1fr); }
   .agent-cards { grid-template-columns: 1fr; }
   .billing-grid { grid-template-columns: 1fr; }
+  .credit-packs { grid-template-columns: repeat(2, 1fr); }
+  .credit-banner { flex-direction: column; align-items: flex-start; }
   .nav-links { display: none; }
   .dash-header {
     flex-direction: row; gap: 6px; align-items: center;
@@ -1412,6 +1452,11 @@ html.light .grid-bg { opacity: 0.3; }
           <span class="gauge-amount" id="oc-spend">—</span>
           <span id="oc-spend-sub">loading...</span>
         </div>
+      </div>
+      <div id="oc-credit-row" style="display:none;margin-top:8px;font-size:12px">
+        <span style="color:var(--gray)">Credits:</span>
+        <span id="oc-credit-balance" style="font-family:var(--font-mono);font-weight:600;margin-left:4px">$0.00</span>
+        <span id="oc-credit-mode" class="credit-mode-badge" style="margin-left:6px;font-size:9px;padding:2px 6px"></span>
       </div>
     </div>
     <div class="overview-card">
@@ -1819,6 +1864,21 @@ function renderOverview() {
   gf.setAttribute('stroke', spendPct > 90 ? 'var(--red)' : spendPct > 70 ? 'var(--gold)' : 'var(--purple)');
   document.getElementById('gauge-pct').textContent = Math.round(spendPct) + '%';
 
+  // Credit balance row in overview
+  const credits = ov.credits || {};
+  const keyMode = ov.key_mode || credits.mode || 'byok';
+  const creditBal = credits.balance || 0;
+  const creditRow = document.getElementById('oc-credit-row');
+  if (creditRow) {
+    creditRow.style.display = '';
+    const balEl = document.getElementById('oc-credit-balance');
+    balEl.textContent = '$' + creditBal.toFixed(2);
+    balEl.style.color = creditBal <= 0 ? 'var(--red)' : creditBal < 1 ? 'var(--gold)' : 'var(--cyan)';
+    const modeEl = document.getElementById('oc-credit-mode');
+    modeEl.textContent = keyMode;
+    modeEl.className = 'credit-mode-badge ' + keyMode;
+  }
+
   // Gateway calls
   document.getElementById('oc-calls').textContent = (usage.total_calls || 0).toLocaleString();
   document.getElementById('oc-calls-today').textContent = (usage.today_calls || 0).toLocaleString();
@@ -2099,7 +2159,111 @@ function renderBilling() {
     </div>
   </div>`;
 
-  container.innerHTML = `<div class="billing-grid">${planHtml}${statusHtml}</div>`;
+  // ── Credit banner ──
+  const keyMode = b.key_mode || 'byok';
+  const creditBal = b.credit_balance || 0;
+  const balClass = creditBal <= 0 ? 'empty' : creditBal < 1 ? 'low' : '';
+
+  const creditHtml = `
+    <div class="credit-banner">
+      <div>
+        <div class="credit-balance-label">Credit Balance</div>
+        <div class="credit-balance-value ${balClass}">$${creditBal.toFixed(4)}</div>
+        <span class="credit-mode-badge ${keyMode}">${keyMode === 'credits' ? 'Credit Mode' : 'BYOK Mode'}</span>
+      </div>
+      <div class="credit-actions">
+        ${keyMode === 'byok'
+          ? `<button class="btn btn-primary btn-sm" onclick="switchKeyMode('credits')">Switch to Credits</button>`
+          : `<button class="btn btn-ghost btn-sm" onclick="switchKeyMode('byok')">Switch to BYOK</button>`
+        }
+        <button class="btn btn-primary btn-sm" onclick="showCreditPacks()">Buy Credits</button>
+      </div>
+    </div>`;
+
+  container.innerHTML = creditHtml + `<div class="billing-grid">${planHtml}${statusHtml}</div>`
+    + `<div id="credit-packs-section" style="display:none;margin-top:16px">
+        <div class="section-header"><h3>Buy Credits</h3></div>
+        <div class="credit-packs" id="credit-packs-grid"></div>
+      </div>`
+    + `<div style="margin-top:24px">
+        <div class="section-header"><h3>Credit Transactions</h3></div>
+        <div id="credit-txn-container"><div class="empty-state"><p>Loading...</p></div></div>
+      </div>`;
+
+  loadCreditTransactions();
+}
+
+async function loadCreditTransactions() {
+  const container = document.getElementById('credit-txn-container');
+  if (!container) return;
+  try {
+    const data = await api('GET', '/api/billing/credits/transactions?limit=20');
+    const txns = data.transactions || [];
+    if (txns.length === 0) {
+      container.innerHTML = '<div class="empty-state"><p>No credit transactions yet.</p></div>';
+      return;
+    }
+    let html = `<table class="credit-txn-table"><thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Balance</th></tr></thead><tbody>`;
+    for (const t of txns) {
+      const date = t.created_at ? new Date(t.created_at).toLocaleDateString() : '—';
+      const amt = parseFloat(t.amount);
+      const cls = amt >= 0 ? 'txn-positive' : 'txn-negative';
+      const sign = amt >= 0 ? '+' : '';
+      html += `<tr>
+        <td style="color:var(--gray)">${date}</td>
+        <td>${esc(t.description || '—')}</td>
+        <td class="${cls}" style="font-family:var(--font-mono)">${sign}$${Math.abs(amt).toFixed(4)}</td>
+        <td style="font-family:var(--font-mono)">$${parseFloat(t.balance_after).toFixed(4)}</td>
+      </tr>`;
+    }
+    html += '</tbody></table>';
+    container.innerHTML = html;
+  } catch (e) {
+    container.innerHTML = '<div class="empty-state"><p>Failed to load transactions.</p></div>';
+  }
+}
+
+async function showCreditPacks() {
+  const section = document.getElementById('credit-packs-section');
+  if (!section) return;
+  section.style.display = '';
+  const grid = document.getElementById('credit-packs-grid');
+  try {
+    const data = await api('GET', '/api/billing/credits/packs');
+    const packs = data.packs || [];
+    grid.innerHTML = packs.map(p => `
+      <div class="credit-pack" onclick="buyCredits('${esc(p.id)}')">
+        <div class="credit-pack-amount">$${p.amount_usd}</div>
+        <div class="credit-pack-label">${esc(p.label)}</div>
+      </div>
+    `).join('');
+  } catch (e) {
+    grid.innerHTML = '<div class="empty-state"><p>Failed to load packs.</p></div>';
+  }
+}
+
+async function buyCredits(pack) {
+  try {
+    const res = await api('POST', '/api/billing/credits/purchase', { pack });
+    if (res.checkout_url) {
+      window.location.href = res.checkout_url;
+    }
+  } catch (e) {
+    toast('Failed to start checkout: ' + e.message, 'error');
+  }
+}
+
+async function switchKeyMode(mode) {
+  try {
+    const res = await api('POST', '/api/billing/credits/key-mode', { mode });
+    toast(`Switched to ${res.key_mode === 'credits' ? 'Credit' : 'BYOK'} mode`, 'success');
+    await loadBillingStatus();
+    renderBilling();
+    await loadData();
+    renderOverview();
+  } catch (e) {
+    toast(e.message || 'Failed to switch mode', 'error');
+  }
 }
 
 async function upgradePlan(tier) {
