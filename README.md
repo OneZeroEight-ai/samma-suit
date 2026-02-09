@@ -34,6 +34,12 @@ pip install samma-suit
 
 Also available on ClawHub: https://clawhub.ai/OneZeroEight-ai/samma-suit
 
+## Demo
+
+[![Sammā Suit Demo](https://img.youtube.com/vi/FvHZFM4v0zg/0.jpg)](https://youtube.com/shorts/FvHZFM4v0zg)
+
+2:20 live demo — create an agent, chat through all 8 layers, kill switch, audit trail, skill marketplace.
+
 ## The 8 Layers
 
 All 8 layers are enforced in v0.1. Not stubs.
