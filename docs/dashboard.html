@@ -46,6 +46,7 @@ body {
   font-family: var(--font-display);
   line-height: 1.6;
   overflow-x: hidden;
+  padding-bottom: env(safe-area-inset-bottom, 80px);
 }
 
 body::before {
@@ -1087,7 +1088,7 @@ select.audit-filter {
 .tab-bar {
   display: flex; gap: 0; border-bottom: 1px solid var(--card-border);
   margin-bottom: 24px; overflow-x: auto; -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
+  scrollbar-width: none; padding-bottom: env(safe-area-inset-bottom, 20px);
 }
 .tab-bar::-webkit-scrollbar { display: none; }
 .tab-btn {
