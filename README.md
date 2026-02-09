@@ -326,6 +326,14 @@ Those protect the LLM. Sammā Suit protects the agent — the identity, the budg
 **What's with the Buddhist naming?**
 Sammā means "right" in Pali (as in Right Action, Right Livelihood). The 8 layers map to the Noble Eightfold Path. Built by OneZeroEight.ai — 108 is sacred in Buddhist tradition.
 
+## Cheatsheet
+
+Every endpoint, layer, shortcut, and config — one page.
+
+![Sammā Suit Mega Cheatsheet](docs/images/samma-suit-cheatsheet.png)
+
+[Download PNG](docs/images/samma-suit-cheatsheet.png) · [Interactive version](https://sammasuit.com/cheatsheet.html)
+
 ## Links
 
 - **Product site:** [sammasuit.com](https://sammasuit.com)
