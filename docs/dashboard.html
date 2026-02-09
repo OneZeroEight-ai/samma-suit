@@ -38,7 +38,7 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; height: 100%; }
 
 body {
   background: var(--bg);
@@ -46,7 +46,8 @@ body {
   font-family: var(--font-display);
   line-height: 1.6;
   overflow-x: hidden;
-  padding-bottom: env(safe-area-inset-bottom, 80px);
+  min-height: 100%;
+  padding-bottom: env(safe-area-inset-bottom, 34px);
 }
 
 body::before {
@@ -442,7 +443,7 @@ nav {
 .dashboard-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 100px 40px 60px;
+  padding: 100px 40px calc(env(safe-area-inset-bottom, 34px) + 60px);
   position: relative;
   z-index: 1;
   display: none;
@@ -1088,7 +1089,7 @@ select.audit-filter {
 .tab-bar {
   display: flex; gap: 0; border-bottom: 1px solid var(--card-border);
   margin-bottom: 24px; overflow-x: auto; -webkit-overflow-scrolling: touch;
-  scrollbar-width: none; padding-bottom: env(safe-area-inset-bottom, 20px);
+  scrollbar-width: none; padding-bottom: env(safe-area-inset-bottom, 34px);
 }
 .tab-bar::-webkit-scrollbar { display: none; }
 .tab-btn {
@@ -1256,14 +1257,14 @@ html.light .grid-bg { opacity: 0.3; }
 }
 @media (max-width: 600px) {
   nav { padding: 16px 20px; }
-  .dashboard-container { padding: 80px 16px 40px; }
+  .dashboard-container { padding: 80px 16px calc(env(safe-area-inset-bottom, 34px) + 40px); }
   .login-card { padding: 32px 24px; margin: 0 16px; }
   .overview-grid { grid-template-columns: 1fr 1fr; }
   .cost-top-row { grid-template-columns: 1fr 1fr; }
 }
 /* iPhone landscape demo — 844×390 */
 @media (max-height: 500px) and (orientation: landscape) {
-  .dashboard-container { padding: 70px 20px 30px; }
+  .dashboard-container { padding: 70px 20px calc(env(safe-area-inset-bottom, 34px) + 30px); }
   nav { padding: 10px 20px; }
   .overview-grid { grid-template-columns: repeat(4, 1fr); gap: 10px; }
   .overview-card { padding: 14px; }
