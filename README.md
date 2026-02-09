@@ -1,6 +1,4 @@
-<p align="center">
-    <img src="pulse_avatar.png" alt="Sammā Suit" width="200" height="200" style="border-radius: 50%;">
-</p>
+![Sammā Suit](docs/images/samma-suit-cover.jpg)
 
 <h1 align="center">Sammā Suit</h1>
 <p align="center"><em>Eight layers of Right Protection for autonomous AI agents</em></p>
