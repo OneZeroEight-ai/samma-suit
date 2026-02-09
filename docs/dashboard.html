@@ -91,15 +91,6 @@ nav {
   border-bottom: 1px solid var(--card-border);
 }
 
-.nav-logo {
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  font-weight: 800;
-  color: var(--white);
-  letter-spacing: 0;
-}
-.nav-logo span { color: var(--purple); }
-.nav-logo a { color: inherit; text-decoration: none; }
 
 .nav-links { display: flex; gap: 32px; align-items: center; }
 .nav-links a {
@@ -1354,7 +1345,6 @@ html.light .grid-bg { opacity: 0.3; }
 
 <!-- NAV -->
 <nav>
-  <div class="nav-logo"><a href="index.html"><span>One</span>ZeroEight</a></div>
   <div class="nav-links">
     <a href="index.html#armor">Armor</a>
     <a href="index.html#features">Features</a>
@@ -1546,7 +1536,7 @@ html.light .grid-bg { opacity: 0.3; }
     </div>
     <div class="section-header"><h3>Per-Agent Spend</h3></div>
     <div class="agent-spend-bars" id="agent-spend-bars"></div>
-    <div class="section-header"><h3>Daily Spend (30 days)</h3></div>
+    <div class="section-header"><h3>Daily Spend</h3></div>
     <div class="spend-chart"><div class="spend-chart-bars" id="spend-chart-bars"></div></div>
     <div class="section-header"><h3>Alerts</h3></div>
     <div class="cost-alerts" id="cost-alerts"><div class="empty-state"><p>No active alerts</p></div></div>
@@ -3027,17 +3017,32 @@ async function loadCosts() {
   }).join('');
   document.getElementById('agent-spend-bars').innerHTML = barsHtml || '<div class="empty-state"><p>No agent data</p></div>';
 
-  // Daily chart — try API, fall back to placeholder
+  // Daily chart — derive from per-agent audit logs
   try {
-    const data = await api('GET', '/api/billing/daily-spend?days=30');
-    renderSpendChart(data.days || []);
+    const agentIds = agents.map(a => a.id);
+    const auditResults = await Promise.all(
+      agentIds.map(id => api('GET', `/api/agents/${id}/audit?limit=100`).catch(() => ({ audit: [] })))
+    );
+    // Group costs by date (YYYY-MM-DD)
+    const dailyCosts = {};
+    for (const res of auditResults) {
+      for (const entry of (res.audit || [])) {
+        if (!entry.cost_usd || !entry.created_at) continue;
+        const date = entry.created_at.slice(0, 10);
+        dailyCosts[date] = (dailyCosts[date] || 0) + entry.cost_usd;
+      }
+    }
+    const days = Object.keys(dailyCosts).sort().map(date => ({ date, cost: dailyCosts[date] }));
+    const uniqueDays = days.filter(d => d.cost > 0);
+    if (uniqueDays.length < 7) {
+      document.getElementById('spend-chart-bars').innerHTML =
+        '<div class="empty-state" style="height:100%;display:flex;align-items:center;justify-content:center;width:100%"><p style="color:var(--gray-dim);font-size:13px">Cost history will appear here after your first week of usage.</p></div>';
+    } else {
+      renderSpendChart(uniqueDays);
+    }
   } catch (e) {
-    // Placeholder bars
-    const bars = Array.from({ length: 30 }, (_, i) => {
-      const h = Math.random() * 80 + 5;
-      return `<div class="spend-bar" style="height:${h}%"><div class="spend-bar-tip">Day ${i + 1}</div></div>`;
-    }).join('');
-    document.getElementById('spend-chart-bars').innerHTML = bars;
+    document.getElementById('spend-chart-bars').innerHTML =
+      '<div class="empty-state" style="height:100%;display:flex;align-items:center;justify-content:center;width:100%"><p style="color:var(--gray-dim);font-size:13px">Cost history will appear here after your first week of usage.</p></div>';
   }
 
   // Alerts
@@ -3057,10 +3062,16 @@ async function loadCosts() {
 }
 
 function renderSpendChart(days) {
+  if (!days.length) {
+    document.getElementById('spend-chart-bars').innerHTML =
+      '<div class="empty-state" style="height:100%;display:flex;align-items:center;justify-content:center;width:100%"><p style="color:var(--gray-dim);font-size:13px">Cost history will appear here after your first week of usage.</p></div>';
+    return;
+  }
   const maxVal = Math.max(...days.map(d => d.cost || 0), 0.01);
   document.getElementById('spend-chart-bars').innerHTML = days.map(d => {
-    const h = ((d.cost || 0) / maxVal * 100);
-    return `<div class="spend-bar" style="height:${h}%"><div class="spend-bar-tip">${d.date || ''}: $${(d.cost || 0).toFixed(2)}</div></div>`;
+    const h = Math.max(((d.cost || 0) / maxVal * 100), 2);
+    const label = d.date ? d.date.slice(5) : '';
+    return `<div class="spend-bar" style="height:${h}%"><div class="spend-bar-tip">${label}: $${(d.cost || 0).toFixed(4)}</div></div>`;
   }).join('');
 }
 
