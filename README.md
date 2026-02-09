@@ -43,7 +43,7 @@ All 8 layers are enforced in v0.1. Not stubs.
 | 1 | **SUTRA** | Gateway | Origin validation, rate limiting, TLS enforcement, WebSocket auth |
 | 2 | **DHARMA** | Permissions | RBAC with 33 permissions, 7 roles, model whitelist, policy engine |
 | 3 | **SANGHA** | Skill Vetting | Allowlist enforcement, skill registry validation, rejects unvetted skills at gateway |
-| 4 | **KARMA** | Cost Controls | Per-agent budget ceiling, monthly spend tracking, blocks requests when budget exceeded |
+| 4 | **KARMA** | Cost Controls | Per-agent budget ceiling, BYOK API keys, monthly spend tracking, blocks requests when budget exceeded |
 | 5 | **SILA** | Audit Trail | Every gateway call logged, token counts, cost tracking, full layer enforcement trace |
 | 6 | **METTA** | Identity | Ed25519 keypair per agent, cryptographic response signing, signature verification |
 | 7 | **BODHI** | Isolation | 30-second hard timeout on LLM calls, max_tokens capped at 4096, timeout error handling |
@@ -106,6 +106,7 @@ engine.deny("rogue-agent-2", Permission.EMAIL_SEND)
 ## KARMA (Layer 4) — Cost Controls
 
 - Per-agent monthly budget ceiling in USD
+- **BYOK (Bring Your Own Key)** — Pro/Team customers can supply their own Anthropic API key per agent, encrypted at rest with Fernet (AES-128-CBC + HMAC-SHA256)
 - Pre-call budget check — blocks requests when spend exceeds limit
 - Post-call cost recording with input/output token counts
 - Monthly spend tracking with automatic budget period rollover
@@ -185,7 +186,7 @@ Response includes your API key:
 curl -X POST http://localhost:8000/api/agents \
   -H "Authorization: Bearer samma_your_key_here" \
   -H "Content-Type: application/json" \
-  -d '{"name": "My Agent", "monthly_budget_usd": 5.0}'
+  -d '{"name": "My Agent", "monthly_budget_usd": 5.0, "llm_api_key": "sk-ant-..."}'
 ```
 
 ### 5. Send a request through the gateway

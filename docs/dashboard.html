@@ -1572,6 +1572,7 @@ html.light .grid-bg { opacity: 0.3; }
       <input type="text" class="login-input" id="agent-name" placeholder="Agent name" required>
       <textarea class="login-input" id="agent-system-prompt" placeholder="Tell this agent how to behave, what tone to use, and what rules to follow." rows="3" style="resize:vertical;font-family:var(--font-mono);font-size:13px;line-height:1.5"></textarea>
       <input type="number" class="login-input" id="agent-budget" placeholder="Monthly budget (USD)" step="0.01" min="0">
+      <input type="password" class="login-input" id="agent-llm-key" placeholder="Anthropic API key (optional — BYOK)" autocomplete="off">
       <div class="modal-actions">
         <button type="button" class="btn btn-ghost btn-sm" onclick="closeModal('modal-create')">Cancel</button>
         <button type="submit" class="btn btn-primary btn-sm">Create Agent</button>
@@ -2196,6 +2197,10 @@ async function openAgentDetail(agentId) {
         </span>
       </div>
       <div class="detail-row">
+        <span class="detail-label">BYOK Key</span>
+        <span class="detail-value">${a.has_byok_key ? '<span style="color:var(--green)">Active — using your Anthropic key</span>' : '<span style="color:var(--gray-dim)">Not set — using platform key</span>'}</span>
+      </div>
+      <div class="detail-row">
         <span class="detail-label">Total Calls</span>
         <span class="detail-value">${(a.total_calls||0).toLocaleString()}</span>
       </div>
@@ -2569,17 +2574,20 @@ document.getElementById('create-agent-form').addEventListener('submit', async (e
   const name = document.getElementById('agent-name').value.trim();
   const systemPrompt = document.getElementById('agent-system-prompt').value.trim();
   const budget = parseFloat(document.getElementById('agent-budget').value) || undefined;
+  const llmKey = document.getElementById('agent-llm-key').value.trim();
   if (!name) return;
 
   try {
     const body = { name };
     if (systemPrompt) body.system_prompt = systemPrompt;
     if (budget != null && budget > 0) body.monthly_budget_usd = budget;
+    if (llmKey) body.llm_api_key = llmKey;
     await api('POST', '/api/agents', body);
     closeModal('modal-create');
     document.getElementById('agent-name').value = '';
     document.getElementById('agent-system-prompt').value = '';
     document.getElementById('agent-budget').value = '';
+    document.getElementById('agent-llm-key').value = '';
     toast('Agent created successfully', 'success');
     loadDashboard();
   } catch (e) {

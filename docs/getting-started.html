@@ -643,10 +643,11 @@ SammaSuit(app)  # All 8 layers activated</code></pre>
   -H "Content-Type: application/json" \
   -d '{
     "name": "my-first-agent",
-    "monthly_budget_usd": 50.00
+    "monthly_budget_usd": 50.00,
+    "llm_api_key": "sk-ant-..."
   }'
 
-# Response: { "agent": { "id": "...", "name": "my-first-agent", ... } }</code></pre>
+# Response: { "agent": { "id": "...", "name": "my-first-agent", "has_byok_key": true, ... } }</code></pre>
     </div>
 
     <h3>3. Send a request through the gateway</h3>
@@ -744,7 +745,7 @@ SammaSuit(app)  # All 8 layers activated</code></pre>
           <span style="font-size:13px;color:var(--gray)">Cost Controls</span>
         </div>
       </div>
-      <p>Per-agent budget enforcement with token optimization. Prevents the $750/month runaway costs seen with uncontrolled heartbeat jobs. Each agent has a hard monthly budget cap that cannot be exceeded.</p>
+      <p>Per-agent budget enforcement with token optimization. Prevents the $750/month runaway costs seen with uncontrolled heartbeat jobs. Each agent has a hard monthly budget cap that cannot be exceeded. Pro/Team customers can <strong>Bring Your Own Key (BYOK)</strong> for full spend control.</p>
       <p><strong>Prevents:</strong> Runaway API costs, budget overruns, token waste</p>
       <div class="layer-error">
         <div class="code-block">
@@ -917,6 +918,7 @@ SammaSuit(app)  # All 8 layers activated</code></pre>
   "name": "my-agent",
   "description": "An email assistant",
   "monthly_budget_usd": 50.00,
+  "llm_api_key": "sk-ant-...",
   "samma_config": {}
 }</code></pre>
         </div>
@@ -929,6 +931,7 @@ SammaSuit(app)  # All 8 layers activated</code></pre>
     "status": "active",
     "metta_public_key": "ed25519:...",
     "monthly_budget_usd": 50.00,
+    "has_byok_key": true,
     "created_at": "2026-02-01T..."
   }
 }</code></pre>
@@ -1335,7 +1338,7 @@ SammaSuit(app)  # All 8 layers activated</code></pre>
 
     <details class="faq-item">
       <summary>What happens if my agent exceeds its budget?</summary>
-      <div class="faq-body">The KARMA layer enforces a hard budget cap. When an agent's monthly spend reaches its budget limit, all subsequent gateway requests return a <code>402</code> error. You can increase the budget via the dashboard or API at any time.</div>
+      <div class="faq-body">The KARMA layer enforces a hard budget cap. When an agent's monthly spend reaches its budget limit, all subsequent gateway requests return a <code>402</code> error. You can increase the budget via the dashboard or API at any time. Pro/Team customers can also use <strong>BYOK (Bring Your Own Key)</strong> to supply their own Anthropic API key and control LLM spend directly.</div>
     </details>
 
     <details class="faq-item">
