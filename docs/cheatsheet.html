@@ -442,7 +442,7 @@
         <tr>
           <td class="layer-num">4</td>
           <td class="layer-name">KARMA</td>
-          <td class="layer-desc">Cost control — per-agent budget ceiling</td>
+          <td class="layer-desc">Cost control — user-set budget ceiling (BYOK)</td>
         </tr>
         <tr>
           <td class="layer-num">5</td>
@@ -613,6 +613,8 @@
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"config"</span>: {<br>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"api_url"</span>: <span class="string">"https://api.sammasuit.com"</span>,<br>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"api_key"</span>: <span class="string">"samma_..."</span>,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"llm_key"</span>: <span class="string">"sk-ant-..."</span>,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"budget"</span>: <span class="string">100</span>,<br>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"layers"</span>: <span class="string">["ALL"]</span><br>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
@@ -621,18 +623,22 @@
         }
       </div>
 
-      <div class="sub-header">Pricing</div>
+      <div class="sub-header">Pricing — BYOK (Bring Your Own Key)</div>
       <div class="cmd-row">
         <div class="cmd">Free</div>
         <div class="cmd-desc">1 agent, 100 calls/mo</div>
       </div>
       <div class="cmd-row">
         <div class="cmd">Pro $29/mo</div>
-        <div class="cmd-desc">5 agents, $500 budget</div>
+        <div class="cmd-desc">5 agents, custom budget ceiling</div>
       </div>
       <div class="cmd-row">
         <div class="cmd">Team $99/mo</div>
-        <div class="cmd-desc">25 agents, $5K budget</div>
+        <div class="cmd-desc">25 agents, custom budget ceiling</div>
+      </div>
+      <div style="font-size:9px; color:#64748B; margin-top:6px;">
+        You provide your LLM API key. We enforce governance.<br>
+        KARMA budget ceiling protects <em>your</em> spend.
       </div>
     </div>
 
