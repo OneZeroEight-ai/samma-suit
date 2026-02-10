@@ -1401,6 +1401,11 @@ html.light .grid-bg { opacity: 0.3; }
     <img src="images/agents/pulse_avatar.png" alt="Samma Suit" class="login-avatar">
     <h2>Welcome Back</h2>
     <p>Sign in to your Samma Suit dashboard</p>
+    <div id="login-existing" style="display:none;margin-bottom:16px;padding:12px 16px;background:rgba(124,58,237,0.08);border:1px solid var(--card-border);border-radius:8px;font-size:13px;text-align:center">
+      <span style="color:var(--gray)">Logged in as</span>
+      <strong id="login-existing-email" style="color:var(--cyan);margin:0 4px"></strong>
+      <a href="#" id="login-switch" style="color:var(--purple);text-decoration:underline;margin-left:8px">Switch Account</a>
+    </div>
     <form id="login-form">
       <input type="email" class="login-input" id="login-email" placeholder="you@example.com" required autocomplete="email">
       <button type="submit" class="btn btn-primary" id="login-btn">Send Magic Link</button>
@@ -1768,6 +1773,15 @@ function showView(view) {
     loginView.style.display = 'flex';
     dashView.style.display = 'none';
     if (refreshInterval) { clearInterval(refreshInterval); refreshInterval = null; }
+    // Show "logged in as" note if a session/email exists
+    const existingEl = document.getElementById('login-existing');
+    const existingEmail = state.customer?.email || localStorage.getItem('samma_email') || '';
+    if (existingEmail && state.token) {
+      document.getElementById('login-existing-email').textContent = existingEmail;
+      existingEl.style.display = 'block';
+    } else {
+      existingEl.style.display = 'none';
+    }
   } else {
     loginView.style.display = 'none';
     dashView.style.display = 'block';
@@ -1786,6 +1800,10 @@ async function loadDashboard() {
     state.customer = meRes.customer;
     state.overview = overviewRes;
     state.agents = agentsRes;
+    // Persist email for login-screen "Logged in as" note
+    if (state.customer?.email) {
+      localStorage.setItem('samma_email', state.customer.email);
+    }
     renderDashboard();
     loadBillingStatus();
 
@@ -2815,10 +2833,27 @@ async function reviveAgent(agentId, agentName) {
 }
 
 // ── LOGIN FLOW ──
+function clearSession() {
+  state.token = null;
+  state.customer = null;
+  state.overview = null;
+  state.agents = null;
+  state.billing = null;
+  localStorage.removeItem('samma_token');
+  localStorage.removeItem('samma_email');
+  localStorage.removeItem('samma_demo');
+  sessionStorage.removeItem('samma_token');
+  sessionStorage.removeItem('samma_email');
+}
+
 document.getElementById('login-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const email = document.getElementById('login-email').value.trim();
   if (!email) return;
+
+  // Clear any existing session before requesting a new magic link
+  clearSession();
+  document.getElementById('login-existing').style.display = 'none';
 
   const btn = document.getElementById('login-btn');
   const successEl = document.getElementById('login-success');
@@ -2834,6 +2869,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
       // Local dev bypass — logged in directly
       state.token = res.token;
       localStorage.setItem('samma_token', res.token);
+      localStorage.setItem('samma_email', email);
       sessionStorage.setItem('samma_token', res.token);
       showView('dashboard');
     } else {
@@ -2846,6 +2882,15 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
     btn.disabled = false;
     btn.textContent = 'Send Magic Link';
   }
+});
+
+// ── SWITCH ACCOUNT ──
+document.getElementById('login-switch').addEventListener('click', (e) => {
+  e.preventDefault();
+  clearSession();
+  document.getElementById('login-existing').style.display = 'none';
+  document.getElementById('login-email').value = '';
+  document.getElementById('login-email').focus();
 });
 
 // ── TOKEN VERIFY ON PAGE LOAD ──
@@ -2919,12 +2964,7 @@ document.getElementById('btn-logout').addEventListener('click', async () => {
   try {
     await api('POST', '/api/auth/logout');
   } catch (e) { /* ignore */ }
-  state.token = null;
-  state.customer = null;
-  state.overview = null;
-  state.agents = null;
-  localStorage.removeItem('samma_token');
-  sessionStorage.removeItem('samma_token');
+  clearSession();
   showView('login');
   toast('Signed out', 'success');
 });
