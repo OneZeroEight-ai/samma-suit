@@ -9,7 +9,7 @@ class TestSammaStatus:
         resp = await client.get("/samma/status")
         assert resp.status_code == 200
         data = resp.json()
-        assert data["samma_version"] == "0.1.1"
+        assert data["samma_version"] == "0.1.2"
         assert data["active_count"] == 2  # sutra + dharma
         assert data["total_layers"] == 8
         assert data["layers"]["sutra"]["active"] is True
@@ -125,4 +125,4 @@ class TestPackageImports:
 
     def test_version(self):
         from samma import __version__
-        assert __version__ == "0.1.1"
+        assert __version__ == "0.1.2"
