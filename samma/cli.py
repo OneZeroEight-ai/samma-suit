@@ -128,9 +128,8 @@ def cmd_scan(args: argparse.Namespace) -> int:
 
 def cmd_scan_clawhub(args: argparse.Namespace) -> int:
     slug = args.slug
-    # ClawHub packages are at https://clawhub.ai/{owner}/{name}
-    # ZIP download convention: https://clawhub.ai/{slug}/archive/main.zip
-    url = f"https://clawhub.ai/{slug}/archive/main.zip"
+    # ClawHub download API: /api/v1/download?slug=<slug>
+    url = f"https://clawhub.ai/api/v1/download?slug={slug}"
 
     if not args.json:
         print(f"\n{_b()}Fetching {slug} from ClawHub...{_r()}")

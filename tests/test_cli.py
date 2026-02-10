@@ -286,13 +286,13 @@ class TestCLIVersion:
     def test_version(self, capsys):
         ret = main(["version"])
         assert ret == 0
-        assert "0.1.0" in capsys.readouterr().out
+        assert "0.1.1" in capsys.readouterr().out
 
     def test_version_json(self, capsys):
         ret = main(["--json", "version"])
         assert ret == 0
         data = json.loads(capsys.readouterr().out)
-        assert data["version"] == "0.1.0"
+        assert data["version"] == "0.1.1"
 
 
 class TestCLIScan:
