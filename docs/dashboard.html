@@ -2888,9 +2888,8 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
 document.getElementById('login-switch').addEventListener('click', (e) => {
   e.preventDefault();
   clearSession();
-  document.getElementById('login-existing').style.display = 'none';
-  document.getElementById('login-email').value = '';
-  document.getElementById('login-email').focus();
+  // Hard reload ensures iPhone/PWA fully clears cached JS state
+  window.location.href = window.location.pathname;
 });
 
 // ── TOKEN VERIFY ON PAGE LOAD ──
@@ -2965,8 +2964,8 @@ document.getElementById('btn-logout').addEventListener('click', async () => {
     await api('POST', '/api/auth/logout');
   } catch (e) { /* ignore */ }
   clearSession();
-  showView('login');
-  toast('Signed out', 'success');
+  // Hard reload ensures iPhone/PWA fully clears cached JS state
+  window.location.href = window.location.pathname;
 });
 
 // ── CREATE AGENT BUTTON ──
