@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms of Service | Samma Suit</title>
+<meta name="description" content="Samma Suit terms of service — usage rules, billing, liability, and acceptable use.">
+<link rel="icon" type="image/x-icon" href="images/agents/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #06060E;
+  --bg2: #0C0C1A;
+  --card: #111126;
+  --card-border: #1E1E3A;
+  --purple: #7C3AED;
+  --purple-glow: rgba(124, 58, 237, 0.3);
+  --purple-dim: rgba(124, 58, 237, 0.08);
+  --cyan: #00D4FF;
+  --white: #F0EFF4;
+  --gray: #8888AA;
+  --gray-dim: #4D4D66;
+  --font-display: 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: var(--font-display);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 3px; }
+
+.grid-bg {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(124,58,237,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124,58,237,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 16px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(20px);
+  background: rgba(6,6,14,0.8);
+  border-bottom: 1px solid var(--card-border);
+}
+
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--white);
+}
+.nav-logo span { color: var(--purple); }
+.nav-logo a { color: inherit; text-decoration: none; }
+
+.nav-links { display: flex; gap: 32px; align-items: center; }
+.nav-links a {
+  color: var(--gray);
+  text-decoration: none;
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: color 0.3s;
+}
+.nav-links a:hover { color: var(--cyan); }
+
+.content {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 120px 24px 80px;
+  position: relative;
+  z-index: 1;
+}
+
+h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, var(--purple), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.effective {
+  font-size: 13px;
+  color: var(--gray);
+  margin-bottom: 40px;
+  font-family: var(--font-mono);
+}
+
+h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--white);
+  margin: 40px 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+p, li {
+  color: #C4C4D4;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+p { margin-bottom: 12px; }
+
+ul {
+  margin: 8px 0 16px 20px;
+}
+
+li {
+  margin-bottom: 6px;
+}
+
+a { color: var(--cyan); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+strong { color: var(--white); }
+
+code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  background: var(--card);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--cyan);
+}
+
+.footer {
+  margin-top: 60px;
+  padding-top: 24px;
+  border-top: 1px solid var(--card-border);
+  font-size: 13px;
+  color: var(--gray);
+}
+
+@media (max-width: 640px) {
+  nav { padding: 12px 16px; }
+  .nav-links { gap: 16px; }
+  .nav-links a { font-size: 11px; }
+  .content { padding: 100px 16px 60px; }
+  h1 { font-size: 1.5rem; }
+}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<nav>
+  <div class="nav-logo"><a href="index.html"><span>One</span>ZeroEight</a></div>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="getting-started.html">Docs</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="https://discord.gg/4A6ExTnKnK">Discord</a>
+  </div>
+</nav>
+
+<div class="content">
+  <h1>Terms of Service</h1>
+  <p class="effective">Effective: February 15, 2026</p>
+
+  <p>These terms govern your use of <strong>Samm&#x101; Suit</strong>, operated by <strong>OneZeroEight.ai</strong> ("we", "us"). By creating an account or using the service, you agree to these terms.</p>
+
+  <h2>The Service</h2>
+  <p>Samm&#x101; Suit is an AI agent security platform providing an 8-layer protection framework, agent management dashboard, and gateway API. The core SDK is open source. Managed hosting, marketplace access, and premium features are provided via paid subscriptions.</p>
+
+  <h2>Accounts</h2>
+  <ul>
+    <li>You must provide a valid email address to create an account.</li>
+    <li>You are responsible for keeping your API keys and credentials secure.</li>
+    <li>One account per person or organization. Don't share accounts.</li>
+  </ul>
+
+  <h2>BYOK (Bring Your Own Key)</h2>
+  <p>Samm&#x101; Suit operates on a BYOK model. When you provide your own LLM API key (e.g., Anthropic), <strong>you are responsible for all costs incurred on that key</strong>. We encrypt and store your key securely, but the billing relationship is between you and the API provider. We are not liable for charges on your API key.</p>
+  <p>If you use our credit system instead of BYOK, charges are billed through Stripe at the rates displayed in the dashboard.</p>
+
+  <h2>Billing &amp; Subscriptions</h2>
+  <ul>
+    <li>Subscriptions are billed monthly via <strong>Stripe</strong>.</li>
+    <li>You can cancel anytime through the <a href="dashboard.html">dashboard</a> billing portal. Cancellation takes effect at the end of the current billing period.</li>
+    <li>Refunds are handled on a case-by-case basis. Contact <a href="mailto:info@sammasuit.com">info@sammasuit.com</a>.</li>
+    <li>If a payment fails, we'll notify you by email. After 3 failed attempts, your account may be downgraded to the free tier.</li>
+  </ul>
+
+  <h2>Acceptable Use</h2>
+  <p>You agree not to:</p>
+  <ul>
+    <li>Use the platform to harm, harass, or defraud others.</li>
+    <li>Attempt to circumvent, disable, or bypass Samm&#x101; Suit's security layers (SUTRA, DHARMA, SANGHA, KARMA, SILA, METTA, BODHI, NIRVANA).</li>
+    <li>Use the gateway to send illegal content, malware, or spam through AI agents.</li>
+    <li>Reverse-engineer the managed infrastructure (the open-source SDK is fair game).</li>
+    <li>Exceed rate limits or abuse the API in ways that degrade service for others.</li>
+  </ul>
+
+  <h2>Termination</h2>
+  <p>We reserve the right to suspend or terminate accounts that violate these terms. We'll notify you by email before taking action unless there's an immediate security risk. You can delete your account at any time by emailing <a href="mailto:info@sammasuit.com">info@sammasuit.com</a>.</p>
+
+  <h2>Intellectual Property</h2>
+  <p>The Samm&#x101; Suit SDK is open source under its published license. The managed platform, branding, documentation, and proprietary features remain the property of OneZeroEight.ai. Your data and agent configurations belong to you.</p>
+
+  <h2>Limitation of Liability</h2>
+  <p>The service is provided <strong>"as is"</strong> without warranty of any kind. To the maximum extent permitted by law:</p>
+  <ul>
+    <li>We are not liable for any indirect, incidental, or consequential damages arising from your use of the service.</li>
+    <li>Our total liability is limited to the amount you paid us in the 12 months preceding the claim.</li>
+    <li>We are not responsible for costs incurred on your BYOK API keys, actions taken by your AI agents, or data loss due to circumstances beyond our control.</li>
+  </ul>
+
+  <h2>Changes</h2>
+  <p>We may update these terms as the product evolves. Material changes will be communicated via email at least 30 days before taking effect. Continued use of the service after changes constitutes acceptance.</p>
+
+  <div class="footer">
+    <p>Questions? Contact <a href="mailto:info@sammasuit.com">info@sammasuit.com</a></p>
+    <p style="margin-top:8px">&copy; 2026 OneZeroEight.ai &mdash; <a href="index.html">sammasuit.com</a> &middot; <a href="privacy.html">Privacy Policy</a></p>
+  </div>
+</div>
+
+</body>
+</html>
