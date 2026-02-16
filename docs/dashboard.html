@@ -1130,6 +1130,37 @@ select.audit-filter {
 .toast.error { border-left: 3px solid var(--red); }
 .toast .toast-icon { font-size: 16px; }
 
+/* ── PAYMENT BANNER ── */
+.payment-banner {
+  margin: 80px 40px 0;
+  padding: 16px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: fadeIn 0.4s ease-out;
+  position: relative;
+  z-index: 10;
+}
+.payment-banner.success {
+  background: rgba(5, 150, 105, 0.1);
+  border: 1px solid rgba(5, 150, 105, 0.3);
+  color: var(--green);
+}
+.payment-banner.cancelled {
+  background: rgba(136, 136, 170, 0.08);
+  border: 1px solid var(--card-border);
+  color: var(--gray);
+}
+.payment-banner .banner-icon { font-size: 18px; flex-shrink: 0; }
+.payment-banner .banner-text { flex: 1; }
+.payment-banner .banner-dismiss {
+  background: none; border: none; color: inherit; cursor: pointer;
+  font-size: 18px; opacity: 0.6; padding: 4px 8px; flex-shrink: 0;
+}
+.payment-banner .banner-dismiss:hover { opacity: 1; }
+
 /* ── EMPTY STATE ── */
 .empty-state {
   text-align: center;
@@ -1394,6 +1425,9 @@ html.light .grid-bg { opacity: 0.3; }
     <a href="https://discord.gg/4A6ExTnKnK">Discord</a>
   </div>
 </nav>
+
+<!-- PAYMENT BANNER (injected by JS) -->
+<div id="payment-banner-slot"></div>
 
 <!-- LOGIN VIEW -->
 <div id="login-view" class="login-container">
@@ -1806,6 +1840,7 @@ async function loadDashboard() {
     }
     renderDashboard();
     loadBillingStatus();
+    showPaymentBanner();
 
     // Auto-refresh overview every 30s
     if (refreshInterval) clearInterval(refreshInterval);
@@ -2930,14 +2965,14 @@ async function checkToken() {
     }
   }
 
-  // Handle Stripe checkout success redirect
-  const checkoutStatus = params.get('checkout');
-  if (checkoutStatus === 'success') {
+  // Handle Stripe payment redirect
+  const paymentStatus = params.get('payment') || params.get('checkout') || params.get('credits');
+  if (paymentStatus) {
     window.history.replaceState({}, '', window.location.pathname);
-    if (state.token) {
-      showView('dashboard');
-      toast('Payment successful! Your plan has been upgraded.', 'success');
-      return;
+    if (paymentStatus === 'success') {
+      state._paymentSuccess = true;
+    } else if (paymentStatus === 'cancelled') {
+      state._paymentCancelled = true;
     }
   }
 
@@ -2972,6 +3007,34 @@ document.getElementById('btn-logout').addEventListener('click', async () => {
 document.getElementById('btn-create-agent').addEventListener('click', () => {
   openModal('modal-create');
 });
+
+// ── PAYMENT BANNER ──
+function showPaymentBanner() {
+  const slot = document.getElementById('payment-banner-slot');
+  if (!slot) return;
+  slot.innerHTML = '';
+
+  if (state._paymentSuccess) {
+    delete state._paymentSuccess;
+    slot.innerHTML = `
+      <div class="payment-banner success">
+        <span class="banner-icon">\u2713</span>
+        <span class="banner-text">
+          <strong>Payment successful!</strong> Your plan is now active.
+          Your API key is visible in the <a href="#" onclick="switchTab('billing');this.closest('.payment-banner').remove();return false" style="color:var(--cyan);text-decoration:underline">Billing</a> tab.
+        </span>
+        <button class="banner-dismiss" onclick="this.parentElement.remove()">&times;</button>
+      </div>`;
+  } else if (state._paymentCancelled) {
+    delete state._paymentCancelled;
+    slot.innerHTML = `
+      <div class="payment-banner cancelled">
+        <span class="banner-icon">\u2192</span>
+        <span class="banner-text">Payment was cancelled. You can upgrade anytime from the <a href="#" onclick="switchTab('billing');this.closest('.payment-banner').remove();return false" style="color:var(--cyan);text-decoration:underline">Billing</a> tab.</span>
+        <button class="banner-dismiss" onclick="this.parentElement.remove()">&times;</button>
+      </div>`;
+  }
+}
 
 // ── TOAST ──
 function toast(message, type = 'success') {
