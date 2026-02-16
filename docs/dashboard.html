@@ -1828,17 +1828,45 @@ function showView(view) {
     if (window.Clerk && !window.Clerk.user) {
       const el = document.getElementById('clerk-sign-in');
       if (el && !el.hasChildNodes()) {
+        // Clerk rejects file:// URLs — show warning for local filesystem
+        if (window.location.protocol === 'file:') {
+          el.innerHTML = `
+            <div style="padding:16px;background:rgba(234,88,12,0.1);border:1px solid var(--orange);border-radius:8px;text-align:center;font-size:13px;color:var(--orange);">
+              <strong>Local file detected</strong><br>
+              Open via <a href="https://sammasuit.com/dashboard.html" style="color:var(--cyan);text-decoration:underline">sammasuit.com/dashboard.html</a>
+              or run a local server to use Clerk sign-in.
+            </div>`;
+          return;
+        }
+        const dashUrl = window.location.origin + window.location.pathname;
         window.Clerk.mountSignIn(el, {
-          afterSignInUrl: window.location.href,
-          afterSignUpUrl: window.location.href,
+          afterSignInUrl: dashUrl,
+          afterSignUpUrl: dashUrl,
+          redirectUrl: dashUrl,
           appearance: {
             variables: {
-              colorPrimary: '#7C3AED',
-              colorBackground: '#0a0a1a',
+              colorPrimary: '#8B5CF6',
+              colorBackground: '#0d1117',
               colorText: '#e2e8f0',
+              colorTextSecondary: '#94a3b8',
               colorInputBackground: '#1a1a2e',
               colorInputText: '#e2e8f0',
-              borderRadius: '0.5rem'
+              borderRadius: '0.75rem',
+              colorDanger: '#ef4444'
+            },
+            elements: {
+              formButtonPrimary: 'bg-[#8B5CF6] hover:bg-[#7c3aed]',
+              card: 'bg-transparent shadow-none',
+              headerTitle: 'text-white',
+              headerSubtitle: 'text-gray-400',
+              socialButtonsBlockButton: 'border-gray-700 text-gray-300',
+              formFieldLabel: 'text-gray-400',
+              formFieldInput: 'bg-[#1a1a2e] border-gray-700 text-white',
+              footerActionLink: 'text-[#8B5CF6]',
+              dividerLine: 'bg-gray-700',
+              dividerText: 'text-gray-500',
+              footer: 'hidden',
+              footerAction: 'hidden'
             }
           }
         });
@@ -3469,7 +3497,19 @@ document.addEventListener('click', (e) => {
     document.getElementById('audit-export-dropdown')?.classList.remove('open');
   }
 });
-checkToken();
+// Wait for Clerk SDK to load before checking auth
+// The Clerk script tag has `async` so it may not be ready yet
+function waitForClerk(maxWait = 5000) {
+  return new Promise((resolve) => {
+    if (window.Clerk) return resolve(true);
+    const start = Date.now();
+    const interval = setInterval(() => {
+      if (window.Clerk) { clearInterval(interval); resolve(true); }
+      else if (Date.now() - start > maxWait) { clearInterval(interval); resolve(false); }
+    }, 100);
+  });
+}
+waitForClerk().then(() => checkToken());
 </script>
 
 </body>
