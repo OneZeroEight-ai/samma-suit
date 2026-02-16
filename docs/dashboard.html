@@ -2346,9 +2346,9 @@ async function upgradePlan(tier) {
 
 async function openBillingPortal() {
   try {
-    const res = await api('GET', '/api/billing/portal');
-    if (res.portal_url) {
-      window.open(res.portal_url, '_blank');
+    const res = await api('POST', '/api/billing/portal');
+    if (res.url) {
+      window.location.href = res.url;
     }
   } catch (e) {
     toast('Failed to open billing portal: ' + e.message, 'error');
