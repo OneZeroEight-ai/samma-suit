@@ -11,6 +11,13 @@
 <meta name="description" content="Samma Suit Dashboard — Manage your AI agents, monitor costs, and review audit logs.">
 <link rel="icon" type="image/x-icon" href="images/agents/favicon.ico">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+<script
+  async
+  crossorigin="anonymous"
+  data-clerk-publishable-key="pk_test_bG9naWNhbC10aWdlci02My5jbGVyay5hY2NvdW50cy5kZXYk"
+  src="https://logical-tiger-63.clerk.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+  type="text/javascript"
+></script>
 <style>
 :root {
   --bg: #06060E;
@@ -1435,16 +1442,7 @@ html.light .grid-bg { opacity: 0.3; }
     <img src="images/agents/pulse_avatar.png" alt="Samma Suit" class="login-avatar">
     <h2>Welcome Back</h2>
     <p>Sign in to your Samma Suit dashboard</p>
-    <div id="login-existing" style="display:none;margin-bottom:16px;padding:12px 16px;background:rgba(124,58,237,0.08);border:1px solid var(--card-border);border-radius:8px;font-size:13px;text-align:center">
-      <span style="color:var(--gray)">Logged in as</span>
-      <strong id="login-existing-email" style="color:var(--cyan);margin:0 4px"></strong>
-      <a href="#" id="login-switch" style="color:var(--purple);text-decoration:underline;margin-left:8px">Switch Account</a>
-    </div>
-    <form id="login-form">
-      <input type="email" class="login-input" id="login-email" placeholder="you@example.com" required autocomplete="email">
-      <button type="submit" class="btn btn-primary" id="login-btn">Send Magic Link</button>
-    </form>
-    <div class="login-success" id="login-success">Check your email for a magic link to sign in.</div>
+    <div id="clerk-sign-in"></div>
     <div class="login-error" id="login-error"></div>
   </div>
 </div>
@@ -1463,6 +1461,7 @@ html.light .grid-bg { opacity: 0.3; }
     <div class="dash-actions">
       <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle theme">☀</button>
       <button class="btn btn-ghost btn-sm" id="btn-billing">Manage Billing</button>
+      <div id="clerk-user-button" style="display:inline-flex;align-items:center"></div>
       <button class="btn btn-ghost btn-sm" id="btn-logout">Logout</button>
     </div>
   </div>
@@ -1754,6 +1753,7 @@ const DEMO_MODE = localStorage.getItem('samma_demo') === 'true';
 // ── STATE ──
 const state = {
   token: localStorage.getItem('samma_token') || sessionStorage.getItem('samma_token') || null,
+  clerkReady: false,
   customer: null,
   overview: null,
   agents: null,
@@ -1776,9 +1776,22 @@ async function api(method, path, body) {
   if (DEMO_MODE) {
     opts.headers['X-Samma-Demo'] = 'true';
   }
-  if (state.token) {
+
+  // Prefer Clerk JWT for browser auth, fall back to stored token (API key or legacy session)
+  if (window.Clerk && window.Clerk.session) {
+    try {
+      const clerkToken = await window.Clerk.session.getToken();
+      if (clerkToken) {
+        opts.headers['Authorization'] = `Bearer ${clerkToken}`;
+      }
+    } catch (e) {
+      // Clerk token refresh failed — fall through to stored token
+    }
+  }
+  if (!opts.headers['Authorization'] && state.token) {
     opts.headers['Authorization'] = `Bearer ${state.token}`;
   }
+
   if (body) {
     opts.body = JSON.stringify(body);
   }
@@ -1788,6 +1801,10 @@ async function api(method, path, body) {
     state.token = null;
     localStorage.removeItem('samma_token');
     sessionStorage.removeItem('samma_token');
+    // If Clerk is loaded, sign out and remount sign-in
+    if (window.Clerk && window.Clerk.user) {
+      await window.Clerk.signOut();
+    }
     showView('login');
     toast('Session expired. Please sign in again.', 'error');
     throw new Error('Unauthorized');
@@ -1807,18 +1824,39 @@ function showView(view) {
     loginView.style.display = 'flex';
     dashView.style.display = 'none';
     if (refreshInterval) { clearInterval(refreshInterval); refreshInterval = null; }
-    // Show "logged in as" note if a session/email exists
-    const existingEl = document.getElementById('login-existing');
-    const existingEmail = state.customer?.email || localStorage.getItem('samma_email') || '';
-    if (existingEmail && state.token) {
-      document.getElementById('login-existing-email').textContent = existingEmail;
-      existingEl.style.display = 'block';
-    } else {
-      existingEl.style.display = 'none';
+    // Mount Clerk sign-in if Clerk is loaded
+    if (window.Clerk && !window.Clerk.user) {
+      const el = document.getElementById('clerk-sign-in');
+      if (el && !el.hasChildNodes()) {
+        window.Clerk.mountSignIn(el, {
+          afterSignInUrl: window.location.href,
+          afterSignUpUrl: window.location.href,
+          appearance: {
+            variables: {
+              colorPrimary: '#7C3AED',
+              colorBackground: '#0a0a1a',
+              colorText: '#e2e8f0',
+              colorInputBackground: '#1a1a2e',
+              colorInputText: '#e2e8f0',
+              borderRadius: '0.5rem'
+            }
+          }
+        });
+      }
     }
   } else {
     loginView.style.display = 'none';
     dashView.style.display = 'block';
+    // Mount Clerk UserButton in the nav
+    if (window.Clerk && window.Clerk.user) {
+      const userBtnEl = document.getElementById('clerk-user-button');
+      if (userBtnEl && !userBtnEl.hasChildNodes()) {
+        window.Clerk.mountUserButton(userBtnEl);
+      }
+      // Hide the legacy logout button when Clerk is active
+      const logoutBtn = document.getElementById('btn-logout');
+      if (logoutBtn) logoutBtn.style.display = 'none';
+    }
     loadDashboard();
   }
 }
@@ -2879,55 +2917,17 @@ function clearSession() {
   localStorage.removeItem('samma_demo');
   sessionStorage.removeItem('samma_token');
   sessionStorage.removeItem('samma_email');
+  // Unmount Clerk components
+  const signInEl = document.getElementById('clerk-sign-in');
+  if (signInEl) signInEl.innerHTML = '';
+  const userBtnEl = document.getElementById('clerk-user-button');
+  if (userBtnEl) userBtnEl.innerHTML = '';
 }
 
-document.getElementById('login-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const email = document.getElementById('login-email').value.trim();
-  if (!email) return;
+// Magic link form removed — Clerk handles sign-in now.
+// The Clerk sign-in component is mounted in showView('login').
 
-  // Clear any existing session before requesting a new magic link
-  clearSession();
-  document.getElementById('login-existing').style.display = 'none';
-
-  const btn = document.getElementById('login-btn');
-  const successEl = document.getElementById('login-success');
-  const errorEl = document.getElementById('login-error');
-  btn.disabled = true;
-  btn.textContent = 'Sending...';
-  successEl.style.display = 'none';
-  errorEl.style.display = 'none';
-
-  try {
-    const res = await api('POST', '/api/auth/magic-link', { email });
-    if (res.token) {
-      // Local dev bypass — logged in directly
-      state.token = res.token;
-      localStorage.setItem('samma_token', res.token);
-      localStorage.setItem('samma_email', email);
-      sessionStorage.setItem('samma_token', res.token);
-      showView('dashboard');
-    } else {
-      successEl.style.display = 'block';
-    }
-  } catch (err) {
-    errorEl.textContent = err.message;
-    errorEl.style.display = 'block';
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Send Magic Link';
-  }
-});
-
-// ── SWITCH ACCOUNT ──
-document.getElementById('login-switch').addEventListener('click', (e) => {
-  e.preventDefault();
-  clearSession();
-  // Hard reload ensures iPhone/PWA fully clears cached JS state
-  window.location.href = window.location.pathname;
-});
-
-// ── TOKEN VERIFY ON PAGE LOAD ──
+// ── AUTH CHECK ON PAGE LOAD ──
 async function checkToken() {
   // Demo mode — skip login entirely
   if (DEMO_MODE) {
@@ -2936,33 +2936,16 @@ async function checkToken() {
   }
 
   const params = new URLSearchParams(window.location.search);
+
+  // API key bypass via URL (e.g. ?token=samma_xxx)
   const urlToken = params.get('token');
-
-  if (urlToken) {
-    // API key bypass — if the token is a Samma API key, store directly
-    // (magic link tokens must go through /api/auth/verify first)
-    if (urlToken.startsWith('samma_')) {
-      state.token = urlToken;
-      localStorage.setItem('samma_token', urlToken);
-      sessionStorage.setItem('samma_token', urlToken);
-      window.history.replaceState({}, '', window.location.pathname);
-      showView('dashboard');
-      return;
-    }
-
-    // Otherwise treat as magic link token — verify with backend
-    try {
-      const res = await api('POST', '/api/auth/verify', { token: urlToken });
-      state.token = res.token;
-      localStorage.setItem('samma_token', res.token);
-      sessionStorage.setItem('samma_token', res.token);
-      // Clean URL
-      window.history.replaceState({}, '', window.location.pathname);
-      showView('dashboard');
-      return;
-    } catch (e) {
-      toast('Invalid or expired magic link', 'error');
-    }
+  if (urlToken && urlToken.startsWith('samma_')) {
+    state.token = urlToken;
+    localStorage.setItem('samma_token', urlToken);
+    sessionStorage.setItem('samma_token', urlToken);
+    window.history.replaceState({}, '', window.location.pathname);
+    showView('dashboard');
+    return;
   }
 
   // Handle Stripe payment redirect
@@ -2976,15 +2959,45 @@ async function checkToken() {
     }
   }
 
+  // Wait for Clerk to load
+  try {
+    await window.Clerk.load();
+    state.clerkReady = true;
+  } catch (e) {
+    console.warn('[Auth] Clerk failed to load, falling back to stored token:', e);
+    // Clerk failed — fall through to legacy token check
+  }
+
+  // If Clerk is loaded and user is signed in, go to dashboard
+  if (state.clerkReady && window.Clerk.user) {
+    showView('dashboard');
+    return;
+  }
+
+  // Fall back to stored samma_ API key or legacy session token
   if (state.token) {
     try {
       await api('GET', '/api/auth/me');
       showView('dashboard');
+      return;
     } catch (e) {
-      showView('login');
+      // Stored token invalid — clear and show login
+      state.token = null;
+      localStorage.removeItem('samma_token');
+      sessionStorage.removeItem('samma_token');
     }
-  } else {
-    showView('login');
+  }
+
+  // No valid auth — show Clerk sign-in
+  showView('login');
+
+  // Listen for Clerk sign-in events to auto-redirect to dashboard
+  if (state.clerkReady) {
+    window.Clerk.addListener(({ user }) => {
+      if (user) {
+        showView('dashboard');
+      }
+    });
   }
 }
 
@@ -2998,6 +3011,10 @@ document.getElementById('btn-logout').addEventListener('click', async () => {
   try {
     await api('POST', '/api/auth/logout');
   } catch (e) { /* ignore */ }
+  // Sign out of Clerk if active
+  if (window.Clerk && window.Clerk.user) {
+    await window.Clerk.signOut();
+  }
   clearSession();
   // Hard reload ensures iPhone/PWA fully clears cached JS state
   window.location.href = window.location.pathname;
