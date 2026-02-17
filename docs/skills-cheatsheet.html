@@ -36,102 +36,86 @@
   }
 
   .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #8B5CF6;
-    position: relative;
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px; padding-bottom: 10px;
+    border-bottom: 2px solid #8B5CF6; position: relative;
   }
-
   .header-left { display: flex; align-items: center; gap: 14px; }
-
   .logo-icon {
     width: 42px; height: 42px;
     background: linear-gradient(135deg, #8B5CF6, #6D28D9);
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px;
-    box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    font-size: 22px; box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
   }
-
-  .header-title {
-    font-family: 'Outfit', sans-serif;
-    font-size: 22px; font-weight: 900; color: #F1F5F9; letter-spacing: -0.5px;
-  }
+  .header-title { font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 900; color: #F1F5F9; letter-spacing: -0.5px; }
   .header-title span { color: #8B5CF6; }
   .header-sub { font-size: 9.5px; color: #64748B; margin-top: 2px; }
-
   .header-right { text-align: right; color: #64748B; font-size: 9px; line-height: 1.6; }
   .header-right a { color: #8B5CF6; text-decoration: none; }
 
   .grid {
     display: grid;
-    grid-template-columns: 1.4fr 0.8fr 0.8fr 0.8fr 0.8fr;
-    gap: 12px;
-    position: relative;
+    grid-template-columns: 1.3fr 0.75fr 0.75fr 0.75fr 0.75fr 0.75fr;
+    gap: 11px; position: relative;
   }
 
   .section {
     background: rgba(15, 23, 42, 0.6);
     border: 1px solid rgba(139, 92, 246, 0.12);
-    border-radius: 10px;
-    padding: 10px;
+    border-radius: 10px; padding: 10px;
+  }
+  .section-coming {
+    background: rgba(15, 23, 42, 0.35);
+    border: 1px dashed rgba(139, 92, 246, 0.2);
+    border-radius: 10px; padding: 10px;
+    position: relative;
+  }
+  .coming-badge {
+    position: absolute; top: 8px; right: 8px;
+    font-family: 'Outfit', sans-serif; font-size: 7px; font-weight: 700;
+    color: #FACC15; background: rgba(250,204,21,0.12);
+    border: 1px solid rgba(250,204,21,0.25);
+    padding: 2px 6px; border-radius: 3px;
+    text-transform: uppercase; letter-spacing: 1px;
   }
 
   .section-title {
-    font-family: 'Outfit', sans-serif;
-    font-size: 11px; font-weight: 700; color: #E2E8F0;
-    margin-bottom: 3px;
-    display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
+    font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 700; color: #E2E8F0;
+    margin-bottom: 3px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
   }
   .section-title .icon { font-size: 13px; }
-
-  .section-subtitle {
-    font-size: 7.5px; color: #64748B; margin-bottom: 7px; font-style: italic;
-  }
+  .section-subtitle { font-size: 7.5px; color: #64748B; margin-bottom: 7px; font-style: italic; }
 
   .badge {
     display: inline-block; font-size: 7px; font-weight: 600;
-    padding: 1px 4px; border-radius: 3px;
-    text-transform: uppercase; letter-spacing: 0.5px;
+    padding: 1px 4px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.5px;
   }
   .badge-utility { background: rgba(56,189,248,0.15); color: #38BDF8; border: 1px solid rgba(56,189,248,0.25); }
   .badge-security { background: rgba(139,92,246,0.15); color: #A78BFA; border: 1px solid rgba(139,92,246,0.25); }
   .badge-orch { background: rgba(52,211,153,0.15); color: #34D399; border: 1px solid rgba(52,211,153,0.25); }
   .badge-prod { background: rgba(251,146,60,0.15); color: #FB923C; border: 1px solid rgba(251,146,60,0.25); }
   .badge-obs { background: rgba(236,72,153,0.15); color: #F472B6; border: 1px solid rgba(236,72,153,0.25); }
+  .badge-int { background: rgba(250,204,21,0.15); color: #FACC15; border: 1px solid rgba(250,204,21,0.25); }
   .badge-sangha { background: rgba(34,197,94,0.12); color: #4ADE80; border: 1px solid rgba(34,197,94,0.2); font-size: 6.5px; }
 
-  .badge-layer {
-    font-size: 6.5px; display: inline-block;
-    padding: 1px 3px; border-radius: 3px; font-weight: 600;
-  }
+  .badge-layer { font-size: 6.5px; display: inline-block; padding: 1px 3px; border-radius: 3px; font-weight: 600; }
   .layer-sila { background: rgba(139,92,246,0.12); color: #A78BFA; border: 1px solid rgba(139,92,246,0.2); }
   .layer-karma { background: rgba(250,204,21,0.12); color: #FACC15; border: 1px solid rgba(250,204,21,0.2); }
   .layer-bodhi { background: rgba(239,68,68,0.12); color: #F87171; border: 1px solid rgba(239,68,68,0.2); }
   .layer-net { background: rgba(251,146,60,0.12); color: #FB923C; border: 1px solid rgba(251,146,60,0.2); }
 
-  .skill {
-    padding: 5px 0;
-    border-bottom: 1px solid rgba(139, 92, 246, 0.05);
-  }
+  .skill { padding: 5px 0; border-bottom: 1px solid rgba(139, 92, 246, 0.05); }
   .skill:last-child { border-bottom: none; }
-
   .skill-name { font-weight: 700; color: #F1F5F9; font-size: 9.5px; }
   .skill-slug { color: #475569; font-size: 7px; margin-left: 3px; }
   .skill-desc { color: #94A3B8; font-size: 8px; margin: 1px 0 3px; }
-
   .skill-functions { display: flex; flex-wrap: wrap; gap: 2px; }
-  .func {
-    font-size: 7px; color: #8B5CF6;
-    background: rgba(139,92,246,0.08);
-    padding: 1px 4px; border-radius: 2px;
-    border: 1px solid rgba(139,92,246,0.12);
-  }
-
+  .func { font-size: 7px; color: #8B5CF6; background: rgba(139,92,246,0.08); padding: 1px 4px; border-radius: 2px; border: 1px solid rgba(139,92,246,0.12); }
   .skill-tags { display: flex; gap: 3px; margin-top: 2px; align-items: center; }
+
+  .skill-coming .skill-name { color: #94A3B8; }
+  .skill-coming .skill-desc { color: #64748B; }
+  .skill-coming .func { color: #64748B; background: rgba(100,116,139,0.08); border-color: rgba(100,116,139,0.12); }
 
   .footer {
     margin-top: 14px; padding-top: 10px;
@@ -140,7 +124,6 @@
     color: #475569; font-size: 8px;
   }
   .footer a { color: #8B5CF6; text-decoration: none; }
-
   .stat-bar { display: flex; gap: 12px; }
   .stat { display: flex; align-items: center; gap: 3px; }
   .stat-num { font-weight: 700; color: #8B5CF6; font-size: 13px; font-family: 'Outfit', sans-serif; }
@@ -155,11 +138,10 @@
       <div class="logo-icon">🛡️</div>
       <div>
         <div class="header-title">Sammā Suit <span>Skills</span> Cheatsheet</div>
-        <div class="header-sub">28 first-party skills · 5 tiers · SANGHA-approved · open source · stdlib-only</div>
+        <div class="header-sub">28 skills live · 4 more building · 6 tiers · SANGHA-approved · open source · stdlib-only</div>
       </div>
     </div>
     <div class="header-right">
-      <a href="index.html">Home</a> · <a href="getting-started.html">Docs</a> · <a href="dashboard.html">Dashboard</a><br>
       <a href="https://sammasuit.com">sammasuit.com</a> · <a href="https://github.com/OneZeroEight-ai/samma-suit">GitHub</a><br>
       GET /api/marketplace/skills<br>
       v0.1 · February 2026
@@ -336,7 +318,7 @@
       </div>
       <div class="skill">
         <div class="skill-name">Eval Harness <span class="skill-slug">eval-harness</span></div>
-        <div class="skill-desc">Test suites with 10 rubric types, TF-IDF similarity, grading</div>
+        <div class="skill-desc">Test suites, 10 rubric types, TF-IDF similarity, grading</div>
         <div class="skill-functions"><span class="func">run_suite(tests)</span> <span class="func">evaluate(output, expected)</span></div>
       </div>
       <div class="skill">
@@ -351,16 +333,48 @@
       </div>
     </div>
 
+    <!-- TIER 6 — COMING SOON -->
+    <div class="section-coming">
+      <div class="coming-badge">Building</div>
+      <div class="section-title"><span class="icon">🔌</span> Tier 6 — Integration <span class="badge badge-int">4</span></div>
+      <div class="section-subtitle">Governed communication with the outside world</div>
+
+      <div class="skill skill-coming">
+        <div class="skill-name">Email Sender <span class="skill-slug">email-sender</span></div>
+        <div class="skill-desc">SMTP sending, templates, attachments, rate limits, dry-run</div>
+        <div class="skill-functions"><span class="func">compose(to, subj, body)</span> <span class="func">send(email, config)</span></div>
+        <div class="skill-tags"><span class="badge-layer layer-net">NETWORK</span></div>
+      </div>
+      <div class="skill skill-coming">
+        <div class="skill-name">Webhook Manager <span class="skill-slug">webhook-manager</span></div>
+        <div class="skill-desc">Register, verify signatures (HMAC), parse, dispatch, replay protection</div>
+        <div class="skill-functions"><span class="func">verify(payload, sig)</span> <span class="func">dispatch(hooks, path)</span></div>
+      </div>
+      <div class="skill skill-coming">
+        <div class="skill-name">Scheduler <span class="skill-slug">scheduler</span></div>
+        <div class="skill-desc">Cron-style scheduling, budget-aware execution, dry-run timeline</div>
+        <div class="skill-functions"><span class="func">create_task(name, cron)</span> <span class="func">evaluate(tasks, now)</span></div>
+        <div class="skill-tags"><span class="badge-layer layer-karma">KARMA</span></div>
+      </div>
+      <div class="skill skill-coming">
+        <div class="skill-name">API Connector <span class="skill-slug">api-connector</span></div>
+        <div class="skill-desc">REST client builder, auth presets, egress allowlist, dry-run</div>
+        <div class="skill-functions"><span class="func">build_request(method, url)</span> <span class="func">check_egress(url, allow)</span></div>
+        <div class="skill-tags"><span class="badge-layer layer-bodhi">BODHI</span> <span class="badge-layer layer-net">NETWORK</span></div>
+      </div>
+    </div>
+
   </div>
 
   <div class="footer">
     <div>
-      All 28 skills: pure Python · stdlib-only (PDF/DOCX optional) · SANGHA AST-scanned · first-party vetted<br>
+      28 skills live + 4 building · pure Python · stdlib-only (PDF/DOCX optional) · SANGHA AST-scanned · first-party vetted<br>
       <a href="https://sammasuit.com">sammasuit.com</a> · <a href="https://sammasuit.com/cheatsheet.html">Mega Cheatsheet</a> · <a href="https://github.com/OneZeroEight-ai/samma-suit">GitHub</a> · <a href="https://discord.gg/4A6ExTnKnK">Discord</a>
     </div>
     <div class="stat-bar">
-      <div class="stat"><span class="stat-num">28</span><span class="stat-label">skills</span></div>
-      <div class="stat"><span class="stat-num">5</span><span class="stat-label">tiers</span></div>
+      <div class="stat"><span class="stat-num">28</span><span class="stat-label">live</span></div>
+      <div class="stat"><span class="stat-num">+4</span><span class="stat-label">building</span></div>
+      <div class="stat"><span class="stat-num">6</span><span class="stat-label">tiers</span></div>
       <div class="stat"><span class="stat-num">8</span><span class="stat-label">layers</span></div>
     </div>
   </div>
