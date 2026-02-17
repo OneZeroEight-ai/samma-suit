@@ -216,7 +216,7 @@ nav {
   padding: 14px 20px; background: var(--bg);
   border-bottom: 1px solid var(--card-border); min-height: 54px; gap: 10px;
 }
-.chat-header h3 { font-size: 16px; font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chat-header h3 { font-size: 16px; font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: 0; }
 .chat-header .chat-close {
   background: none; border: none; color: var(--gray); cursor: pointer;
   font-size: 22px; min-width: 44px; min-height: 44px;
@@ -424,6 +424,7 @@ nav {
 }
 
 .login-input::placeholder { color: var(--gray-dim); }
+select.login-input { appearance: auto; cursor: pointer; }
 
 .login-card .btn { width: 100%; justify-content: center; }
 
@@ -1645,8 +1646,17 @@ html.light .grid-bg { opacity: 0.3; }
     <form id="create-agent-form">
       <input type="text" class="login-input" id="agent-name" placeholder="Agent name" required>
       <textarea class="login-input" id="agent-system-prompt" placeholder="Tell this agent how to behave, what tone to use, and what rules to follow." rows="3" style="resize:vertical;font-family:var(--font-mono);font-size:13px;line-height:1.5"></textarea>
+      <div style="display:flex;gap:8px">
+        <select class="login-input" id="agent-provider" style="flex:1" onchange="onCreateProviderChange()">
+          <option value="anthropic">Anthropic</option>
+          <option value="openai">OpenAI</option>
+          <option value="google">Google</option>
+        </select>
+        <select class="login-input" id="agent-model" style="flex:1"></select>
+      </div>
       <input type="number" class="login-input" id="agent-budget" placeholder="Monthly budget (USD)" step="0.01" min="0">
-      <input type="password" class="login-input" id="agent-llm-key" placeholder="Anthropic API key (optional — BYOK)" autocomplete="off">
+      <input type="password" class="login-input" id="agent-llm-key" placeholder="sk-ant-api03-... (optional — BYOK)" autocomplete="off">
+      <span id="agent-key-error" style="font-size:11px;color:var(--red);display:none"></span>
       <div class="modal-actions">
         <button type="button" class="btn btn-ghost btn-sm" onclick="closeModal('modal-create')">Cancel</button>
         <button type="submit" class="btn btn-primary btn-sm">Create Agent</button>
@@ -1690,7 +1700,10 @@ html.light .grid-bg { opacity: 0.3; }
 <div class="chat-sidebar" id="chat-sidebar">
   <div class="chat-header">
     <button class="chat-close" onclick="closeChat()" title="Back" style="display:none" id="chat-back-btn">&#8592;</button>
-    <h3 id="chat-agent-name">Agent</h3>
+    <div style="flex:1;min-width:0;overflow:hidden">
+      <h3 id="chat-agent-name" style="margin:0;font-size:16px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Agent</h3>
+      <div id="chat-agent-model" style="font-size:11px;color:var(--gray);display:flex;align-items:center;gap:5px;margin-top:2px"></div>
+    </div>
     <button class="chat-close" onclick="closeChat()" title="Close">&times;</button>
   </div>
   <div class="chat-new-convo" onclick="startNewConversation()">+ New Conversation</div>
@@ -1760,6 +1773,63 @@ const state = {
   agents: null,
   selectedAgent: null
 };
+
+// ── MULTI-PROVIDER CONSTANTS ──
+const MODEL_DISPLAY_NAMES = {
+  "claude-sonnet-4-5-20250929": "Claude Sonnet 4.5",
+  "claude-haiku-4-5-20251001": "Claude Haiku 4.5",
+  "gpt-4o": "GPT-4o",
+  "gpt-4o-mini": "GPT-4o Mini",
+  "gpt-4.1": "GPT-4.1",
+  "gpt-4.1-mini": "GPT-4.1 Mini",
+  "gemini-2.0-flash": "Gemini 2.0 Flash",
+  "gemini-2.5-pro": "Gemini 2.5 Pro",
+};
+
+const PROVIDER_COLORS = {
+  "anthropic": "#7C3AED",
+  "openai": "#10A37F",
+  "google": "#4285F4",
+};
+
+const PROVIDER_DISPLAY = {
+  "anthropic": "Anthropic",
+  "openai": "OpenAI",
+  "google": "Google",
+};
+
+const PROVIDER_MODELS = {
+  "anthropic": ["claude-sonnet-4-5-20250929", "claude-haiku-4-5-20251001"],
+  "openai": ["gpt-4o", "gpt-4o-mini", "gpt-4.1", "gpt-4.1-mini"],
+  "google": ["gemini-2.0-flash", "gemini-2.5-pro"],
+};
+
+const PROVIDER_KEY_PREFIXES = {
+  "anthropic": { prefix: "sk-ant-", placeholder: "sk-ant-api03-..." },
+  "openai": { prefix: "sk-", placeholder: "sk-proj-..." },
+  "google": { prefix: "AI", placeholder: "AIza..." },
+};
+
+function getModelDisplay(model) {
+  return MODEL_DISPLAY_NAMES[model] || model || '—';
+}
+
+function getProviderFromModel(model) {
+  if (!model) return 'anthropic';
+  for (const [prov, models] of Object.entries(PROVIDER_MODELS)) {
+    if (models.includes(model)) return prov;
+  }
+  return 'anthropic';
+}
+
+function validateKeyPrefix(key, provider) {
+  if (!key || !provider) return true;
+  const info = PROVIDER_KEY_PREFIXES[provider];
+  if (!info) return true;
+  // OpenAI prefix "sk-" collides with Anthropic "sk-ant-"
+  if (provider === 'openai') return key.startsWith('sk-') && !key.startsWith('sk-ant-');
+  return key.startsWith(info.prefix);
+}
 
 // ── API BASE ──
 const API_BASE = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
@@ -2061,11 +2131,18 @@ function renderAgents() {
     const created = a.created_at ? new Date(a.created_at).toLocaleDateString() : '—';
     const pubKey = a.metta_public_key || a.public_key || '';
     const truncKey = pubKey ? (pubKey.length > 24 ? pubKey.slice(0, 10) + '\u2026' + pubKey.slice(-6) : pubKey) : 'No key assigned';
+    const agentProv = a.provider || 'anthropic';
+    const provColor = PROVIDER_COLORS[agentProv] || PROVIDER_COLORS.anthropic;
+    const modelName = getModelDisplay(a.model || (PROVIDER_MODELS[agentProv] || [])[0]);
 
     html += `<div class="agent-card glow-${status}" id="agent-card-${a.id}" style="animation-delay:${i * 0.08}s" onclick="selectAgent('${a.id}');openAgentDetail('${a.id}')">
         <div class="agent-card-header">
           <div class="agent-card-name">${esc(a.name)}</div>
           <div class="agent-card-status"><span class="status-dot ${status}"></span><span class="status-badge ${status}">${status}</span></div>
+        </div>
+        <div style="font-size:12px;color:var(--gray);margin-bottom:4px;display:flex;align-items:center;gap:6px">
+          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${provColor}"></span>
+          <span>${esc(modelName)}</span>
         </div>
         <div class="agent-card-meta">
           <div class="agent-card-stat"><div class="stat-label">Calls</div><div class="stat-value">${(a.total_calls || 0).toLocaleString()}</div></div>
@@ -2502,6 +2579,14 @@ async function openAgentDetail(agentId) {
         <button class="btn btn-primary" style="padding:6px 16px;font-size:12px;margin-top:8px;display:none" id="btn-save-prompt" onclick="savePrompt('${a.id}')">Save</button>
       </div>
       <div class="detail-row">
+        <span class="detail-label">Provider / Model</span>
+        <span class="detail-value" style="display:flex;align-items:center;gap:8px">
+          <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${PROVIDER_COLORS[a.provider || 'anthropic'] || PROVIDER_COLORS.anthropic}"></span>
+          ${getModelDisplay(a.model || (PROVIDER_MODELS[a.provider || 'anthropic'] || [])[0])}
+          <span style="color:var(--gray-dim);font-size:12px">${PROVIDER_DISPLAY[a.provider || 'anthropic'] || 'Anthropic'}</span>
+        </span>
+      </div>
+      <div class="detail-row">
         <span class="detail-label">Public Key</span>
         <span class="detail-value" title="${esc(pubKey)}">${esc(truncKey)}</span>
       </div>
@@ -2514,14 +2599,22 @@ async function openAgentDetail(agentId) {
       </div>
       <div class="detail-row">
         <span class="detail-label">BYOK Key</span>
-        <span class="detail-value" id="byok-status-${a.id}">${a.has_byok_key ? '<span style="color:var(--green)">Active — using your Anthropic key</span>' : '<span style="color:var(--gray-dim)">Not set — using platform key</span>'}</span>
+        <span class="detail-value" id="byok-status-${a.id}">${a.has_byok_key
+          ? `<span style="color:var(--green)">Active — using your ${PROVIDER_DISPLAY[a.provider || 'anthropic'] || 'Anthropic'} key</span>`
+          : '<span style="color:var(--gray-dim)">Not set — using platform key</span>'}</span>
       </div>
       <div class="detail-row" style="flex-direction:column;align-items:flex-start;gap:8px">
         <div style="display:flex;align-items:center;gap:8px;width:100%">
-          <input type="password" id="byok-input-${a.id}" class="login-input" placeholder="${a.has_byok_key ? 'Replace existing key…' : 'sk-ant-api03-...'}" autocomplete="off" style="flex:1;margin:0;font-size:13px;padding:8px 12px">
+          <select class="login-input" id="byok-provider-${a.id}" style="flex:0 0 130px;margin:0;font-size:13px;padding:8px 12px" onchange="onByokProviderChange('${a.id}')">
+            <option value="anthropic"${(a.provider||'anthropic')==='anthropic'?' selected':''}>Anthropic</option>
+            <option value="openai"${a.provider==='openai'?' selected':''}>OpenAI</option>
+            <option value="google"${a.provider==='google'?' selected':''}>Google</option>
+          </select>
+          <input type="password" id="byok-input-${a.id}" class="login-input" placeholder="${a.has_byok_key ? 'Replace existing key…' : (PROVIDER_KEY_PREFIXES[a.provider||'anthropic']?.placeholder||'sk-ant-api03-...')}" autocomplete="off" style="flex:1;margin:0;font-size:13px;padding:8px 12px">
           <button class="btn btn-primary" style="padding:6px 16px;font-size:12px;white-space:nowrap" onclick="saveBYOKKey('${a.id}')">Save Key</button>
           ${a.has_byok_key ? `<button class="btn btn-ghost" style="padding:6px 12px;font-size:12px;color:var(--red)" onclick="removeBYOKKey('${a.id}')">Remove</button>` : ''}
         </div>
+        <span id="byok-key-error-${a.id}" style="font-size:11px;color:var(--red);display:none"></span>
         <span style="font-size:11px;color:var(--gray-dim)">Your key is encrypted at rest (AES-128 + HMAC-SHA256). We never see or store your raw key.</span>
       </div>
       <div class="detail-row">
@@ -2618,27 +2711,54 @@ async function savePrompt(agentId) {
 
 // ── BYOK KEY MANAGEMENT ──
 
+function onByokProviderChange(agentId) {
+  const prov = document.getElementById('byok-provider-' + agentId).value;
+  const input = document.getElementById('byok-input-' + agentId);
+  input.placeholder = PROVIDER_KEY_PREFIXES[prov]?.placeholder || 'API key';
+  const errEl = document.getElementById('byok-key-error-' + agentId);
+  if (errEl) errEl.style.display = 'none';
+}
+
 async function saveBYOKKey(agentId) {
   const input = document.getElementById('byok-input-' + agentId);
+  const provSel = document.getElementById('byok-provider-' + agentId);
+  const provider = provSel ? provSel.value : 'anthropic';
   const key = input.value.trim();
   if (!key) { toast('Please enter an API key', 'error'); return; }
+
+  // Client-side prefix validation
+  if (!validateKeyPrefix(key, provider)) {
+    const errEl = document.getElementById('byok-key-error-' + agentId);
+    if (errEl) {
+      errEl.textContent = `Key doesn't match ${PROVIDER_DISPLAY[provider]} — expected prefix: ${PROVIDER_KEY_PREFIXES[provider]?.prefix || '?'}`;
+      errEl.style.display = 'block';
+    }
+    return;
+  }
+
   try {
-    await api('PUT', `/api/agents/${agentId}`, { llm_api_key: key });
+    await api('PUT', `/api/agents/${agentId}`, { llm_api_key: key, provider });
     input.value = '';
-    document.getElementById('byok-status-' + agentId).innerHTML = '<span style="color:var(--green)">Active — using your Anthropic key</span>';
+    const provName = PROVIDER_DISPLAY[provider] || provider;
+    document.getElementById('byok-status-' + agentId).innerHTML = `<span style="color:var(--green)">Active — using your ${provName} key</span>`;
     input.placeholder = 'Replace existing key…';
-    toast('API key saved and encrypted', 'success');
+    const errEl = document.getElementById('byok-key-error-' + agentId);
+    if (errEl) errEl.style.display = 'none';
+    toast(`${provName} API key saved and encrypted`, 'success');
   } catch (e) {
     toast('Failed to save key: ' + e.message, 'error');
   }
 }
 
 async function removeBYOKKey(agentId) {
-  if (!confirm('Remove your Anthropic API key? The agent will fall back to credit mode.')) return;
+  const provSel = document.getElementById('byok-provider-' + agentId);
+  const provider = provSel ? provSel.value : 'anthropic';
+  const provName = PROVIDER_DISPLAY[provider] || provider;
+  if (!confirm(`Remove your ${provName} API key? The agent will fall back to credit mode.`)) return;
   try {
     await api('PUT', `/api/agents/${agentId}`, { llm_api_key: '' });
     document.getElementById('byok-status-' + agentId).innerHTML = '<span style="color:var(--gray-dim)">Not set — using platform key</span>';
-    document.getElementById('byok-input-' + agentId).placeholder = 'sk-ant-api03-...';
+    document.getElementById('byok-input-' + agentId).placeholder = PROVIDER_KEY_PREFIXES[provider]?.placeholder || 'API key';
     toast('API key removed', 'success');
   } catch (e) {
     toast('Failed to remove key: ' + e.message, 'error');
@@ -2655,6 +2775,18 @@ function openChat(agentId, agentName) {
   chatAgentName = agentName || 'Agent';
   chatConversationId = null;
   document.getElementById('chat-agent-name').textContent = chatAgentName;
+  // Show provider/model info in chat header
+  const agentList = state.agents?.agents || [];
+  const agentObj = agentList.find(x => x.id === agentId);
+  const chatModelEl = document.getElementById('chat-agent-model');
+  if (chatModelEl && agentObj) {
+    const prov = agentObj.provider || 'anthropic';
+    const provColor = PROVIDER_COLORS[prov] || PROVIDER_COLORS.anthropic;
+    const modelStr = getModelDisplay(agentObj.model || (PROVIDER_MODELS[prov] || [])[0]);
+    chatModelEl.innerHTML = `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${provColor}"></span>${modelStr} · ${PROVIDER_DISPLAY[prov] || 'Anthropic'}`;
+  } else if (chatModelEl) {
+    chatModelEl.innerHTML = '';
+  }
   document.getElementById('chat-messages').innerHTML = '';
   document.getElementById('chat-input').value = '';
   document.getElementById('chat-sidebar').classList.add('open');
@@ -2932,16 +3064,40 @@ document.querySelectorAll('.modal-overlay').forEach(m => {
 // Note: Escape handling is in the keyboard shortcuts section
 
 // ── CREATE AGENT ──
+
+function onCreateProviderChange() {
+  const prov = document.getElementById('agent-provider').value;
+  const modelSel = document.getElementById('agent-model');
+  const keyInput = document.getElementById('agent-llm-key');
+  const models = PROVIDER_MODELS[prov] || [];
+  modelSel.innerHTML = models.map(m => `<option value="${m}">${getModelDisplay(m)}</option>`).join('');
+  keyInput.placeholder = (PROVIDER_KEY_PREFIXES[prov]?.placeholder || '') + ' (optional — BYOK)';
+  document.getElementById('agent-key-error').style.display = 'none';
+}
+
+// Initialize model dropdown on page load
+onCreateProviderChange();
+
 document.getElementById('create-agent-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const name = document.getElementById('agent-name').value.trim();
   const systemPrompt = document.getElementById('agent-system-prompt').value.trim();
+  const provider = document.getElementById('agent-provider').value;
+  const model = document.getElementById('agent-model').value;
   const budget = parseFloat(document.getElementById('agent-budget').value) || undefined;
   const llmKey = document.getElementById('agent-llm-key').value.trim();
   if (!name) return;
 
+  // Validate key prefix
+  if (llmKey && !validateKeyPrefix(llmKey, provider)) {
+    const errEl = document.getElementById('agent-key-error');
+    errEl.textContent = `Key doesn't match ${PROVIDER_DISPLAY[provider]} — expected prefix: ${PROVIDER_KEY_PREFIXES[provider]?.prefix || '?'}`;
+    errEl.style.display = 'block';
+    return;
+  }
+
   try {
-    const body = { name };
+    const body = { name, provider, model };
     if (systemPrompt) body.system_prompt = systemPrompt;
     if (budget != null && budget > 0) body.monthly_budget_usd = budget;
     if (llmKey) body.llm_api_key = llmKey;
@@ -2951,6 +3107,8 @@ document.getElementById('create-agent-form').addEventListener('submit', async (e
     document.getElementById('agent-system-prompt').value = '';
     document.getElementById('agent-budget').value = '';
     document.getElementById('agent-llm-key').value = '';
+    document.getElementById('agent-provider').value = 'anthropic';
+    onCreateProviderChange();
     toast('Agent created successfully', 'success');
     loadDashboard();
   } catch (e) {
