@@ -1778,18 +1778,35 @@ async function api(method, path, body) {
   }
 
   // Prefer Clerk JWT for browser auth, fall back to stored token (API key or legacy session)
-  if (window.Clerk && window.Clerk.session) {
+  if (window.Clerk && window.Clerk.user) {
     try {
-      const clerkToken = await window.Clerk.session.getToken();
-      if (clerkToken) {
-        opts.headers['Authorization'] = `Bearer ${clerkToken}`;
+      // Wait for session if it's not ready yet (post-redirect race)
+      let session = window.Clerk.session;
+      if (!session) {
+        console.log('[api] Clerk.user exists but session is null, waiting...');
+        await new Promise(r => setTimeout(r, 500));
+        session = window.Clerk.session;
+      }
+      if (session) {
+        const clerkToken = await session.getToken();
+        console.log('[api]', method, path, '| Clerk token:', clerkToken ? clerkToken.substring(0, 20) + '...' : 'NULL');
+        if (clerkToken) {
+          opts.headers['Authorization'] = `Bearer ${clerkToken}`;
+        }
+      } else {
+        console.warn('[api]', method, path, '| Clerk.user exists but session still null');
       }
     } catch (e) {
+      console.warn('[api] Clerk token error:', e);
       // Clerk token refresh failed — fall through to stored token
     }
   }
   if (!opts.headers['Authorization'] && state.token) {
     opts.headers['Authorization'] = `Bearer ${state.token}`;
+    console.log('[api]', method, path, '| Using stored token:', state.token.substring(0, 15) + '...');
+  }
+  if (!opts.headers['Authorization']) {
+    console.warn('[api]', method, path, '| NO AUTH TOKEN — request will 401');
   }
 
   if (body) {
