@@ -13,14 +13,14 @@
     background: #06060E;
     color: #C8CCD4;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    line-height: 1.45;
+    font-size: 9.5px;
+    line-height: 1.4;
   }
 
   .page {
-    width: 1200px;
+    width: 1400px;
     margin: 0 auto;
-    padding: 32px 36px;
+    padding: 28px 32px;
     position: relative;
     overflow: hidden;
   }
@@ -39,62 +39,37 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
     padding-bottom: 10px;
     border-bottom: 2px solid #8B5CF6;
     position: relative;
   }
 
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
+  .header-left { display: flex; align-items: center; gap: 14px; }
 
   .logo-icon {
-    width: 44px;
-    height: 44px;
+    width: 42px; height: 42px;
     background: linear-gradient(135deg, #8B5CF6, #6D28D9);
     border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
     box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
   }
 
   .header-title {
     font-family: 'Outfit', sans-serif;
-    font-size: 24px;
-    font-weight: 900;
-    color: #F1F5F9;
-    letter-spacing: -0.5px;
+    font-size: 22px; font-weight: 900; color: #F1F5F9; letter-spacing: -0.5px;
   }
-
   .header-title span { color: #8B5CF6; }
+  .header-sub { font-size: 9.5px; color: #64748B; margin-top: 2px; }
 
-  .header-sub {
-    font-size: 10px;
-    color: #64748B;
-    margin-top: 2px;
-  }
-
-  .header-right {
-    text-align: right;
-    color: #64748B;
-    font-size: 9px;
-    line-height: 1.6;
-  }
-
-  .header-right a {
-    color: #8B5CF6;
-    text-decoration: none;
-  }
+  .header-right { text-align: right; color: #64748B; font-size: 9px; line-height: 1.6; }
+  .header-right a { color: #8B5CF6; text-decoration: none; }
 
   .grid {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    gap: 14px;
+    grid-template-columns: 1.4fr 0.8fr 0.8fr 0.8fr 0.8fr;
+    gap: 12px;
     position: relative;
   }
 
@@ -102,135 +77,77 @@
     background: rgba(15, 23, 42, 0.6);
     border: 1px solid rgba(139, 92, 246, 0.12);
     border-radius: 10px;
-    padding: 12px;
+    padding: 10px;
   }
 
   .section-title {
     font-family: 'Outfit', sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    color: #E2E8F0;
-    margin-bottom: 4px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
+    font-size: 11px; font-weight: 700; color: #E2E8F0;
+    margin-bottom: 3px;
+    display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
   }
-
-  .section-title .icon { font-size: 14px; }
+  .section-title .icon { font-size: 13px; }
 
   .section-subtitle {
-    font-size: 8px;
-    color: #64748B;
-    margin-bottom: 8px;
-    font-style: italic;
+    font-size: 7.5px; color: #64748B; margin-bottom: 7px; font-style: italic;
   }
 
   .badge {
-    display: inline-block;
-    font-size: 7px;
-    font-weight: 600;
-    padding: 1px 5px;
-    border-radius: 3px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    display: inline-block; font-size: 7px; font-weight: 600;
+    padding: 1px 4px; border-radius: 3px;
+    text-transform: uppercase; letter-spacing: 0.5px;
   }
-
-  .badge-utility { background: rgba(56, 189, 248, 0.15); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.25); }
-  .badge-security { background: rgba(139, 92, 246, 0.15); color: #A78BFA; border: 1px solid rgba(139, 92, 246, 0.25); }
-  .badge-orch { background: rgba(52, 211, 153, 0.15); color: #34D399; border: 1px solid rgba(52, 211, 153, 0.25); }
-  .badge-prod { background: rgba(251, 146, 60, 0.15); color: #FB923C; border: 1px solid rgba(251, 146, 60, 0.25); }
-  .badge-sangha { background: rgba(34, 197, 94, 0.12); color: #4ADE80; border: 1px solid rgba(34, 197, 94, 0.2); font-size: 7px; }
+  .badge-utility { background: rgba(56,189,248,0.15); color: #38BDF8; border: 1px solid rgba(56,189,248,0.25); }
+  .badge-security { background: rgba(139,92,246,0.15); color: #A78BFA; border: 1px solid rgba(139,92,246,0.25); }
+  .badge-orch { background: rgba(52,211,153,0.15); color: #34D399; border: 1px solid rgba(52,211,153,0.25); }
+  .badge-prod { background: rgba(251,146,60,0.15); color: #FB923C; border: 1px solid rgba(251,146,60,0.25); }
+  .badge-obs { background: rgba(236,72,153,0.15); color: #F472B6; border: 1px solid rgba(236,72,153,0.25); }
+  .badge-sangha { background: rgba(34,197,94,0.12); color: #4ADE80; border: 1px solid rgba(34,197,94,0.2); font-size: 6.5px; }
 
   .badge-layer {
-    font-size: 7px;
-    display: inline-block;
-    padding: 1px 4px;
-    border-radius: 3px;
-    font-weight: 600;
+    font-size: 6.5px; display: inline-block;
+    padding: 1px 3px; border-radius: 3px; font-weight: 600;
   }
-
   .layer-sila { background: rgba(139,92,246,0.12); color: #A78BFA; border: 1px solid rgba(139,92,246,0.2); }
   .layer-karma { background: rgba(250,204,21,0.12); color: #FACC15; border: 1px solid rgba(250,204,21,0.2); }
   .layer-bodhi { background: rgba(239,68,68,0.12); color: #F87171; border: 1px solid rgba(239,68,68,0.2); }
   .layer-net { background: rgba(251,146,60,0.12); color: #FB923C; border: 1px solid rgba(251,146,60,0.2); }
 
   .skill {
-    padding: 6px 0;
-    border-bottom: 1px solid rgba(139, 92, 246, 0.06);
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(139, 92, 246, 0.05);
   }
-
   .skill:last-child { border-bottom: none; }
 
-  .skill-name {
-    font-weight: 700;
-    color: #F1F5F9;
-    font-size: 10px;
-  }
+  .skill-name { font-weight: 700; color: #F1F5F9; font-size: 9.5px; }
+  .skill-slug { color: #475569; font-size: 7px; margin-left: 3px; }
+  .skill-desc { color: #94A3B8; font-size: 8px; margin: 1px 0 3px; }
 
-  .skill-slug {
-    color: #475569;
-    font-size: 7.5px;
-    margin-left: 4px;
-  }
-
-  .skill-desc {
-    color: #94A3B8;
-    font-size: 8.5px;
-    margin: 1px 0 3px;
-  }
-
-  .skill-functions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2px;
-  }
-
+  .skill-functions { display: flex; flex-wrap: wrap; gap: 2px; }
   .func {
-    font-size: 7.5px;
-    color: #8B5CF6;
-    background: rgba(139, 92, 246, 0.08);
-    padding: 1px 4px;
-    border-radius: 2px;
-    border: 1px solid rgba(139, 92, 246, 0.12);
+    font-size: 7px; color: #8B5CF6;
+    background: rgba(139,92,246,0.08);
+    padding: 1px 4px; border-radius: 2px;
+    border: 1px solid rgba(139,92,246,0.12);
   }
 
-  .skill-tags {
-    display: flex;
-    gap: 3px;
-    margin-top: 2px;
-    align-items: center;
-  }
+  .skill-tags { display: flex; gap: 3px; margin-top: 2px; align-items: center; }
 
   .footer {
-    margin-top: 16px;
-    padding-top: 10px;
-    border-top: 1px solid rgba(139, 92, 246, 0.15);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: #475569;
-    font-size: 8px;
+    margin-top: 14px; padding-top: 10px;
+    border-top: 1px solid rgba(139,92,246,0.15);
+    display: flex; justify-content: space-between; align-items: center;
+    color: #475569; font-size: 8px;
   }
-
   .footer a { color: #8B5CF6; text-decoration: none; }
 
-  .stat-bar { display: flex; gap: 14px; }
-
-  .stat { display: flex; align-items: center; gap: 4px; }
-
-  .stat-num {
-    font-weight: 700;
-    color: #8B5CF6;
-    font-size: 14px;
-    font-family: 'Outfit', sans-serif;
-  }
-
-  .stat-label { color: #64748B; font-size: 8px; }
+  .stat-bar { display: flex; gap: 12px; }
+  .stat { display: flex; align-items: center; gap: 3px; }
+  .stat-num { font-weight: 700; color: #8B5CF6; font-size: 13px; font-family: 'Outfit', sans-serif; }
+  .stat-label { color: #64748B; font-size: 7.5px; }
 </style>
 </head>
 <body>
-
 <div class="page">
 
   <div class="header">
@@ -238,7 +155,7 @@
       <div class="logo-icon">🛡️</div>
       <div>
         <div class="header-title">Sammā Suit <span>Skills</span> Cheatsheet</div>
-        <div class="header-sub">24 first-party skills · 4 tiers · SANGHA-approved · open source</div>
+        <div class="header-sub">28 first-party skills · 5 tiers · SANGHA-approved · open source · stdlib-only</div>
       </div>
     </div>
     <div class="header-right">
@@ -260,69 +177,58 @@
         <div class="skill-desc">Extractive summarization via sentence scoring</div>
         <div class="skill-functions"><span class="func">summarize(text, ratio)</span> <span class="func">extract_sentences(text, n)</span></div>
       </div>
-
       <div class="skill">
         <div class="skill-name">Sentiment Analyzer <span class="skill-slug">sentiment-analyzer</span></div>
         <div class="skill-desc">Keyword-based sentiment with confidence</div>
         <div class="skill-functions"><span class="func">analyze(text)</span> <span class="func">batch_analyze(texts)</span></div>
       </div>
-
       <div class="skill">
         <div class="skill-name">JSON Formatter <span class="skill-slug">json-formatter</span></div>
         <div class="skill-desc">Validate, pretty-print, minify, dot-path</div>
         <div class="skill-functions"><span class="func">format(json)</span> <span class="func">minify(json)</span> <span class="func">extract(json, path)</span></div>
       </div>
-
       <div class="skill">
         <div class="skill-name">Prompt Template <span class="skill-slug">prompt-template-engine</span></div>
         <div class="skill-desc">{{variable}} substitution, conditionals, defaults</div>
         <div class="skill-functions"><span class="func">render(tpl, vars)</span> <span class="func">validate(tpl)</span></div>
       </div>
-
       <div class="skill">
         <div class="skill-name">Response Validator <span class="skill-slug">response-validator</span></div>
         <div class="skill-desc">Length, keywords, banned phrases, JSON, regex</div>
         <div class="skill-functions"><span class="func">validate(text, rules)</span> <span class="func">check_json(text)</span></div>
       </div>
-
       <div class="skill">
         <div class="skill-name">Content Classifier <span class="skill-slug">content-classifier</span></div>
         <div class="skill-desc">Text categorization for routing</div>
         <div class="skill-functions"><span class="func">classify(text, cats)</span></div>
       </div>
-
       <div class="skill">
         <div class="skill-name">Markdown Stripper <span class="skill-slug">markdown-stripper</span></div>
         <div class="skill-desc">Markdown to clean plain text</div>
         <div class="skill-functions"><span class="func">strip(md)</span> <span class="func">to_text(md)</span></div>
       </div>
-
       <div class="skill">
         <div class="skill-name">Token Counter <span class="skill-slug">token-counter</span></div>
         <div class="skill-desc">Token estimation + cost calculator</div>
         <div class="skill-functions"><span class="func">count(text)</span> <span class="func">estimate_cost(text, model)</span></div>
       </div>
-
       <div class="skill">
         <div class="skill-name">Web Fetcher <span class="skill-slug">web-fetcher</span></div>
         <div class="skill-desc">Fetch URLs, extract text/links/meta</div>
         <div class="skill-functions"><span class="func">fetch_url(url)</span> <span class="func">search_text(content, q)</span></div>
         <div class="skill-tags"><span class="badge-layer layer-net">NETWORK</span> <span class="badge badge-sangha">APPROVED</span></div>
       </div>
-
       <div class="skill">
         <div class="skill-name">Code Executor <span class="skill-slug">code-executor</span></div>
         <div class="skill-desc">Restricted sandbox — no fs/net/subprocess</div>
         <div class="skill-functions"><span class="func">execute(code, timeout=5)</span></div>
         <div class="skill-tags"><span class="badge-layer layer-bodhi">SANDBOXED</span> <span class="badge badge-sangha">APPROVED</span></div>
       </div>
-
       <div class="skill">
         <div class="skill-name">File Reader <span class="skill-slug">file-reader</span></div>
         <div class="skill-desc">TXT, CSV, JSON, MD, PDF, DOCX</div>
         <div class="skill-functions"><span class="func">read_file(b64, type)</span> <span class="func">read_pdf(b64)</span></div>
       </div>
-
       <div class="skill">
         <div class="skill-name">Memory Store <span class="skill-slug">memory-store</span></div>
         <div class="skill-desc">Per-session key-value with metadata</div>
@@ -333,7 +239,7 @@
     <!-- TIER 2 -->
     <div class="section">
       <div class="section-title"><span class="icon">🔒</span> Tier 2 — Security <span class="badge badge-security">4</span></div>
-      <div class="section-subtitle">Security-native skills no one else has</div>
+      <div class="section-subtitle">Security-native — no one else has these</div>
 
       <div class="skill">
         <div class="skill-name">Secret Scanner <span class="skill-slug">secret-scanner</span></div>
@@ -341,24 +247,21 @@
         <div class="skill-functions"><span class="func">scan(text)</span> <span class="func">redact(text)</span> <span class="func">scan_and_redact(text)</span></div>
         <div class="skill-tags"><span class="badge-layer layer-sila">SILA</span></div>
       </div>
-
       <div class="skill">
         <div class="skill-name">PII Redactor <span class="skill-slug">pii-redactor</span></div>
-        <div class="skill-desc">Emails, SSNs, credit cards (Luhn), phones, IPs — full/partial/hash modes</div>
+        <div class="skill-desc">Emails, SSNs, credit cards (Luhn), phones, IPs — full/partial/hash</div>
         <div class="skill-functions"><span class="func">scan(text)</span> <span class="func">redact(text, mode)</span> <span class="func">scan_and_redact(text)</span></div>
         <div class="skill-tags"><span class="badge badge-security">COMPLIANCE</span></div>
       </div>
-
       <div class="skill">
         <div class="skill-name">Cost Estimator <span class="skill-slug">cost-estimator</span></div>
-        <div class="skill-desc">Pre-execution cost estimation, multi-model pricing, budget check</div>
+        <div class="skill-desc">Pre-execution cost, multi-model pricing, budget check</div>
         <div class="skill-functions"><span class="func">estimate(text, model)</span> <span class="func">estimate_conversation(msgs)</span></div>
         <div class="skill-tags"><span class="badge-layer layer-karma">KARMA</span></div>
       </div>
-
       <div class="skill">
-        <div class="skill-name">Audit Report Generator <span class="skill-slug">audit-report</span></div>
-        <div class="skill-desc">Reports from SILA logs — summary, detailed, security, compliance (SOC2/ISO)</div>
+        <div class="skill-name">Audit Report Gen <span class="skill-slug">audit-report</span></div>
+        <div class="skill-desc">SILA log reports — summary, detailed, security, compliance</div>
         <div class="skill-functions"><span class="func">generate_report(logs, fmt)</span> <span class="func">risk_score(logs)</span></div>
         <div class="skill-tags"><span class="badge-layer layer-sila">SILA</span> <span class="badge badge-security">SOC2</span></div>
       </div>
@@ -367,30 +270,27 @@
     <!-- TIER 3 -->
     <div class="section">
       <div class="section-title"><span class="icon">🔀</span> Tier 3 — Orchestration <span class="badge badge-orch">4</span></div>
-      <div class="section-subtitle">Multi-skill workflows and agent intelligence</div>
+      <div class="section-subtitle">Multi-skill workflows & agent intelligence</div>
 
       <div class="skill">
         <div class="skill-name">Conversation Compressor <span class="skill-slug">conversation-compressor</span></div>
-        <div class="skill-desc">Context window management — scored, recent, sliding strategies</div>
+        <div class="skill-desc">Context window mgmt — scored, recent, sliding</div>
         <div class="skill-functions"><span class="func">compress(msgs, strategy)</span> <span class="func">score_messages(msgs)</span></div>
       </div>
-
       <div class="skill">
-        <div class="skill-name">Output Schema Enforcer <span class="skill-slug">output-schema-enforcer</span></div>
-        <div class="skill-desc">Validate & auto-repair LLM JSON against schema</div>
+        <div class="skill-name">Schema Enforcer <span class="skill-slug">output-schema-enforcer</span></div>
+        <div class="skill-desc">Validate & auto-repair LLM JSON outputs</div>
         <div class="skill-functions"><span class="func">validate(data, schema)</span> <span class="func">enforce(data, schema)</span></div>
       </div>
-
       <div class="skill">
         <div class="skill-name">Intent Router <span class="skill-slug">intent-router</span></div>
-        <div class="skill-desc">Classify messages by intent, route to handlers</div>
+        <div class="skill-desc">Classify intent, route to skills/handlers</div>
         <div class="skill-functions"><span class="func">route(text, intents)</span> <span class="func">classify(text)</span></div>
       </div>
-
       <div class="skill">
-        <div class="skill-name">Skill Chain Orchestrator <span class="skill-slug">skill-chain</span></div>
-        <div class="skill-desc">Multi-skill workflows with variable piping + branching</div>
-        <div class="skill-functions"><span class="func">execute_chain(steps)</span> <span class="func">build_chain(config)</span></div>
+        <div class="skill-name">Skill Chain <span class="skill-slug">skill-chain</span></div>
+        <div class="skill-desc">Multi-skill workflows, variable piping, branching</div>
+        <div class="skill-functions"><span class="func">execute_chain(steps)</span> <span class="func">build_chain(cfg)</span></div>
       </div>
     </div>
 
@@ -401,28 +301,52 @@
 
       <div class="skill">
         <div class="skill-name">Prompt Guard <span class="skill-slug">prompt-guard</span></div>
-        <div class="skill-desc">Injection detection — jailbreak, delimiter, leak, social engineering, encoded evasion</div>
+        <div class="skill-desc">Injection detection — jailbreak, delimiter, leak, social eng</div>
         <div class="skill-functions"><span class="func">scan(text, sensitivity)</span> <span class="func">scan_conversation(msgs)</span></div>
         <div class="skill-tags"><span class="badge badge-security">DEFENSE</span></div>
       </div>
-
       <div class="skill">
         <div class="skill-name">Retry Engine <span class="skill-slug">retry-engine</span></div>
-        <div class="skill-desc">Exponential backoff, jitter, circuit breaker, budget-aware limits</div>
+        <div class="skill-desc">Backoff, jitter, circuit breaker, budget limits</div>
         <div class="skill-functions"><span class="func">compute_delay(attempt)</span> <span class="func">circuit_breaker(state)</span></div>
-        <div class="skill-tags"><span class="badge-layer layer-karma">BUDGET-AWARE</span></div>
+        <div class="skill-tags"><span class="badge-layer layer-karma">BUDGET</span></div>
       </div>
-
       <div class="skill">
         <div class="skill-name">Response Cache <span class="skill-slug">response-cache</span></div>
-        <div class="skill-desc">LRU cache with TTL, namespaces, hit/miss/eviction metrics</div>
-        <div class="skill-functions"><span class="func">cache_get(ns, key)</span> <span class="func">cache_set(ns, key, val)</span> <span class="func">get_metrics()</span></div>
+        <div class="skill-desc">LRU + TTL, namespaces, hit/miss metrics</div>
+        <div class="skill-functions"><span class="func">cache_get(ns, k)</span> <span class="func">cache_set(ns, k, v)</span> <span class="func">metrics()</span></div>
       </div>
-
       <div class="skill">
         <div class="skill-name">Data Transformer <span class="skill-slug">data-transformer</span></div>
-        <div class="skill-desc">16-op pipeline: flatten, pick, merge, diff, CSV, filter, sort, group</div>
-        <div class="skill-functions"><span class="func">transform(data, ops)</span> <span class="func">flatten(d)</span> <span class="func">merge(a, b)</span></div>
+        <div class="skill-desc">16-op pipeline: flatten, pick, merge, diff, CSV, filter</div>
+        <div class="skill-functions"><span class="func">transform(data, ops)</span> <span class="func">flatten(d)</span> <span class="func">merge(a,b)</span></div>
+      </div>
+    </div>
+
+    <!-- TIER 5 -->
+    <div class="section">
+      <div class="section-title"><span class="icon">📊</span> Tier 5 — Observability <span class="badge badge-obs">4</span></div>
+      <div class="section-subtitle">Know how your agents are performing</div>
+
+      <div class="skill">
+        <div class="skill-name">Structured Logger <span class="skill-slug">structured-logger</span></div>
+        <div class="skill-desc">JSON logs, correlation IDs, duration tracking, buffer search</div>
+        <div class="skill-functions"><span class="func">log(level, msg, ctx)</span> <span class="func">timed_span(name)</span> <span class="func">search(q)</span></div>
+      </div>
+      <div class="skill">
+        <div class="skill-name">Eval Harness <span class="skill-slug">eval-harness</span></div>
+        <div class="skill-desc">Test suites with 10 rubric types, TF-IDF similarity, grading</div>
+        <div class="skill-functions"><span class="func">run_suite(tests)</span> <span class="func">evaluate(output, expected)</span></div>
+      </div>
+      <div class="skill">
+        <div class="skill-name">Usage Tracker <span class="skill-slug">usage-tracker</span></div>
+        <div class="skill-desc">Sliding windows, p50/p95/p99, trend detection, anomaly flags</div>
+        <div class="skill-functions"><span class="func">record(event)</span> <span class="func">report()</span> <span class="func">detect_anomalies()</span></div>
+      </div>
+      <div class="skill">
+        <div class="skill-name">Health Monitor <span class="skill-slug">health-monitor</span></div>
+        <div class="skill-desc">Uptime, latency percentiles, error rates, status indicators</div>
+        <div class="skill-functions"><span class="func">check(name, fn)</span> <span class="func">run_all()</span> <span class="func">status()</span></div>
       </div>
     </div>
 
@@ -430,12 +354,12 @@
 
   <div class="footer">
     <div>
-      All 24 skills: pure Python · stdlib-only (PDF/DOCX optional) · SANGHA AST-scanned · first-party vetted<br>
+      All 28 skills: pure Python · stdlib-only (PDF/DOCX optional) · SANGHA AST-scanned · first-party vetted<br>
       <a href="https://sammasuit.com">sammasuit.com</a> · <a href="https://sammasuit.com/cheatsheet.html">Mega Cheatsheet</a> · <a href="https://github.com/OneZeroEight-ai/samma-suit">GitHub</a> · <a href="https://discord.gg/4A6ExTnKnK">Discord</a>
     </div>
     <div class="stat-bar">
-      <div class="stat"><span class="stat-num">24</span><span class="stat-label">skills</span></div>
-      <div class="stat"><span class="stat-num">4</span><span class="stat-label">tiers</span></div>
+      <div class="stat"><span class="stat-num">28</span><span class="stat-label">skills</span></div>
+      <div class="stat"><span class="stat-num">5</span><span class="stat-label">tiers</span></div>
       <div class="stat"><span class="stat-num">8</span><span class="stat-label">layers</span></div>
     </div>
   </div>
