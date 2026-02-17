@@ -2513,7 +2513,15 @@ async function openAgentDetail(agentId) {
       </div>
       <div class="detail-row">
         <span class="detail-label">BYOK Key</span>
-        <span class="detail-value">${a.has_byok_key ? '<span style="color:var(--green)">Active — using your Anthropic key</span>' : '<span style="color:var(--gray-dim)">Not set — using platform key</span>'}</span>
+        <span class="detail-value" id="byok-status-${a.id}">${a.has_byok_key ? '<span style="color:var(--green)">Active — using your Anthropic key</span>' : '<span style="color:var(--gray-dim)">Not set — using platform key</span>'}</span>
+      </div>
+      <div class="detail-row" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div style="display:flex;align-items:center;gap:8px;width:100%">
+          <input type="password" id="byok-input-${a.id}" class="login-input" placeholder="${a.has_byok_key ? 'Replace existing key…' : 'sk-ant-api03-...'}" autocomplete="off" style="flex:1;margin:0;font-size:13px;padding:8px 12px">
+          <button class="btn btn-primary" style="padding:6px 16px;font-size:12px;white-space:nowrap" onclick="saveBYOKKey('${a.id}')">Save Key</button>
+          ${a.has_byok_key ? `<button class="btn btn-ghost" style="padding:6px 12px;font-size:12px;color:var(--red)" onclick="removeBYOKKey('${a.id}')">Remove</button>` : ''}
+        </div>
+        <span style="font-size:11px;color:var(--gray-dim)">Your key is encrypted at rest (AES-128 + HMAC-SHA256). We never see or store your raw key.</span>
       </div>
       <div class="detail-row">
         <span class="detail-label">Total Calls</span>
@@ -2604,6 +2612,35 @@ async function savePrompt(agentId) {
     toast('Agent instructions updated', 'success');
   } catch (e) {
     toast('Failed to save: ' + e.message, 'error');
+  }
+}
+
+// ── BYOK KEY MANAGEMENT ──
+
+async function saveBYOKKey(agentId) {
+  const input = document.getElementById('byok-input-' + agentId);
+  const key = input.value.trim();
+  if (!key) { toast('Please enter an API key', 'error'); return; }
+  try {
+    await api('PUT', `/api/agents/${agentId}`, { llm_api_key: key });
+    input.value = '';
+    document.getElementById('byok-status-' + agentId).innerHTML = '<span style="color:var(--green)">Active — using your Anthropic key</span>';
+    input.placeholder = 'Replace existing key…';
+    toast('API key saved and encrypted', 'success');
+  } catch (e) {
+    toast('Failed to save key: ' + e.message, 'error');
+  }
+}
+
+async function removeBYOKKey(agentId) {
+  if (!confirm('Remove your Anthropic API key? The agent will fall back to credit mode.')) return;
+  try {
+    await api('PUT', `/api/agents/${agentId}`, { llm_api_key: '' });
+    document.getElementById('byok-status-' + agentId).innerHTML = '<span style="color:var(--gray-dim)">Not set — using platform key</span>';
+    document.getElementById('byok-input-' + agentId).placeholder = 'sk-ant-api03-...';
+    toast('API key removed', 'success');
+  } catch (e) {
+    toast('Failed to remove key: ' + e.message, 'error');
   }
 }
 
