@@ -2774,7 +2774,17 @@ async function sendChatMsg() {
       body: JSON.stringify(body)
     };
     if (DEMO_MODE) opts.headers['X-Samma-Demo'] = 'true';
-    if (state.token) opts.headers['Authorization'] = `Bearer ${state.token}`;
+
+    // Get fresh Clerk JWT (same as api() helper) — state.token is stale/legacy
+    if (window.Clerk && window.Clerk.session) {
+      try {
+        const clerkToken = await window.Clerk.session.getToken();
+        if (clerkToken) opts.headers['Authorization'] = `Bearer ${clerkToken}`;
+      } catch (e) { console.warn('[sendChatMsg] Clerk token error:', e); }
+    }
+    if (!opts.headers['Authorization'] && state.token) {
+      opts.headers['Authorization'] = `Bearer ${state.token}`;
+    }
 
     const res = await fetch(`${API_BASE}/api/agents/${chatAgentId}/gateway`, opts);
     if (res.status === 401) { state.token = null; localStorage.removeItem('samma_token'); sessionStorage.removeItem('samma_token'); showView('login'); throw new Error('Unauthorized'); }
