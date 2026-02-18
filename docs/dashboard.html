@@ -2938,6 +2938,7 @@ async function sendChatMsg() {
   try {
     const body = { messages: [{ role: 'user', content: text }], stream: true };
     if (chatConversationId) body.conversation_id = chatConversationId;
+    console.log('[chat] sending with conversation_id:', chatConversationId || '(new)');
 
     const opts = {
       method: 'POST',
@@ -3002,6 +3003,7 @@ async function sendChatMsg() {
               tokens += evt.tokens || 1;
               tokenCount.textContent = tokens + ' tokens';
             }
+            if (evt.conversation_id) chatConversationId = evt.conversation_id;
             if (evt.layers_enforced) streamLayers = evt.layers_enforced;
             if (evt.metta_signature) streamSig = evt.metta_signature;
           } catch (_) {}
@@ -3027,6 +3029,7 @@ async function sendChatMsg() {
       // Normal JSON mode (fallback)
       const data = await res.json();
       chatConversationId = data.conversation_id || chatConversationId;
+      console.log('[chat] stored conversation_id:', chatConversationId);
       let reply = '';
       if (data.content) { for (const block of data.content) { if (block.type === 'text') { reply = block.text; break; } } }
       addChatMsg('assistant', reply || '(empty response)', data.layers_enforced || [], data.metta_signature || null);
