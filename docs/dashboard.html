@@ -291,14 +291,16 @@ nav {
   display: flex; gap: 8px; padding: 14px 20px;
   padding-bottom: env(safe-area-inset-bottom, 20px);
   background: var(--bg); border-top: 1px solid var(--card-border);
+  margin-bottom: 20px; align-items: flex-end;
 }
-.chat-input-bar input {
+.chat-input-bar textarea {
   flex: 1; padding: 12px 16px; border-radius: 8px;
   border: 1px solid var(--card-border); background: var(--bg2);
   color: var(--white); font-size: 14px; outline: none;
   font-family: var(--font-display); min-height: 44px;
+  resize: vertical; line-height: 1.5;
 }
-.chat-input-bar input:focus { border-color: var(--purple); }
+.chat-input-bar textarea:focus { border-color: var(--purple); }
 .chat-input-bar button {
   padding: 12px 24px; border-radius: 8px; border: none;
   background: var(--purple); color: white; font-weight: 600;
@@ -1366,7 +1368,7 @@ html.light .grid-bg { opacity: 0.3; }
     padding-bottom: 140px;
   }
   .chat-input-bar {
-    position: fixed !important; bottom: 0; left: 0; right: 0;
+    position: fixed !important; bottom: 20px; left: 0; right: 0;
     padding: 12px;
     padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 60px);
     margin-bottom: 0;
@@ -1710,7 +1712,7 @@ html.light .grid-bg { opacity: 0.3; }
   <div class="chat-convos" id="chat-convos"></div>
   <div class="chat-messages" id="chat-messages"></div>
   <div class="chat-input-bar">
-    <input type="text" id="chat-input" placeholder="Type a message..." autocomplete="off" />
+    <textarea id="chat-input" rows="3" placeholder="Type a message..." autocomplete="off"></textarea>
     <button id="chat-send" onclick="sendChatMsg()">Send</button>
   </div>
 </div>
@@ -3046,7 +3048,7 @@ async function sendChatMsg() {
 
 // Chat keyboard
 document.getElementById('chat-input').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') sendChatMsg();
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMsg(); }
 });
 
 // ── MODALS ──
