@@ -756,6 +756,26 @@ select.login-input { appearance: auto; cursor: pointer; }
 }
 .agent-card.glow-paused { border-color: rgba(136,136,170,0.2); }
 .agent-card.kill-flash { animation: killFlash 0.6s ease !important; }
+.agent-card.death-shake { animation: deathShake 0.6s ease, killFlash 0.6s ease !important; }
+.agent-card.revive-flash { animation: reviveFlash 2.5s ease-out !important; }
+@keyframes deathShake {
+  0%, 100% { transform: translateX(0) rotate(0); }
+  10% { transform: translateX(-6px) rotate(-1deg); }
+  20% { transform: translateX(6px) rotate(1deg); }
+  30% { transform: translateX(-5px) rotate(-0.5deg); }
+  40% { transform: translateX(5px) rotate(0.5deg); }
+  50% { transform: translateX(-3px); }
+  60% { transform: translateX(3px); }
+  70% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
+  90% { transform: translateX(-1px); }
+}
+@keyframes reviveFlash {
+  0% { border-color: var(--gold); box-shadow: 0 0 30px rgba(255,215,0,0.4); }
+  30% { border-color: var(--gold); box-shadow: 0 0 50px rgba(255,215,0,0.6); }
+  60% { border-color: var(--green); box-shadow: 0 0 30px rgba(5,150,105,0.3); }
+  100% { border-color: var(--card-border); box-shadow: none; }
+}
 .agent-card-header {
   display: flex;
   align-items: flex-start;
@@ -859,6 +879,33 @@ select.login-input { appearance: auto; cursor: pointer; }
 .status-badge.terminated {
   background: rgba(220,38,38,0.1);
   color: var(--red);
+}
+
+/* Agent state icons */
+.agent-state {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+}
+.agent-state-icon {
+  display: inline-block;
+  font-size: 16px;
+  line-height: 1;
+}
+.agent-state-icon.pulse-heart { animation: heartbeat 1s ease-in-out infinite; }
+.agent-state-icon.reviving { animation: reviveIconPulse 0.8s ease-in-out infinite; }
+.agent-state-label { letter-spacing: 0.5px; }
+.agent-state-label.killed { color: var(--red); }
+.agent-state-label.reviving { color: var(--gold); }
+.agent-state-label.heartbeat { color: var(--cyan); }
+.agent-state-label.active { color: var(--green); }
+.agent-state-clickable { cursor: pointer; transition: opacity 0.2s; }
+.agent-state-clickable:hover { opacity: 0.75; }
+@keyframes reviveIconPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
 }
 
 .budget-bar {
@@ -1940,7 +1987,9 @@ const state = {
   customer: null,
   overview: null,
   agents: null,
-  selectedAgent: null
+  selectedAgent: null,
+  heartbeats: {},       // agentId → heartbeat data (or null)
+  revivingAgents: new Set(),  // agentIds currently in revive transition
 };
 
 // ── MULTI-PROVIDER CONSTANTS ──
@@ -2183,6 +2232,19 @@ async function loadDashboard() {
     loadBillingStatus();
     showPaymentBanner();
 
+    // Batch-fetch heartbeat status for agent cards (non-blocking)
+    const agentList = agentsRes?.agents || [];
+    if (agentList.length > 0) {
+      Promise.all(agentList.map(a =>
+        api('GET', `/api/agents/${a.id}/heartbeat`).catch(() => ({ heartbeat: null }))
+      )).then(results => {
+        agentList.forEach((a, i) => {
+          state.heartbeats[a.id] = results[i]?.heartbeat || null;
+        });
+        renderAgents(); // re-render with heartbeat data
+      });
+    }
+
     // Auto-refresh overview every 30s
     if (refreshInterval) clearInterval(refreshInterval);
     refreshInterval = setInterval(async () => {
@@ -2305,10 +2367,39 @@ function renderAgents() {
     const provColor = PROVIDER_COLORS[agentProv] || PROVIDER_COLORS.anthropic;
     const modelName = getModelDisplay(a.model || (PROVIDER_MODELS[agentProv] || [])[0]);
 
+    // Determine dynamic state icon
+    const hb = state.heartbeats[a.id];
+    const isReviving = state.revivingAgents.has(a.id);
+    let stateIcon, stateLabel, stateLabelClass, stateClickable = false;
+    if (status === 'terminated') {
+      stateIcon = '<span class="agent-state-icon">\uD83D\uDC80</span>';
+      stateLabel = 'Killed';
+      stateLabelClass = 'killed';
+    } else if (isReviving) {
+      stateIcon = '<span class="agent-state-icon reviving">\u26A1</span>';
+      stateLabel = 'Reviving\u2026';
+      stateLabelClass = 'reviving';
+    } else if (hb && hb.enabled) {
+      const mins = hb.interval_minutes || 60;
+      const interval = mins >= 1440 ? Math.round(mins/1440) + 'd' : mins >= 60 ? Math.round(mins/60) + 'h' : mins + 'm';
+      stateIcon = '<span class="agent-state-icon pulse-heart">\u2764\uFE0F</span>';
+      stateLabel = 'Heartbeat: ' + interval;
+      stateLabelClass = 'heartbeat';
+      stateClickable = true;
+    } else {
+      stateIcon = '<span class="agent-state-icon">\uD83D\uDFE2</span>';
+      stateLabel = 'Active';
+      stateLabelClass = 'active';
+    }
+
+    const stateHtml = stateClickable
+      ? `<div class="agent-state agent-state-clickable" onclick="event.stopPropagation();openAgentDetail('${a.id}');setTimeout(()=>{const el=document.getElementById('heartbeat-section');if(el)el.scrollIntoView({behavior:'smooth',block:'start'})},400)" title="Click to configure heartbeat">${stateIcon}<span class="agent-state-label ${stateLabelClass}">${stateLabel}</span></div>`
+      : `<div class="agent-state">${stateIcon}<span class="agent-state-label ${stateLabelClass}">${stateLabel}</span></div>`;
+
     html += `<div class="agent-card glow-${status}" id="agent-card-${a.id}" style="animation-delay:${i * 0.08}s" onclick="selectAgent('${a.id}');openAgentDetail('${a.id}')">
         <div class="agent-card-header">
           <div class="agent-card-name">${esc(a.name)}</div>
-          <div class="agent-card-status"><span class="status-dot ${status}"></span><span class="status-badge ${status}">${status}</span></div>
+          ${stateHtml}
         </div>
         <div style="font-size:12px;color:var(--gray);margin-bottom:4px;display:flex;align-items:center;gap:6px">
           <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${provColor}"></span>
@@ -2801,7 +2892,7 @@ async function openAgentDetail(agentId) {
 
     // ── Heartbeat section ──
     const hb = hbRes.heartbeat;
-    html += '<div style="border-top:1px solid var(--card-border);margin-top:16px;padding-top:16px">';
+    html += '<div id="heartbeat-section" style="border-top:1px solid var(--card-border);margin-top:16px;padding-top:16px">';
     // Heading with pulsing heart + status badge
     const hbActive = hb && hb.enabled;
     const hbHeart = hbActive
@@ -3621,11 +3712,16 @@ async function executeKill() {
     await api('POST', `/api/agents/${killTargetId}/kill`);
     closeModal('modal-kill');
     toast('Agent terminated via NIRVANA kill switch', 'success');
-    // Red flash on card
+    // Death shake + skull transition on card
     const card = document.getElementById('agent-card-' + killTargetId);
     if (card) {
-      card.classList.add('kill-flash');
-      setTimeout(() => { card.classList.remove('kill-flash'); loadDashboard(); }, 600);
+      card.classList.add('death-shake');
+      // Immediately swap icon to skull
+      const stateEl = card.querySelector('.agent-state');
+      if (stateEl) {
+        stateEl.innerHTML = '<span class="agent-state-icon">\uD83D\uDC80</span><span class="agent-state-label killed">Killed</span>';
+      }
+      setTimeout(() => { card.classList.remove('death-shake'); loadDashboard(); }, 800);
     } else { loadDashboard(); }
     killTargetId = null;
   } catch (e) { toast('Failed to kill agent: ' + e.message, 'error'); }
@@ -3643,7 +3739,21 @@ async function reviveAgent(agentId, agentName) {
   try {
     await api('POST', `/api/agents/${agentId}/revive`);
     toast(`Agent "${agentName}" revived via NIRVANA`, 'success');
-    loadDashboard();
+    // Show ⚡ reviving state for 2.5 seconds, then transition
+    state.revivingAgents.add(agentId);
+    const card = document.getElementById('agent-card-' + agentId);
+    if (card) {
+      card.classList.add('revive-flash');
+      const stateEl = card.querySelector('.agent-state');
+      if (stateEl) {
+        stateEl.innerHTML = '<span class="agent-state-icon reviving">\u26A1</span><span class="agent-state-label reviving">Reviving\u2026</span>';
+      }
+    }
+    setTimeout(() => {
+      state.revivingAgents.delete(agentId);
+      if (card) card.classList.remove('revive-flash');
+      loadDashboard();
+    }, 2500);
   } catch (e) {
     toast('Failed to revive agent: ' + e.message, 'error');
   }
