@@ -18,6 +18,8 @@
   src="https://clerk.sammasuit.com/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
   type="text/javascript"
 ></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
 <style>
 :root {
   --bg: #06060E;
@@ -224,9 +226,13 @@ nav {
 }
 .chat-header .chat-close:hover { color: var(--white); }
 .chat-convos {
-  max-height: 160px; overflow-y: auto; border-bottom: 1px solid var(--card-border);
-  background: var(--bg);
+  overflow-y: auto; border-bottom: 1px solid var(--card-border);
+  background: var(--bg); flex-shrink: 0;
 }
+.chat-sidebar.convo-list-view .chat-convos { flex: 1; max-height: none; }
+.chat-sidebar.convo-list-view .chat-messages,
+.chat-sidebar.convo-list-view .chat-input-bar { display: none; }
+.chat-sidebar:not(.convo-list-view) .chat-convos { max-height: 160px; }
 .chat-convo-item {
   padding: 8px 20px; font-size: 12px; cursor: pointer;
   border-bottom: 1px solid rgba(30,30,58,0.5); transition: background 0.2s;
@@ -260,11 +266,46 @@ nav {
   align-self: flex-start; background: var(--bg);
   border: 1px solid var(--card-border); border-radius: 12px 12px 12px 4px;
 }
+.chat-msg.assistant pre {
+  background: #1a1a2e; border-radius: 6px; padding: 10px; overflow-x: auto;
+  font-family: 'JetBrains Mono', monospace; font-size: 13px; margin: 8px 0;
+}
+.chat-msg.assistant code {
+  background: #1a1a2e; padding: 2px 6px; border-radius: 3px;
+  font-family: 'JetBrains Mono', monospace; font-size: 13px;
+}
+.chat-msg.assistant pre code { background: none; padding: 0; }
+.chat-msg.assistant ul, .chat-msg.assistant ol { padding-left: 20px; margin: 8px 0; }
+.chat-msg.assistant a { color: #a855f7; text-decoration: underline; }
+.chat-msg.assistant strong { font-weight: 700; }
+.chat-msg.assistant em { font-style: italic; }
+.chat-msg.assistant p { margin: 6px 0; }
+.chat-msg.assistant p:first-child { margin-top: 0; }
+.chat-msg.assistant p:last-child { margin-bottom: 0; }
 .chat-msg .chat-meta {
   display: flex; gap: 4px; flex-wrap: wrap; align-items: center;
   margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--card-border);
 }
 .chat-msg .chat-meta .layer-badge { font-size: 9px; padding: 1px 6px; }
+.security-bar {
+  display: flex; width: 100%; height: 16px; align-items: flex-end;
+  gap: 1px; margin-top: 8px; cursor: pointer;
+}
+.security-bar .seg {
+  flex: 1; min-height: 2px; border-radius: 1px 1px 0 0;
+  transition: height 0.2s ease; position: relative;
+}
+.security-bar .seg.pass { height: 3px; }
+.security-bar .seg.warn { height: 8px; }
+.security-bar .seg.error { height: 16px; }
+.security-bar .seg.skip { height: 2px; opacity: 0.3; }
+.security-bar .seg:hover::after,
+.security-bar .seg:active::after {
+  content: attr(data-tip); position: absolute; bottom: 100%; left: 50%;
+  transform: translateX(-50%); background: #111; color: #fff;
+  padding: 4px 8px; border-radius: 4px; font-size: 11px;
+  white-space: nowrap; z-index: 100; pointer-events: none;
+}
 .chat-msg .metta-sig {
   margin-top: 6px; font-family: var(--font-mono); font-size: 10px;
   color: var(--gray-dim); cursor: pointer; padding: 4px 8px;
@@ -1361,7 +1402,8 @@ html.light .grid-bg { opacity: 0.3; }
     height: 100% !important; z-index: 9999 !important; border-radius: 0 !important;
     background: var(--bg2) !important;
   }
-  .chat-sidebar .chat-header .chat-back { display: flex; }
+  .chat-sidebar .chat-header #chat-back-btn { display: flex; }
+  .chat-sidebar.convo-list-view .chat-header #chat-back-btn { display: none; }
   .chat-sidebar .chat-header .chat-close { min-width: 44px; min-height: 44px; }
   .chat-messages {
     flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
@@ -1701,7 +1743,7 @@ html.light .grid-bg { opacity: 0.3; }
 <div class="chat-backdrop" id="chat-backdrop" onclick="closeChat()"></div>
 <div class="chat-sidebar" id="chat-sidebar">
   <div class="chat-header">
-    <button class="chat-close" onclick="closeChat()" title="Back" style="display:none" id="chat-back-btn">&#8592;</button>
+    <button class="chat-close" onclick="chatBackToList()" title="Conversations" style="display:none" id="chat-back-btn">&#8592;</button>
     <div style="flex:1;min-width:0;overflow:hidden">
       <h3 id="chat-agent-name" style="margin:0;font-size:16px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Agent</h3>
       <div id="chat-agent-model" style="font-size:11px;color:var(--gray);display:flex;align-items:center;gap:5px;margin-top:2px"></div>
@@ -2543,9 +2585,10 @@ async function openAgentDetail(agentId) {
   document.getElementById('detail-body').innerHTML = '<div class="loading-state"><div class="spinner"></div></div>';
 
   try {
-    const [agentRes, auditRes] = await Promise.all([
+    const [agentRes, auditRes, hbRes] = await Promise.all([
       api('GET', `/api/agents/${agentId}`),
-      api('GET', `/api/agents/${agentId}/audit?limit=10`)
+      api('GET', `/api/agents/${agentId}/audit?limit=10`),
+      api('GET', `/api/agents/${agentId}/heartbeat`).catch(() => ({ heartbeat: null })),
     ]);
 
     const a = agentRes.agent;
@@ -2628,6 +2671,43 @@ async function openAgentDetail(agentId) {
         <span class="detail-label">Created</span>
         <span class="detail-value">${a.created_at ? new Date(a.created_at).toLocaleString() : '—'}</span>
       </div>`;
+
+    // ── Heartbeat section ──
+    const hb = hbRes.heartbeat;
+    html += '<div style="border-top:1px solid var(--card-border);margin-top:16px;padding-top:16px">';
+    html += '<h4 style="font-size:14px;color:var(--gray);margin:0 0 12px">Heartbeat</h4>';
+    if (hb) {
+      const nextIn = hb.next_in_seconds != null && hb.enabled
+        ? (hb.next_in_seconds >= 3600 ? Math.floor(hb.next_in_seconds/3600)+'h '+Math.floor((hb.next_in_seconds%3600)/60)+'m' : Math.floor(hb.next_in_seconds/60)+'m')
+        : '';
+      const statusDot = hb.enabled ? '<span style="color:#22c55e">Enabled</span>' : '<span style="color:var(--gray-dim)">Disabled</span>';
+      const lastRun = hb.last_run_at ? new Date(hb.last_run_at).toLocaleString() : 'Never';
+      const lastCost = hb.last_cost_usd != null ? '$'+hb.last_cost_usd.toFixed(2) : '';
+      html += '<div class="detail-row"><span class="detail-label">Status</span><span>' + statusDot + (nextIn ? ' (next in '+nextIn+')' : '') + '</span></div>';
+      html += '<div class="detail-row"><span class="detail-label">Last Run</span><span>' + lastRun + (hb.last_result ? ' — ' + esc(hb.last_result) : '') + (lastCost ? ' ('+lastCost+')' : '') + '</span></div>';
+      html += '<div class="detail-row"><span class="detail-label">Interval</span><span>';
+      html += '<select class="login-input" id="hb-interval-'+a.id+'" style="width:120px;margin:0;padding:6px 10px;font-size:12px">';
+      [15,30,60,120,240,480].forEach(m => { html += '<option value="'+m+'"'+(hb.interval_minutes===m?' selected':'')+'>'+( m >= 60 ? (m/60)+'h' : m+'m')+'</option>'; });
+      html += '</select></span></div>';
+      html += '<div class="detail-row"><span class="detail-label">Cost Cap</span><span>';
+      html += '<select class="login-input" id="hb-cap-'+a.id+'" style="width:120px;margin:0;padding:6px 10px;font-size:12px">';
+      [0.10,0.25,0.50,1.00,2.00,5.00].forEach(c => { html += '<option value="'+c+'"'+(hb.max_cost_per_run_usd===c?' selected':'')+'>'+'$'+c.toFixed(2)+'</option>'; });
+      html += '</select></span></div>';
+      html += '<div style="margin-top:8px"><span class="detail-label" style="display:block;margin-bottom:4px">Prompt</span>';
+      html += '<textarea class="login-input" id="hb-prompt-'+a.id+'" rows="3" style="width:100%;margin:0;font-size:12px;resize:vertical">'+esc(hb.prompt)+'</textarea></div>';
+      html += '<div style="display:flex;gap:8px;margin-top:10px">';
+      html += '<button class="btn btn-primary" style="padding:6px 16px;font-size:12px" onclick="saveHeartbeat(\''+a.id+'\',true)">Save & Enable</button>';
+      html += '<button class="btn btn-ghost" style="padding:6px 16px;font-size:12px" onclick="triggerHeartbeat(\''+a.id+'\')">Trigger Now</button>';
+      if (hb.enabled) html += '<button class="btn btn-ghost" style="padding:6px 12px;font-size:12px;color:var(--red)" onclick="saveHeartbeat(\''+a.id+'\',false)">Disable</button>';
+      html += '</div>';
+    } else {
+      html += '<div style="margin-top:8px"><span class="detail-label" style="display:block;margin-bottom:4px">Prompt</span>';
+      html += '<textarea class="login-input" id="hb-prompt-'+a.id+'" rows="3" placeholder="What should this agent do on each heartbeat?" style="width:100%;margin:0;font-size:12px;resize:vertical"></textarea></div>';
+      html += '<div style="display:flex;gap:8px;margin-top:10px">';
+      html += '<button class="btn btn-primary" style="padding:6px 16px;font-size:12px" onclick="saveHeartbeat(\''+a.id+'\',true)">Create & Enable</button>';
+      html += '</div>';
+    }
+    html += '</div>';
 
     // Mini audit table
     const auditEntries = auditRes.audit || [];
@@ -2768,6 +2848,34 @@ async function removeBYOKKey(agentId) {
   }
 }
 
+// ── HEARTBEAT ──
+async function saveHeartbeat(agentId, enabled) {
+  const promptEl = document.getElementById('hb-prompt-' + agentId);
+  const intervalEl = document.getElementById('hb-interval-' + agentId);
+  const capEl = document.getElementById('hb-cap-' + agentId);
+  const prompt = promptEl ? promptEl.value.trim() : '';
+  if (!prompt) { toast('Heartbeat prompt is required', 'error'); return; }
+  try {
+    await api('POST', `/api/agents/${agentId}/heartbeat`, {
+      enabled: enabled,
+      interval_minutes: intervalEl ? parseInt(intervalEl.value) : 240,
+      prompt: prompt,
+      max_cost_per_run_usd: capEl ? parseFloat(capEl.value) : 0.50,
+    });
+    toast(enabled ? 'Heartbeat enabled' : 'Heartbeat disabled', 'success');
+    showAgentDetail(agentId);
+  } catch (e) { toast('Failed: ' + e.message, 'error'); }
+}
+
+async function triggerHeartbeat(agentId) {
+  toast('Triggering heartbeat...', 'info');
+  try {
+    const res = await api('POST', `/api/agents/${agentId}/heartbeat/trigger`);
+    toast('Heartbeat: ' + (res.last_result || 'done') + (res.last_cost_usd ? ' ($'+res.last_cost_usd.toFixed(2)+')' : ''), 'success');
+    showAgentDetail(agentId);
+  } catch (e) { toast('Failed: ' + e.message, 'error'); }
+}
+
 // ── CHAT SIDEBAR ──
 let chatAgentId = null;
 let chatConversationId = null;
@@ -2792,11 +2900,15 @@ function openChat(agentId, agentName) {
   }
   document.getElementById('chat-messages').innerHTML = '';
   document.getElementById('chat-input').value = '';
-  document.getElementById('chat-sidebar').classList.add('open');
+  const sidebar = document.getElementById('chat-sidebar');
+  sidebar.classList.add('open');
   document.getElementById('chat-backdrop').classList.add('open');
-  // Show back button on mobile
-  const backBtn = document.getElementById('chat-back-btn');
-  if (backBtn && window.innerWidth <= 768) backBtn.style.display = 'flex';
+  // On mobile, start with conversation list view
+  if (window.innerWidth <= 768) {
+    sidebar.classList.add('convo-list-view');
+  } else {
+    sidebar.classList.remove('convo-list-view');
+  }
   document.getElementById('chat-input').focus();
   loadConversations(agentId);
 }
@@ -2807,10 +2919,20 @@ function openChatFromDetail() {
 }
 
 function closeChat() {
-  document.getElementById('chat-sidebar').classList.remove('open');
+  const sidebar = document.getElementById('chat-sidebar');
+  sidebar.classList.remove('open');
+  sidebar.classList.remove('convo-list-view');
   document.getElementById('chat-backdrop').classList.remove('open');
   chatAgentId = null;
   chatConversationId = null;
+}
+
+function chatBackToList() {
+  const sidebar = document.getElementById('chat-sidebar');
+  sidebar.classList.add('convo-list-view');
+  chatConversationId = null;
+  document.getElementById('chat-messages').innerHTML = '';
+  loadConversations(chatAgentId);
 }
 
 // iOS virtual keyboard handling for chat
@@ -2861,6 +2983,8 @@ async function loadConversations(agentId) {
 
 async function loadConversation(conversationId) {
   chatConversationId = conversationId;
+  // Switch to message view (exits convo-list-view on mobile)
+  document.getElementById('chat-sidebar').classList.remove('convo-list-view');
   const msgEl = document.getElementById('chat-messages');
   msgEl.innerHTML = '<div class="loading-state"><div class="spinner"></div></div>';
   try {
@@ -2876,11 +3000,37 @@ async function loadConversation(conversationId) {
 
 function startNewConversation() {
   chatConversationId = null;
+  document.getElementById('chat-sidebar').classList.remove('convo-list-view');
   document.getElementById('chat-messages').innerHTML = '';
   document.getElementById('chat-input').value = '';
   document.getElementById('chat-input').focus();
-  // Deselect active convo
   document.querySelectorAll('.chat-convo-item').forEach(c => c.classList.remove('active'));
+}
+
+const LAYER_ORDER = ['SUTRA','NIRVANA','SANGHA','KARMA','DHARMA','BODHI','METTA','SILA'];
+const LAYER_COLORS = { sutra:'#06b6d4', nirvana:'#ef4444', sangha:'#22c55e', karma:'#eab308', dharma:'#3b82f6', bodhi:'#8b5cf6', metta:'#f97316', sila:'#ec4899' };
+const LAYER_TIPS = { SUTRA:'Gateway passed', NIRVANA:'Agent alive', SANGHA:'Skills approved', KARMA:'Budget OK', DHARMA:'Policy enforced', BODHI:'Sandbox clear', METTA:'Signed', SILA:'Audited' };
+
+function renderSecurityBar(layers) {
+  const bar = document.createElement('div');
+  bar.className = 'security-bar';
+  const passed = new Set((layers || []).map(l => l.toUpperCase()));
+  LAYER_ORDER.forEach(l => {
+    const seg = document.createElement('div');
+    const ok = passed.has(l);
+    seg.className = 'seg ' + (ok ? 'pass' : 'skip');
+    seg.style.background = ok ? LAYER_COLORS[l.toLowerCase()] : '#333';
+    seg.setAttribute('data-tip', l + (ok ? ' \u2713 \u2014 ' + (LAYER_TIPS[l]||'') : ' \u2014 skipped'));
+    bar.appendChild(seg);
+  });
+  return bar;
+}
+
+function renderMarkdown(text) {
+  if (typeof marked !== 'undefined' && typeof DOMPurify !== 'undefined') {
+    return DOMPurify.sanitize(marked.parse(text));
+  }
+  return esc(text);
 }
 
 function addChatMsg(role, text, layers, mettaSig) {
@@ -2889,21 +3039,18 @@ function addChatMsg(role, text, layers, mettaSig) {
   div.className = 'chat-msg ' + role;
 
   const textNode = document.createElement('span');
-  textNode.textContent = text;
+  if (role === 'assistant') {
+    textNode.innerHTML = renderMarkdown(text);
+    textNode.style.whiteSpace = 'normal';
+  } else {
+    textNode.textContent = text;
+  }
   div.appendChild(textNode);
 
   if (role === 'assistant') {
-    // Layer badges
+    // Security status bar (replaces layer badges)
     if (layers && layers.length) {
-      const meta = document.createElement('div');
-      meta.className = 'chat-meta';
-      layers.forEach(l => {
-        const badge = document.createElement('span');
-        badge.className = 'layer-badge ' + l.toLowerCase();
-        badge.textContent = l + ' \u2713';
-        meta.appendChild(badge);
-      });
-      div.appendChild(meta);
+      div.appendChild(renderSecurityBar(layers));
     }
     // Metta signature collapsible
     if (mettaSig) {
@@ -2913,7 +3060,6 @@ function addChatMsg(role, text, layers, mettaSig) {
       sigDiv.innerHTML = `<span class="metta-short">METTA sig:${esc(mettaSig.slice(0, 16))}\u2026</span><span class="metta-full">${esc(mettaSig)}</span>`;
       div.appendChild(sigDiv);
     }
-    // Check for exec approval (dangerous commands in response)
     checkExecApproval(text);
   }
 
@@ -3014,11 +3160,11 @@ async function sendChatMsg() {
         el.scrollTop = el.scrollHeight;
       }
       cursor.remove();
+      // Render final markdown
+      textSpan.innerHTML = renderMarkdown(fullText);
+      textSpan.style.whiteSpace = 'normal';
       if (streamLayers.length) {
-        const meta = document.createElement('div');
-        meta.className = 'chat-meta';
-        streamLayers.forEach(l => { const b = document.createElement('span'); b.className = 'layer-badge ' + l.toLowerCase(); b.textContent = l + ' \u2713'; meta.appendChild(b); });
-        msgDiv.appendChild(meta);
+        msgDiv.appendChild(renderSecurityBar(streamLayers));
       }
       if (streamSig) {
         const sigDiv = document.createElement('div');
