@@ -2585,10 +2585,12 @@ async function openAgentDetail(agentId) {
   document.getElementById('detail-body').innerHTML = '<div class="loading-state"><div class="spinner"></div></div>';
 
   try {
-    const [agentRes, auditRes, hbRes] = await Promise.all([
+    const [agentRes, auditRes, hbRes, tgLinksRes, slackLinksRes] = await Promise.all([
       api('GET', `/api/agents/${agentId}`),
       api('GET', `/api/agents/${agentId}/audit?limit=10`),
       api('GET', `/api/agents/${agentId}/heartbeat`).catch(() => ({ heartbeat: null })),
+      api('GET', `/api/channels/telegram/links`).catch(() => ({ links: [] })),
+      api('GET', `/api/channels/slack/links`).catch(() => ({ links: [] })),
     ]);
 
     const a = agentRes.agent;
@@ -2707,6 +2709,56 @@ async function openAgentDetail(agentId) {
       html += '<button class="btn btn-primary" style="padding:6px 16px;font-size:12px" onclick="saveHeartbeat(\''+a.id+'\',true)">Create & Enable</button>';
       html += '</div>';
     }
+    html += '</div>';
+
+    // ── Channel Integrations section ──
+    const tgLinks = (tgLinksRes.links || []).filter(l => l.agent_id === a.id);
+    const slackLinks = (slackLinksRes.links || []).filter(l => l.agent_id === a.id);
+
+    html += '<div style="border-top:1px solid var(--border);margin-top:20px;padding-top:16px">';
+    html += '<h4 style="margin:0 0 12px;font-size:14px;color:var(--gray)">Channel Integrations</h4>';
+
+    // Telegram
+    html += '<div style="margin-bottom:16px">';
+    html += '<span class="detail-label" style="font-weight:600">Telegram</span>';
+    if (tgLinks.length > 0) {
+      for (const tg of tgLinks) {
+        html += '<div style="display:flex;align-items:center;gap:8px;margin-top:6px">';
+        html += '<span style="color:var(--green);font-size:11px">&#9679;</span>';
+        html += '<span style="font-size:13px">@'+esc(tg.bot_username || 'unknown')+'</span>';
+        html += '<button class="btn btn-ghost" style="padding:2px 8px;font-size:11px;color:var(--red)" onclick="unlinkTelegram(\''+tg.id+'\',\''+a.id+'\')">Disconnect</button>';
+        html += '</div>';
+      }
+    } else {
+      html += '<div style="margin-top:6px">';
+      html += '<input class="login-input" id="tg-token-'+a.id+'" placeholder="Bot token from @BotFather" style="width:100%;margin:0 0 6px;font-size:12px">';
+      html += '<button class="btn btn-primary" style="padding:4px 12px;font-size:12px" onclick="linkTelegram(\''+a.id+'\')">Connect Telegram Bot</button>';
+      html += '</div>';
+    }
+    html += '</div>';
+
+    // Slack
+    html += '<div style="margin-bottom:8px">';
+    html += '<span class="detail-label" style="font-weight:600">Slack</span>';
+    if (slackLinks.length > 0) {
+      for (const sl of slackLinks) {
+        html += '<div style="display:flex;align-items:center;gap:8px;margin-top:6px">';
+        html += '<span style="color:var(--green);font-size:11px">&#9679;</span>';
+        html += '<span style="font-size:13px">'+esc(sl.team_name || 'Workspace')+'</span>';
+        html += '<button class="btn btn-ghost" style="padding:2px 8px;font-size:11px;color:var(--red)" onclick="unlinkSlack(\''+sl.id+'\',\''+a.id+'\')">Disconnect</button>';
+        html += '</div>';
+        html += '<div style="margin-top:4px;font-size:11px;color:var(--gray)">Event URL: <code style="font-size:10px">'+window.API_BASE+'/api/channels/slack/events</code></div>';
+      }
+    } else {
+      html += '<div style="margin-top:6px">';
+      html += '<input class="login-input" id="slack-token-'+a.id+'" placeholder="Bot Token (xoxb-...)" style="width:100%;margin:0 0 4px;font-size:12px">';
+      html += '<input class="login-input" id="slack-secret-'+a.id+'" placeholder="Signing Secret" style="width:100%;margin:0 0 6px;font-size:12px">';
+      html += '<button class="btn btn-primary" style="padding:4px 12px;font-size:12px" onclick="linkSlack(\''+a.id+'\')">Connect Slack App</button>';
+      html += '<div style="margin-top:4px;font-size:11px;color:var(--gray)">Create a Slack App at <a href="https://api.slack.com/apps" target="_blank" style="color:var(--purple)">api.slack.com/apps</a></div>';
+      html += '</div>';
+    }
+    html += '</div>';
+
     html += '</div>';
 
     // Mini audit table
@@ -2873,6 +2925,52 @@ async function triggerHeartbeat(agentId) {
     const res = await api('POST', `/api/agents/${agentId}/heartbeat/trigger`);
     toast('Heartbeat: ' + (res.last_result || 'done') + (res.last_cost_usd ? ' ($'+res.last_cost_usd.toFixed(2)+')' : ''), 'success');
     showAgentDetail(agentId);
+  } catch (e) { toast('Failed: ' + e.message, 'error'); }
+}
+
+// ── CHANNEL INTEGRATIONS ──
+async function linkTelegram(agentId) {
+  const token = document.getElementById('tg-token-' + agentId)?.value?.trim();
+  if (!token) { toast('Enter a bot token from @BotFather', 'error'); return; }
+  toast('Linking Telegram bot...', 'info');
+  try {
+    const res = await api('POST', '/api/channels/telegram/link', { agent_id: agentId, bot_token: token });
+    const webhookUrl = (res.webhook_url || '').replace('http://', 'https://');
+    toast('Linked @' + (res.link?.bot_username || 'bot') + '. Setting webhook...', 'success');
+    // Set webhook with Telegram API directly (Railway returns http:// internally)
+    await fetch('https://api.telegram.org/bot' + token + '/setWebhook?url=' + encodeURIComponent(webhookUrl));
+    toast('Telegram bot connected!', 'success');
+    openAgentDetail(agentId);
+  } catch (e) { toast('Link failed: ' + e.message, 'error'); }
+}
+
+async function unlinkTelegram(linkId, agentId) {
+  if (!confirm('Disconnect this Telegram bot?')) return;
+  try {
+    await api('DELETE', '/api/channels/telegram/link/' + linkId);
+    toast('Telegram bot disconnected', 'success');
+    openAgentDetail(agentId);
+  } catch (e) { toast('Failed: ' + e.message, 'error'); }
+}
+
+async function linkSlack(agentId) {
+  const token = document.getElementById('slack-token-' + agentId)?.value?.trim();
+  const secret = document.getElementById('slack-secret-' + agentId)?.value?.trim();
+  if (!token || !secret) { toast('Enter both Bot Token and Signing Secret', 'error'); return; }
+  toast('Linking Slack workspace...', 'info');
+  try {
+    const res = await api('POST', '/api/channels/slack/link', { agent_id: agentId, bot_token: token, signing_secret: secret });
+    toast('Connected to ' + (res.link?.team_name || 'workspace') + '! Set the Event URL in your Slack app settings.', 'success');
+    openAgentDetail(agentId);
+  } catch (e) { toast('Link failed: ' + e.message, 'error'); }
+}
+
+async function unlinkSlack(linkId, agentId) {
+  if (!confirm('Disconnect this Slack workspace?')) return;
+  try {
+    await api('DELETE', '/api/channels/slack/link/' + linkId);
+    toast('Slack workspace disconnected', 'success');
+    openAgentDetail(agentId);
   } catch (e) { toast('Failed: ' + e.message, 'error'); }
 }
 
