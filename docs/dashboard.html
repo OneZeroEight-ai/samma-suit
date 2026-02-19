@@ -2726,37 +2726,71 @@ async function openAgentDetail(agentId) {
     // ── Heartbeat section ──
     const hb = hbRes.heartbeat;
     html += '<div style="border-top:1px solid var(--card-border);margin-top:16px;padding-top:16px">';
-    html += '<h4 style="font-size:14px;color:var(--gray);margin:0 0 12px">Heartbeat</h4>';
+    // Heading with status badge
+    const hbBadge = hb
+      ? (hb.enabled
+        ? '<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(5,150,105,0.15);color:#22c55e;margin-left:8px">Active</span>'
+        : '<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(136,136,170,0.15);color:var(--gray-dim);margin-left:8px">Disabled</span>')
+      : '';
+    html += '<h4 style="font-size:14px;color:var(--gray);margin:0 0 12px;display:flex;align-items:center">Heartbeat' + hbBadge + '</h4>';
     if (hb) {
-      const nextIn = hb.next_in_seconds != null && hb.enabled
-        ? (hb.next_in_seconds >= 3600 ? Math.floor(hb.next_in_seconds/3600)+'h '+Math.floor((hb.next_in_seconds%3600)/60)+'m' : Math.floor(hb.next_in_seconds/60)+'m')
-        : '';
-      const statusDot = hb.enabled ? '<span style="color:#22c55e">Enabled</span>' : '<span style="color:var(--gray-dim)">Disabled</span>';
+      // -- Last run / next run info --
       const lastRun = hb.last_run_at ? new Date(hb.last_run_at).toLocaleString() : 'Never';
-      const lastCost = hb.last_cost_usd != null ? '$'+hb.last_cost_usd.toFixed(2) : '';
-      html += '<div class="detail-row"><span class="detail-label">Status</span><span>' + statusDot + (nextIn ? ' (next in '+nextIn+')' : '') + '</span></div>';
-      html += '<div class="detail-row"><span class="detail-label">Last Run</span><span>' + lastRun + (hb.last_result ? ' — ' + esc(hb.last_result) : '') + (lastCost ? ' ('+lastCost+')' : '') + '</span></div>';
-      html += '<div class="detail-row"><span class="detail-label">Interval</span><span>';
-      html += '<select class="login-input" id="hb-interval-'+a.id+'" style="width:120px;max-width:100%;margin:0;padding:6px 10px;font-size:12px">';
-      [15,30,60,120,240,480].forEach(m => { html += '<option value="'+m+'"'+(hb.interval_minutes===m?' selected':'')+'>'+( m >= 60 ? (m/60)+'h' : m+'m')+'</option>'; });
+      const lastCost = hb.last_cost_usd != null ? '$' + hb.last_cost_usd.toFixed(2) : '';
+      const lastResultBadge = hb.last_result
+        ? (hb.last_result === 'Success'
+          ? '<span style="color:#22c55e;font-size:12px;margin-left:4px">Success</span>'
+          : '<span style="color:var(--red);font-size:12px;margin-left:4px">' + esc(hb.last_result) + '</span>')
+        : '';
+      html += '<div class="detail-row"><span class="detail-label">Last Run</span><span style="font-size:13px">' + lastRun + lastResultBadge + (lastCost ? ' <span style="color:var(--gray-dim);font-size:12px">(' + lastCost + ')</span>' : '') + '</span></div>';
+      if (hb.enabled && hb.next_run_at) {
+        const nextDate = new Date(hb.next_run_at);
+        const nextIn = hb.next_in_seconds != null
+          ? (hb.next_in_seconds >= 3600 ? Math.floor(hb.next_in_seconds/3600)+'h '+Math.floor((hb.next_in_seconds%3600)/60)+'m' : Math.floor(hb.next_in_seconds/60)+'m')
+          : '';
+        html += '<div class="detail-row"><span class="detail-label">Next Run</span><span style="font-size:13px">' + nextDate.toLocaleString() + (nextIn ? ' <span style="color:var(--cyan);font-size:12px">(in ' + nextIn + ')</span>' : '') + '</span></div>';
+      }
+      // -- Schedule selectors --
+      html += '<div class="detail-row"><span class="detail-label">Frequency</span><span>';
+      html += '<select class="login-input" id="hb-interval-'+a.id+'" style="width:140px;max-width:100%;margin:0;padding:6px 10px;font-size:12px">';
+      [{v:15,l:'Every 15 min'},{v:30,l:'Every 30 min'},{v:60,l:'Every hour'},{v:120,l:'Every 2 hours'},{v:240,l:'Every 4 hours'},{v:480,l:'Every 8 hours'},{v:1440,l:'Daily'}].forEach(o => {
+        html += '<option value="'+o.v+'"'+(hb.interval_minutes===o.v?' selected':'')+'>'+o.l+'</option>';
+      });
       html += '</select></span></div>';
       html += '<div class="detail-row"><span class="detail-label">Cost Cap</span><span>';
-      html += '<select class="login-input" id="hb-cap-'+a.id+'" style="width:120px;max-width:100%;margin:0;padding:6px 10px;font-size:12px">';
-      [0.10,0.25,0.50,1.00,2.00,5.00].forEach(c => { html += '<option value="'+c+'"'+(hb.max_cost_per_run_usd===c?' selected':'')+'>'+'$'+c.toFixed(2)+'</option>'; });
+      html += '<select class="login-input" id="hb-cap-'+a.id+'" style="width:140px;max-width:100%;margin:0;padding:6px 10px;font-size:12px">';
+      [0.10,0.25,0.50,1.00,2.00,5.00].forEach(c => { html += '<option value="'+c+'"'+(hb.max_cost_per_run_usd===c?' selected':'')+'>'+'$'+c.toFixed(2)+' per run</option>'; });
       html += '</select></span></div>';
+      // -- Prompt (read-only by default, editable on click) --
       html += '<div style="margin-top:8px"><span class="detail-label" style="display:block;margin-bottom:4px">Prompt</span>';
-      html += '<textarea class="login-input" id="hb-prompt-'+a.id+'" rows="3" style="width:100%;margin:0;font-size:12px;resize:vertical">'+esc(hb.prompt)+'</textarea></div>';
-      html += '<div style="display:flex;gap:8px;margin-top:10px">';
-      html += '<button class="btn btn-primary" style="padding:6px 16px;font-size:12px" onclick="saveHeartbeat(\''+a.id+'\',true)">Save & Enable</button>';
+      html += '<div id="hb-prompt-display-'+a.id+'" onclick="document.getElementById(\'hb-prompt-display-'+a.id+'\').style.display=\'none\';document.getElementById(\'hb-prompt-edit-'+a.id+'\').style.display=\'block\';document.getElementById(\'hb-prompt-'+a.id+'\').focus()" style="width:100%;padding:10px 14px;background:var(--bg2);border:1px solid var(--card-border);border-radius:8px;color:var(--white);font-family:var(--font-mono);font-size:12px;line-height:1.5;min-height:44px;white-space:pre-wrap;word-wrap:break-word;cursor:pointer" title="Click to edit">'+esc(hb.prompt)+'</div>';
+      html += '<div id="hb-prompt-edit-'+a.id+'" style="display:none">';
+      html += '<textarea class="login-input" id="hb-prompt-'+a.id+'" rows="3" style="width:100%;margin:0;font-size:12px;resize:vertical">'+esc(hb.prompt)+'</textarea></div></div>';
+      // -- Action buttons --
+      html += '<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">';
+      html += '<button class="btn btn-primary" style="padding:6px 16px;font-size:12px" onclick="saveHeartbeat(\''+a.id+'\',true)">Save</button>';
       html += '<button class="btn btn-ghost" style="padding:6px 16px;font-size:12px" onclick="triggerHeartbeat(\''+a.id+'\')">Trigger Now</button>';
-      if (hb.enabled) html += '<button class="btn btn-ghost" style="padding:6px 12px;font-size:12px;color:var(--red)" onclick="saveHeartbeat(\''+a.id+'\',false)">Disable</button>';
+      if (hb.enabled) {
+        html += '<button class="btn btn-ghost" style="padding:6px 12px;font-size:12px;color:var(--orange)" onclick="saveHeartbeat(\''+a.id+'\',false)">Disable</button>';
+      } else {
+        html += '<button class="btn btn-ghost" style="padding:6px 12px;font-size:12px;color:var(--green)" onclick="saveHeartbeat(\''+a.id+'\',true)">Enable</button>';
+      }
+      html += '<button class="btn btn-ghost" style="padding:6px 12px;font-size:12px;color:var(--red)" onclick="deleteHeartbeat(\''+a.id+'\')">Delete</button>';
       html += '</div>';
     } else {
+      // -- No heartbeat yet — creation form --
+      html += '<div style="margin-top:4px">';
+      html += '<div class="detail-row"><span class="detail-label">Frequency</span><span>';
+      html += '<select class="login-input" id="hb-interval-'+a.id+'" style="width:140px;max-width:100%;margin:0;padding:6px 10px;font-size:12px">';
+      [{v:60,l:'Every hour'},{v:15,l:'Every 15 min'},{v:30,l:'Every 30 min'},{v:120,l:'Every 2 hours'},{v:240,l:'Every 4 hours'},{v:480,l:'Every 8 hours'},{v:1440,l:'Daily'}].forEach(o => {
+        html += '<option value="'+o.v+'">'+o.l+'</option>';
+      });
+      html += '</select></span></div>';
       html += '<div style="margin-top:8px"><span class="detail-label" style="display:block;margin-bottom:4px">Prompt</span>';
       html += '<textarea class="login-input" id="hb-prompt-'+a.id+'" rows="3" placeholder="What should this agent do on each heartbeat?" style="width:100%;margin:0;font-size:12px;resize:vertical"></textarea></div>';
       html += '<div style="display:flex;gap:8px;margin-top:10px">';
       html += '<button class="btn btn-primary" style="padding:6px 16px;font-size:12px" onclick="saveHeartbeat(\''+a.id+'\',true)">Create & Enable</button>';
-      html += '</div>';
+      html += '</div></div>';
     }
     html += '</div>';
 
@@ -2964,16 +2998,26 @@ async function saveHeartbeat(agentId, enabled) {
       max_cost_per_run_usd: capEl ? parseFloat(capEl.value) : 0.50,
     });
     toast(enabled ? 'Heartbeat enabled' : 'Heartbeat disabled', 'success');
-    showAgentDetail(agentId);
+    openAgentDetail(agentId);
   } catch (e) { toast('Failed: ' + e.message, 'error'); }
 }
 
 async function triggerHeartbeat(agentId) {
-  toast('Triggering heartbeat...', 'info');
+  toast('Heartbeat triggered — running in background...', 'info');
   try {
-    const res = await api('POST', `/api/agents/${agentId}/heartbeat/trigger`);
-    toast('Heartbeat: ' + (res.last_result || 'done') + (res.last_cost_usd ? ' ($'+res.last_cost_usd.toFixed(2)+')' : ''), 'success');
-    showAgentDetail(agentId);
+    await api('POST', `/api/agents/${agentId}/heartbeat/trigger`);
+    toast('Heartbeat running. Refresh in a minute to see result.', 'success');
+    // Auto-refresh detail after 5 seconds to show "in progress" state
+    setTimeout(() => openAgentDetail(agentId), 5000);
+  } catch (e) { toast('Failed: ' + e.message, 'error'); }
+}
+
+async function deleteHeartbeat(agentId) {
+  if (!confirm('Delete this heartbeat? This cannot be undone.')) return;
+  try {
+    await api('DELETE', `/api/agents/${agentId}/heartbeat`);
+    toast('Heartbeat deleted', 'success');
+    openAgentDetail(agentId);
   } catch (e) { toast('Failed: ' + e.message, 'error'); }
 }
 
