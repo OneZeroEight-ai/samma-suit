@@ -256,6 +256,7 @@ nav {
 .chat-msg {
   max-width: 85%; padding: 12px 16px; border-radius: 12px;
   font-size: 14px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;
+  overflow-wrap: break-word; overflow-x: hidden;
   opacity: 0; animation: slideInUp 0.3s ease forwards;
 }
 .chat-msg.user {
@@ -269,6 +270,7 @@ nav {
 .chat-msg.assistant pre {
   background: #1a1a2e; border-radius: 6px; padding: 10px; overflow-x: auto;
   font-family: 'JetBrains Mono', monospace; font-size: 13px; margin: 8px 0;
+  max-width: 100%; white-space: pre-wrap; word-wrap: break-word;
 }
 .chat-msg.assistant code {
   background: #1a1a2e; padding: 2px 6px; border-radius: 3px;
@@ -1026,6 +1028,7 @@ select.audit-filter {
   width: 100%;
   max-height: 85vh;
   overflow-y: auto;
+  overflow-x: hidden;
   animation: fadeIn 0.3s ease-out;
 }
 
@@ -1410,14 +1413,15 @@ html.light .grid-bg { opacity: 0.3; }
     padding-bottom: 140px;
   }
   .chat-input-bar {
-    position: fixed !important; bottom: 20px; left: 0; right: 0;
+    position: fixed !important; bottom: 0; left: 0; right: 0;
     padding: 12px;
-    padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 60px);
+    padding-bottom: calc(env(safe-area-inset-bottom, 10px) + 10px);
     margin-bottom: 0;
     background: var(--bg2) !important;
     z-index: 10000;
     border-top: 1px solid var(--card-border);
   }
+  .chat-input-bar button { flex-shrink: 0; white-space: nowrap; }
   /* Content containers — prevent horizontal overflow */
   .dashboard-container, .overview-grid, .agent-cards, .billing-grid,
   .audit-section, .audit-filters, .cost-section, .skill-cards {
@@ -1434,11 +1438,56 @@ html.light .grid-bg { opacity: 0.3; }
   .cost-top-row { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 600px) {
-  nav { padding: 16px 20px; }
-  .dashboard-container { padding: 80px 16px calc(env(safe-area-inset-bottom, 34px) + 40px); }
-  .login-card { padding: 32px 24px; margin: 0 16px; }
+  nav { padding: 16px 12px; }
+  .dashboard-container { padding: 80px 10px calc(env(safe-area-inset-bottom, 34px) + 40px); }
+  .login-card { padding: 32px 20px; margin: 0 10px; }
   .overview-grid { grid-template-columns: 1fr 1fr; }
   .cost-top-row { grid-template-columns: 1fr 1fr; }
+  .overview-card { padding: 16px; }
+  .agent-card { padding: 16px; }
+  /* Chat sidebar — full-screen on all small devices */
+  .chat-sidebar {
+    position: fixed !important;
+    top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
+    width: 100% !important; max-width: 100% !important;
+    height: 100% !important; z-index: 9999 !important; border-radius: 0 !important;
+  }
+  .chat-input-bar {
+    position: fixed !important; bottom: 0; left: 0; right: 0;
+    padding: 10px;
+    padding-bottom: calc(env(safe-area-inset-bottom, 10px) + 10px);
+    margin-bottom: 0;
+    background: var(--bg2) !important;
+    z-index: 10000;
+    border-top: 1px solid var(--card-border);
+  }
+  .chat-input-bar textarea { font-size: 16px; min-height: 40px; padding: 10px 12px; }
+  .chat-input-bar button { padding: 10px 16px; font-size: 13px; flex-shrink: 0; white-space: nowrap; }
+  .chat-messages { padding-bottom: 120px; }
+  /* Modal — full-width on small screens */
+  .modal-content { max-width: calc(100vw - 20px) !important; padding: 20px !important; margin: 10px; }
+  /* Detail rows wrap on narrow screens */
+  .detail-row { flex-wrap: wrap; gap: 4px; }
+  .detail-row .detail-label { flex-basis: 100%; }
+  /* Agent spend bars */
+  .agent-spend-name { width: 80px; font-size: 12px; }
+  .agent-spend-amount { width: 60px; font-size: 11px; }
+  /* Audit table */
+  .audit-export-dropdown { min-width: auto; }
+  /* Section header wraps */
+  .section-header { flex-wrap: wrap; gap: 8px; }
+  #skill-search { width: 100% !important; }
+  /* Tab bar scrollable */
+  .tab-bar { overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; }
+}
+@media (max-width: 400px) {
+  .overview-grid { grid-template-columns: 1fr; gap: 10px; }
+  .cost-top-row { grid-template-columns: 1fr; }
+  .dash-header { flex-wrap: wrap; }
+  .dash-actions .btn-sm { padding: 3px 6px; font-size: 9px; }
+  .agent-card-name { font-size: 15px; }
+  .btn { padding: 10px 16px; font-size: 13px; }
+  .chat-msg { max-width: 92%; padding: 10px 12px; font-size: 13px; }
 }
 /* iPhone landscape demo — 844×390 */
 @media (max-height: 500px) and (orientation: landscape) {
@@ -1582,7 +1631,7 @@ html.light .grid-bg { opacity: 0.3; }
   <div class="tab-panel" id="tab-skills">
     <div class="section-header">
       <h3>Skill Browser</h3>
-      <input type="text" class="audit-filter" id="skill-search" placeholder="Search skills..." style="width:220px" oninput="filterSkills()">
+      <input type="text" class="audit-filter" id="skill-search" placeholder="Search skills..." style="width:220px;max-width:100%" oninput="filterSkills()">
     </div>
     <div class="audit-filters" id="skill-filters">
       <select class="audit-filter" id="skill-filter-source" onchange="filterSkills()">
@@ -2623,7 +2672,7 @@ async function openAgentDetail(agentId) {
           <span style="color:var(--gray);font-size:14px">Agent Instructions</span>
           <button class="btn btn-ghost" style="padding:4px 12px;font-size:11px" id="btn-edit-prompt" onclick="togglePromptEdit('${a.id}')">Edit</button>
         </div>
-        <div id="detail-system-prompt" data-value="${esc(a.system_prompt || '').replace(/"/g, '&quot;')}" style="width:100%;padding:10px 14px;background:var(--bg2);border:1px solid var(--card-border);border-radius:8px;color:var(--white);font-family:var(--font-mono);font-size:13px;line-height:1.5;min-height:60px;white-space:pre-wrap;word-wrap:break-word">${esc(a.system_prompt || '') || '<span style="color:var(--gray-dim)">No instructions set</span>'}</div>
+        <div id="detail-system-prompt" data-value="${esc(a.system_prompt || '').replace(/"/g, '&quot;')}" style="width:100%;max-width:100%;padding:10px 14px;background:var(--bg2);border:1px solid var(--card-border);border-radius:8px;color:var(--white);font-family:var(--font-mono);font-size:13px;line-height:1.5;min-height:60px;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:break-word;overflow-x:hidden">${esc(a.system_prompt || '') || '<span style="color:var(--gray-dim)">No instructions set</span>'}</div>
         <button class="btn btn-primary" style="padding:6px 16px;font-size:12px;margin-top:8px;display:none" id="btn-save-prompt" onclick="savePrompt('${a.id}')">Save</button>
       </div>
       <div class="detail-row">
@@ -2641,7 +2690,7 @@ async function openAgentDetail(agentId) {
       <div class="detail-row">
         <span class="detail-label">Budget Used</span>
         <span>
-          <span class="budget-bar" style="width:120px"><span class="budget-bar-fill ${budgetClass}" style="width:${budgetPct}%"></span></span>
+          <span class="budget-bar" style="width:80px;max-width:30vw"><span class="budget-bar-fill ${budgetClass}" style="width:${budgetPct}%"></span></span>
           <span style="font-size:13px;margin-left:8px">$${(a.total_cost_usd||0).toFixed(2)} / $${(a.monthly_budget_usd||0).toFixed(2)}</span>
         </span>
       </div>
@@ -2652,8 +2701,8 @@ async function openAgentDetail(agentId) {
           : '<span style="color:var(--gray-dim)">Not set — using platform key</span>'}</span>
       </div>
       <div class="detail-row" style="flex-direction:column;align-items:flex-start;gap:8px">
-        <div style="display:flex;align-items:center;gap:8px;width:100%">
-          <select class="login-input" id="byok-provider-${a.id}" style="flex:0 0 130px;margin:0;font-size:13px;padding:8px 12px" onchange="onByokProviderChange('${a.id}')">
+        <div style="display:flex;align-items:center;gap:8px;width:100%;flex-wrap:wrap">
+          <select class="login-input" id="byok-provider-${a.id}" style="flex:0 1 130px;min-width:100px;margin:0;font-size:13px;padding:8px 12px" onchange="onByokProviderChange('${a.id}')">
             <option value="anthropic"${(a.provider||'anthropic')==='anthropic'?' selected':''}>Anthropic</option>
             <option value="openai"${a.provider==='openai'?' selected':''}>OpenAI</option>
             <option value="google"${a.provider==='google'?' selected':''}>Google</option>
@@ -2688,11 +2737,11 @@ async function openAgentDetail(agentId) {
       html += '<div class="detail-row"><span class="detail-label">Status</span><span>' + statusDot + (nextIn ? ' (next in '+nextIn+')' : '') + '</span></div>';
       html += '<div class="detail-row"><span class="detail-label">Last Run</span><span>' + lastRun + (hb.last_result ? ' — ' + esc(hb.last_result) : '') + (lastCost ? ' ('+lastCost+')' : '') + '</span></div>';
       html += '<div class="detail-row"><span class="detail-label">Interval</span><span>';
-      html += '<select class="login-input" id="hb-interval-'+a.id+'" style="width:120px;margin:0;padding:6px 10px;font-size:12px">';
+      html += '<select class="login-input" id="hb-interval-'+a.id+'" style="width:120px;max-width:100%;margin:0;padding:6px 10px;font-size:12px">';
       [15,30,60,120,240,480].forEach(m => { html += '<option value="'+m+'"'+(hb.interval_minutes===m?' selected':'')+'>'+( m >= 60 ? (m/60)+'h' : m+'m')+'</option>'; });
       html += '</select></span></div>';
       html += '<div class="detail-row"><span class="detail-label">Cost Cap</span><span>';
-      html += '<select class="login-input" id="hb-cap-'+a.id+'" style="width:120px;margin:0;padding:6px 10px;font-size:12px">';
+      html += '<select class="login-input" id="hb-cap-'+a.id+'" style="width:120px;max-width:100%;margin:0;padding:6px 10px;font-size:12px">';
       [0.10,0.25,0.50,1.00,2.00,5.00].forEach(c => { html += '<option value="'+c+'"'+(hb.max_cost_per_run_usd===c?' selected':'')+'>'+'$'+c.toFixed(2)+'</option>'; });
       html += '</select></span></div>';
       html += '<div style="margin-top:8px"><span class="detail-label" style="display:block;margin-bottom:4px">Prompt</span>';
@@ -2747,7 +2796,7 @@ async function openAgentDetail(agentId) {
         html += '<span style="font-size:13px">'+esc(sl.team_name || 'Workspace')+'</span>';
         html += '<button class="btn btn-ghost" style="padding:2px 8px;font-size:11px;color:var(--red)" onclick="unlinkSlack(\''+sl.id+'\',\''+a.id+'\')">Disconnect</button>';
         html += '</div>';
-        html += '<div style="margin-top:4px;font-size:11px;color:var(--gray)">Event URL: <code style="font-size:10px">'+window.API_BASE+'/api/channels/slack/events</code></div>';
+        html += '<div style="margin-top:4px;font-size:11px;color:var(--gray);word-break:break-all">Event URL: <code style="font-size:10px">'+window.API_BASE+'/api/channels/slack/events</code></div>';
       }
     } else {
       html += '<div style="margin-top:6px">';
