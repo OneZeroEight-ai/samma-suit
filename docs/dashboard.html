@@ -2848,11 +2848,12 @@ async function loadConversations(agentId) {
     const convos = data.conversations || [];
     if (convos.length === 0) { container.innerHTML = ''; return; }
     container.innerHTML = convos.map(c => {
-      const preview = c.first_message || c.conversation_id?.slice(0, 12) || '—';
+      const cid = c.conversation_id || c.id;
+      const preview = c.title || c.first_message || cid?.slice(0, 12) || 'Untitled';
       const ts = c.created_at ? new Date(c.created_at).toLocaleTimeString() : '';
-      const active = c.conversation_id === chatConversationId ? ' active' : '';
-      return `<div class="chat-convo-item${active}" onclick="loadConversation('${c.conversation_id}')">
-        <span class="chat-convo-preview">${esc(preview)}</span>
+      const active = cid === chatConversationId ? ' active' : '';
+      return `<div class="chat-convo-item${active}" onclick="loadConversation('${cid}')">
+        <span class="chat-convo-preview">${esc(preview.length > 50 ? preview.slice(0, 47) + '...' : preview)}</span>
         <span class="chat-convo-time">${ts} (${c.message_count || 0})</span></div>`;
     }).join('');
   } catch (e) { container.innerHTML = ''; }
