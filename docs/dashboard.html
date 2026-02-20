@@ -324,6 +324,49 @@ nav {
 .chat-msg.assistant table { border-collapse: collapse; margin: 6px 0; font-size: 12px; }
 .chat-msg.assistant th, .chat-msg.assistant td { border: 1px solid var(--card-border); padding: 4px 8px; }
 
+/* Text selection — ensure chat messages are selectable */
+.chat-messages, .chat-msg, .chat-msg * {
+  user-select: text; -webkit-user-select: text;
+  -webkit-touch-callout: default;
+}
+.chat-input-bar textarea {
+  user-select: text; -webkit-user-select: text;
+  -webkit-touch-callout: default;
+}
+
+/* Copy button — message level */
+.chat-msg.assistant { position: relative; }
+.chat-msg-copy {
+  position: absolute; top: 6px; right: 6px;
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1);
+  color: var(--gray); border-radius: 6px; padding: 3px 6px;
+  font-size: 11px; cursor: pointer; opacity: 0; transition: opacity 0.15s;
+  font-family: var(--font-mono); z-index: 2; display: flex; align-items: center; gap: 3px;
+  line-height: 1;
+}
+.chat-msg.assistant:hover .chat-msg-copy { opacity: 1; }
+.chat-msg-copy:hover { background: rgba(124,58,237,0.15); color: var(--purple-light); }
+.chat-msg-copy.copied { color: #10b981; border-color: rgba(16,185,129,0.3); }
+
+/* Code block copy button */
+.chat-msg.assistant pre { position: relative; }
+.code-copy-btn {
+  position: absolute; top: 6px; right: 6px;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);
+  color: var(--gray); border-radius: 4px; padding: 2px 6px;
+  font-size: 10px; cursor: pointer; opacity: 0; transition: opacity 0.15s;
+  font-family: var(--font-mono); z-index: 2;
+}
+.chat-msg.assistant pre:hover .code-copy-btn { opacity: 1; }
+.code-copy-btn:hover { background: rgba(124,58,237,0.15); color: var(--purple-light); }
+.code-copy-btn.copied { color: #10b981; }
+
+/* Mobile: always show copy buttons (no hover) */
+@media (hover: none) {
+  .chat-msg-copy { opacity: 0.6; }
+  .code-copy-btn { opacity: 0.6; }
+}
+
 /* Timestamp — muted, below bubble */
 .chat-ts {
   font-size: 10px; color: var(--gray-dim); font-family: var(--font-mono);
@@ -1495,6 +1538,10 @@ html.light .chat-msg.assistant pre { background: #E2E2EA; border-color: #D8D8E8;
 html.light .chat-msg.assistant code { background: rgba(124,58,237,0.08); }
 html.light .chat-typing { background: #EEEEF2; border-color: #D8D8E8; }
 html.light .chat-input-bar textarea { background: #FFFFFF; border-color: #D8D8E8; color: #1A1A2E; }
+html.light .chat-msg-copy { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); color: #666; }
+html.light .chat-msg-copy:hover { background: rgba(124,58,237,0.1); color: #7C3AED; }
+html.light .code-copy-btn { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.08); color: #666; }
+html.light .code-copy-btn:hover { background: rgba(124,58,237,0.1); color: #7C3AED; }
 
 /* ── RESPONSIVE ── */
 @media (max-width: 900px) {
@@ -3400,6 +3447,43 @@ function renderMarkdown(text) {
 
 let _lastChatRole = null; // track sender for grouping
 
+function copyToClipboard(text, btnEl) {
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btnEl.innerHTML;
+    btnEl.innerHTML = '\u2713 Copied!';
+    btnEl.classList.add('copied');
+    setTimeout(() => { btnEl.innerHTML = orig; btnEl.classList.remove('copied'); }, 1500);
+  }).catch(() => {
+    // Fallback for older browsers
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    const orig = btnEl.innerHTML;
+    btnEl.innerHTML = '\u2713 Copied!';
+    btnEl.classList.add('copied');
+    setTimeout(() => { btnEl.innerHTML = orig; btnEl.classList.remove('copied'); }, 1500);
+  });
+}
+
+function addCodeCopyButtons(container) {
+  container.querySelectorAll('pre').forEach(pre => {
+    if (pre.querySelector('.code-copy-btn')) return;
+    const btn = document.createElement('button');
+    btn.className = 'code-copy-btn';
+    btn.innerHTML = '\u2398 Copy';
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const code = pre.querySelector('code');
+      copyToClipboard((code || pre).textContent, btn);
+    };
+    pre.appendChild(btn);
+  });
+}
+
 function addChatMsg(role, text, layers, mettaSig, opts = {}) {
   const el = document.getElementById('chat-messages');
   const sameSender = _lastChatRole === role;
@@ -3438,6 +3522,17 @@ function addChatMsg(role, text, layers, mettaSig, opts = {}) {
   div.appendChild(textNode);
 
   if (role === 'assistant') {
+    // Copy button for entire message
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'chat-msg-copy';
+    copyBtn.innerHTML = '\u2398 Copy';
+    copyBtn.onclick = (e) => {
+      e.stopPropagation();
+      copyToClipboard(textNode.textContent, copyBtn);
+    };
+    div.appendChild(copyBtn);
+    // Copy buttons on code blocks
+    addCodeCopyButtons(div);
     if (layers && layers.length) div.appendChild(renderSecurityBar(layers));
     if (mettaSig) {
       const sigDiv = document.createElement('div');
@@ -3571,6 +3666,16 @@ async function sendChatMsg() {
       cursor.remove();
       textSpan.innerHTML = renderMarkdown(fullText);
       textSpan.style.whiteSpace = 'normal';
+      // Add copy button for streamed message
+      const streamCopyBtn = document.createElement('button');
+      streamCopyBtn.className = 'chat-msg-copy';
+      streamCopyBtn.innerHTML = '\u2398 Copy';
+      streamCopyBtn.onclick = (e) => {
+        e.stopPropagation();
+        copyToClipboard(textSpan.textContent, streamCopyBtn);
+      };
+      msgDiv.appendChild(streamCopyBtn);
+      addCodeCopyButtons(msgDiv);
       if (streamLayers.length) msgDiv.appendChild(renderSecurityBar(streamLayers));
       if (streamSig) {
         const sigDiv = document.createElement('div');
