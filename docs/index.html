@@ -876,6 +876,25 @@ footer .copy {
 }
 
 /* ── RESPONSIVE ── */
+/* ── SCREENSHOT GRID ── */
+.screenshot-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 40px;
+}
+.screenshot-grid img {
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 0 30px rgba(124, 58, 237, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+}
+.screenshot-grid p {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--gray);
+}
+
 @media (max-width: 900px) {
   .armor-layer { grid-template-columns: 50px 1fr; }
   .armor-protects { display: none; }
@@ -885,6 +904,7 @@ footer .copy {
   .nav-links { display: none; }
   .showcase-card { grid-template-columns: 1fr; text-align: center; }
   .showcase-facts { grid-template-columns: 1fr; }
+  .screenshot-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 600px) {
@@ -1187,12 +1207,23 @@ footer .copy {
   <p>Built by <strong>OneZeroEight.ai</strong> &#8212; we built Samm&#x101; Suit because we needed it.</p>
 </section>
 
-<!-- DEMO VIDEO -->
-<section style="text-align: center; max-width: 400px; margin: 40px auto; padding: 0 20px;">
-  <h2 style="font-size: 28px; font-weight: 800; margin-bottom: 8px;">See it in action</h2>
-  <p style="color: var(--gray); margin-bottom: 20px; font-size: 15px;">2 minutes. All 8 layers. Live production.</p>
-  <div style="position: relative; width: 100%; max-width: 360px; margin: 0 auto; aspect-ratio: 9/16; border-radius: 12px; overflow: hidden; border: 1px solid rgba(139,92,246,0.2);">
-    <iframe src="https://www.youtube.com/embed/FvHZFM4v0zg" style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>
+<!-- DASHBOARD SCREENSHOTS -->
+<section style="max-width: 1100px; margin: 80px auto; padding: 0 24px;">
+  <div class="section-label" style="text-align:center;">IN PRODUCTION</div>
+  <h2 class="section-title" style="text-align:center;">Real dashboard. Real agents. Real governance.</h2>
+  <div class="screenshot-grid fade-in">
+    <div style="text-align:center;">
+      <img src="images/screenshots/dashboard-overview.png" alt="Agent management dashboard">
+      <p>Agent management with live state icons</p>
+    </div>
+    <div style="text-align:center;">
+      <img src="images/screenshots/heartbeat-channels.png" alt="Heartbeat and channels">
+      <p>Governed heartbeats across 5 channels</p>
+    </div>
+    <div style="text-align:center;">
+      <img src="images/screenshots/cost-dashboard.png" alt="Cost dashboard">
+      <p>Real-time KARMA budget enforcement</p>
+    </div>
   </div>
 </section>
 
