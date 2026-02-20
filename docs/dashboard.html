@@ -2398,7 +2398,7 @@ function renderAgents() {
 
     html += `<div class="agent-card glow-${status}" id="agent-card-${a.id}" style="animation-delay:${i * 0.08}s" onclick="selectAgent('${a.id}');openAgentDetail('${a.id}')">
         <div class="agent-card-header">
-          <div class="agent-card-name">${esc(a.name)}</div>
+          <div class="agent-card-name">${esc(a.name)}${a.is_platform_agent ? '<span title="Platform Agent" style="margin-left:6px;font-size:11px;vertical-align:middle;opacity:0.7">\uD83D\uDEE1\uFE0F</span>' : ''}</div>
           ${stateHtml}
         </div>
         <div style="font-size:12px;color:var(--gray);margin-bottom:4px;display:flex;align-items:center;gap:6px">
