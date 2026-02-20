@@ -138,7 +138,7 @@
       <div class="logo-icon">🛡️</div>
       <div>
         <div class="header-title">Sammā Suit <span>Skills</span> Cheatsheet</div>
-        <div class="header-sub">28 skills live · 4 more building · 6 tiers · SANGHA-approved · open source · stdlib-only</div>
+        <div class="header-sub">32 skills live · 6 tiers · SANGHA-approved · open source · stdlib-only</div>
       </div>
     </div>
     <div class="header-right">
@@ -333,34 +333,34 @@
       </div>
     </div>
 
-    <!-- TIER 6 — COMING SOON -->
-    <div class="section-coming">
-      <div class="coming-badge">Building</div>
+    <!-- TIER 6 -->
+    <div class="section">
       <div class="section-title"><span class="icon">🔌</span> Tier 6 — Integration <span class="badge badge-int">4</span></div>
       <div class="section-subtitle">Governed communication with the outside world</div>
 
-      <div class="skill skill-coming">
+      <div class="skill">
         <div class="skill-name">Email Sender <span class="skill-slug">email-sender</span></div>
-        <div class="skill-desc">SMTP sending, templates, attachments, rate limits, dry-run</div>
-        <div class="skill-functions"><span class="func">compose(to, subj, body)</span> <span class="func">send(email, config)</span></div>
-        <div class="skill-tags"><span class="badge-layer layer-net">NETWORK</span></div>
+        <div class="skill-desc">Send emails via Resend API. Plain text and structured HTML reports. SANGHA enforces recipient allowlist.</div>
+        <div class="skill-functions"><span class="func">email_action(action, to, subject, body)</span></div>
+        <div class="skill-tags"><span class="badge badge-sangha">SANGHA &#10003;</span> <span class="badge-layer layer-net">NETWORK</span> <span class="badge-layer layer-sila">SILA</span></div>
       </div>
-      <div class="skill skill-coming">
-        <div class="skill-name">Webhook Manager <span class="skill-slug">webhook-manager</span></div>
-        <div class="skill-desc">Register, verify signatures (HMAC), parse, dispatch, replay protection</div>
-        <div class="skill-functions"><span class="func">verify(payload, sig)</span> <span class="func">dispatch(hooks, path)</span></div>
+      <div class="skill">
+        <div class="skill-name">Web Fetcher <span class="skill-slug">web-fetcher</span></div>
+        <div class="skill-desc">Fetch and extract text from any public HTTPS URL. BODHI enforces HTTPS-only + private IP blocking.</div>
+        <div class="skill-functions"><span class="func">fetch_url(url, max_length, timeout)</span></div>
+        <div class="skill-tags"><span class="badge badge-sangha">SANGHA &#10003;</span> <span class="badge-layer layer-net">NETWORK</span> <span class="badge-layer layer-bodhi">BODHI</span></div>
       </div>
-      <div class="skill skill-coming">
-        <div class="skill-name">Scheduler <span class="skill-slug">scheduler</span></div>
-        <div class="skill-desc">Cron-style scheduling, budget-aware execution, dry-run timeline</div>
-        <div class="skill-functions"><span class="func">create_task(name, cron)</span> <span class="func">evaluate(tasks, now)</span></div>
-        <div class="skill-tags"><span class="badge-layer layer-karma">KARMA</span></div>
+      <div class="skill">
+        <div class="skill-name">Moltbook <span class="skill-slug">moltbook</span></div>
+        <div class="skill-desc">Post, comment, upvote on Moltbook AI agent social network.</div>
+        <div class="skill-functions"><span class="func">moltbook_action(action, content, post_id)</span></div>
+        <div class="skill-tags"><span class="badge badge-sangha">SANGHA &#10003;</span> <span class="badge-layer layer-net">NETWORK</span> <span class="badge-layer layer-sila">SILA</span></div>
       </div>
-      <div class="skill skill-coming">
-        <div class="skill-name">API Connector <span class="skill-slug">api-connector</span></div>
-        <div class="skill-desc">REST client builder, auth presets, egress allowlist, dry-run</div>
-        <div class="skill-functions"><span class="func">build_request(method, url)</span> <span class="func">check_egress(url, allow)</span></div>
-        <div class="skill-tags"><span class="badge-layer layer-bodhi">BODHI</span> <span class="badge-layer layer-net">NETWORK</span></div>
+      <div class="skill">
+        <div class="skill-name">Zoom Scheduler <span class="skill-slug">zoom-scheduler</span></div>
+        <div class="skill-desc">Create, list, delete Zoom meetings via Server-to-Server OAuth. Credentials injected at gateway.</div>
+        <div class="skill-functions"><span class="func">zoom_action(action, topic, start_time, duration)</span></div>
+        <div class="skill-tags"><span class="badge badge-sangha">SANGHA &#10003;</span> <span class="badge-layer layer-net">NETWORK</span> <span class="badge-layer layer-sila">SILA</span></div>
       </div>
     </div>
 
@@ -368,12 +368,11 @@
 
   <div class="footer">
     <div>
-      28 skills live + 4 building · pure Python · stdlib-only (PDF/DOCX optional) · SANGHA AST-scanned · first-party vetted<br>
+      32 skills live · 6 tiers · pure Python · stdlib-only (PDF/DOCX optional) · SANGHA AST-scanned · first-party vetted<br>
       <a href="https://sammasuit.com">sammasuit.com</a> · <a href="https://sammasuit.com/cheatsheet.html">Mega Cheatsheet</a> · <a href="https://github.com/OneZeroEight-ai/samma-suit">GitHub</a> · <a href="https://discord.gg/4A6ExTnKnK">Discord</a>
     </div>
     <div class="stat-bar">
-      <div class="stat"><span class="stat-num">28</span><span class="stat-label">live</span></div>
-      <div class="stat"><span class="stat-num">+4</span><span class="stat-label">building</span></div>
+      <div class="stat"><span class="stat-num">32</span><span class="stat-label">skills</span></div>
       <div class="stat"><span class="stat-num">6</span><span class="stat-label">tiers</span></div>
       <div class="stat"><span class="stat-num">8</span><span class="stat-label">layers</span></div>
     </div>
