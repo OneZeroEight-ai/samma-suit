@@ -1947,7 +1947,10 @@ html.light .code-copy-btn:hover { background: rgba(124,58,237,0.1); color: #7C3A
 <!-- AGENT DETAIL MODAL -->
 <div class="modal-overlay" id="modal-detail">
   <div class="modal-content" style="max-width:640px">
-    <h3 id="detail-agent-name">Agent Detail</h3>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div id="detail-agent-avatar"></div>
+      <h3 id="detail-agent-name">Agent Detail</h3>
+    </div>
     <div id="detail-body">
       <div class="loading-state"><div class="spinner"></div></div>
     </div>
@@ -2443,10 +2446,16 @@ function renderAgents() {
       ? `<div class="agent-state agent-state-clickable" onclick="event.stopPropagation();openAgentDetail('${a.id}');setTimeout(()=>{const el=document.getElementById('heartbeat-section');if(el)el.scrollIntoView({behavior:'smooth',block:'start'})},400)" title="Click to configure heartbeat">${stateIcon}<span class="agent-state-label ${stateLabelClass}">${stateLabel}</span></div>`
       : `<div class="agent-state">${stateIcon}<span class="agent-state-label ${stateLabelClass}">${stateLabel}</span></div>`;
 
+    const avatarHtml = a.avatar_url ? '<img src="' + esc(a.avatar_url) + '" alt="" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0">' : '<div style="width:36px;height:36px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;flex-shrink:0">' + esc((a.name||'A').charAt(0).toUpperCase()) + '</div>';
+
     html += `<div class="agent-card glow-${status}" id="agent-card-${a.id}" style="animation-delay:${i * 0.08}s" onclick="selectAgent('${a.id}');openAgentDetail('${a.id}')">
-        <div class="agent-card-header">
+        <div class="agent-card-header" style="display:flex;align-items:center;gap:10px">
+          ${avatarHtml}
+          <div style="flex:1;min-width:0">
           <div class="agent-card-name">${esc(a.name)}${a.is_platform_agent ? '<span title="Platform Agent" style="margin-left:6px;font-size:11px;vertical-align:middle;opacity:0.7">\uD83D\uDEE1\uFE0F</span>' : ''}</div>
+          ${a.persona_name ? '<div style="font-size:11px;color:var(--purple);opacity:0.8;margin-top:1px">' + esc(a.persona_name) + '</div>' : ''}
           ${stateHtml}
+          </div>
         </div>
         <div style="font-size:12px;color:var(--gray);margin-bottom:4px;display:flex;align-items:center;gap:6px">
           <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${provColor}"></span>
@@ -2462,7 +2471,7 @@ function renderAgents() {
         </div>
         <div class="agent-card-key" title="${esc(pubKey)}">${esc(truncKey)}</div>
         <div class="agent-card-actions">
-          ${status === 'active' ? `<button class="btn-chat" onclick="event.stopPropagation();openChat('${a.id}','${esc(a.name)}')">Chat</button>` : ''}
+          ${status === 'active' ? `<button class="btn-chat" onclick="event.stopPropagation();openChat('${a.id}','${esc(a.name)}','${esc(a.avatar_url||'')}')">Chat</button>` : ''}
           <button class="btn-audit" onclick="event.stopPropagation();scrollToAudit('${a.id}','${esc(a.name)}')">Audit</button>
           ${status !== 'terminated' ? `<button class="btn-kill" onclick="event.stopPropagation();confirmKill('${a.id}','${esc(a.name)}')">Kill <span class="key-badge">K</span></button>` : ''}
           ${status === 'terminated' ? `<button class="btn-revive" onclick="event.stopPropagation();reviveAgent('${a.id}','${esc(a.name)}')">Revive</button>` : ''}
@@ -2859,7 +2868,16 @@ async function openAgentDetail(agentId) {
     const a = agentRes.agent;
     state.detailAgentId = a.id;
     state.detailAgentName = a.name;
+    state.detailAgentAvatar = a.avatar_url || '';
     document.getElementById('detail-agent-name').textContent = a.name;
+    const detailAvatarEl = document.getElementById('detail-agent-avatar');
+    if (detailAvatarEl) {
+      if (a.avatar_url) {
+        detailAvatarEl.innerHTML = '<img src="' + esc(a.avatar_url) + '" alt="" style="width:40px;height:40px;border-radius:50%;object-fit:cover">';
+      } else {
+        detailAvatarEl.innerHTML = '<div style="width:40px;height:40px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:white">' + esc((a.name||'A').charAt(0).toUpperCase()) + '</div>';
+      }
+    }
     // Show/hide chat button based on status
     const chatBtn = document.getElementById('btn-detail-chat');
     if (chatBtn) chatBtn.style.display = (a.status || 'active') === 'active' ? '' : 'none';
@@ -3289,10 +3307,12 @@ async function unlinkSlack(linkId, agentId) {
 let chatAgentId = null;
 let chatConversationId = null;
 let chatAgentName = '';
+let chatAgentAvatar = '';
 
-function openChat(agentId, agentName) {
+function openChat(agentId, agentName, avatarUrl) {
   chatAgentId = agentId;
   chatAgentName = agentName || 'Agent';
+  chatAgentAvatar = avatarUrl || '';
   chatConversationId = null;
   _lastChatRole = null;
   document.getElementById('chat-agent-name').textContent = chatAgentName;
@@ -3325,7 +3345,7 @@ function openChat(agentId, agentName) {
 
 function openChatFromDetail() {
   closeModal('modal-detail');
-  openChat(state.detailAgentId, state.detailAgentName);
+  openChat(state.detailAgentId, state.detailAgentName, state.detailAgentAvatar);
 }
 
 function closeChat() {
@@ -3497,9 +3517,16 @@ function addChatMsg(role, text, layers, mettaSig, opts = {}) {
   if (role === 'assistant' && !sameSender) {
     const header = document.createElement('div');
     header.className = 'chat-sender-header';
-    const avatar = document.createElement('div');
-    avatar.className = 'chat-sender-avatar';
-    avatar.textContent = (chatAgentName || 'A').charAt(0).toUpperCase();
+    let avatar;
+    if (chatAgentAvatar) {
+      avatar = document.createElement('img');
+      avatar.src = chatAgentAvatar;
+      avatar.style.cssText = 'width:20px;height:20px;border-radius:50%;object-fit:cover;flex-shrink:0';
+    } else {
+      avatar = document.createElement('div');
+      avatar.className = 'chat-sender-avatar';
+      avatar.textContent = (chatAgentName || 'A').charAt(0).toUpperCase();
+    }
     const name = document.createElement('span');
     name.className = 'chat-sender-name';
     name.textContent = chatAgentName || 'Agent';
@@ -3582,7 +3609,10 @@ async function sendChatMsg() {
   typingWrap.className = 'chat-msg-wrap';
   const typingHeader = document.createElement('div');
   typingHeader.className = 'chat-sender-header';
-  typingHeader.innerHTML = `<div class="chat-sender-avatar">${(chatAgentName || 'A').charAt(0).toUpperCase()}</div><span class="chat-sender-name">${esc(chatAgentName || 'Agent')}</span>`;
+  const typingAvatarHtml = chatAgentAvatar
+    ? `<img src="${esc(chatAgentAvatar)}" style="width:20px;height:20px;border-radius:50%;object-fit:cover;flex-shrink:0">`
+    : `<div class="chat-sender-avatar">${(chatAgentName || 'A').charAt(0).toUpperCase()}</div>`;
+  typingHeader.innerHTML = `${typingAvatarHtml}<span class="chat-sender-name">${esc(chatAgentName || 'Agent')}</span>`;
   typingWrap.appendChild(typingHeader);
   const typing = document.createElement('div');
   typing.className = 'chat-typing';
