@@ -4321,7 +4321,7 @@ function startLiveFeed() {
 async function pollLiveFeed() {
   try {
     const since = lastLiveTs || new Date(Date.now() - 60000).toISOString();
-    const data = await api('GET', `/api/audit?since=${encodeURIComponent(since)}&limit=50`);
+    const data = await api('GET', `/api/dashboard/audit?since=${encodeURIComponent(since)}&limit=50`);
     const entries = data.entries || data.audit || [];
     if (entries.length > 0) {
       lastLiveTs = entries[0].created_at || lastLiveTs;
