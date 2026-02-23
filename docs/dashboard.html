@@ -198,6 +198,38 @@ nav {
   background: rgba(6,182,212,0.2);
   border-color: var(--cyan);
 }
+.btn-sleep {
+  background: rgba(124,58,237,0.1);
+  color: var(--purple);
+  border: 1px solid rgba(124,58,237,0.3);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-sleep:hover {
+  background: rgba(124,58,237,0.2);
+  border-color: var(--purple);
+}
+.btn-wake {
+  background: rgba(5,150,105,0.1);
+  color: var(--green);
+  border: 1px solid rgba(5,150,105,0.3);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-wake:hover {
+  background: rgba(5,150,105,0.2);
+  border-color: var(--green);
+}
 
 /* ── CHAT SIDEBAR ── */
 .chat-backdrop {
@@ -924,6 +956,11 @@ select.login-input { appearance: auto; cursor: pointer; }
   color: var(--red);
 }
 
+.status-badge.sleeping {
+  background: rgba(124,58,237,0.15);
+  color: var(--purple);
+}
+
 /* Agent state icons */
 .agent-state {
   display: flex;
@@ -944,6 +981,7 @@ select.login-input { appearance: auto; cursor: pointer; }
 .agent-state-label.reviving { color: var(--gold); }
 .agent-state-label.heartbeat { color: var(--cyan); }
 .agent-state-label.active { color: var(--green); }
+.agent-state-label.sleeping { color: var(--purple); }
 .agent-state-clickable { cursor: pointer; transition: opacity 0.2s; }
 .agent-state-clickable:hover { opacity: 0.75; }
 @keyframes reviveIconPulse {
@@ -2007,7 +2045,7 @@ html.light .code-copy-btn:hover { background: rgba(124,58,237,0.1); color: #7C3A
       <div class="shortcut-item"><span>Skills Tab</span><span class="shortcut-key">S</span></div>
       <div class="shortcut-item"><span>Live Feed</span><span class="shortcut-key">L</span></div>
       <div class="shortcut-item"><span>Costs Tab</span><span class="shortcut-key">$</span></div>
-      <div class="shortcut-item"><span>Kill Agent</span><span class="shortcut-key">K</span></div>
+      <div class="shortcut-item"><span>Sleep / Wake</span><span class="shortcut-key">Z</span></div>
       <div class="shortcut-item"><span>Revive Agent</span><span class="shortcut-key">R</span></div>
       <div class="shortcut-item"><span>Focus Search</span><span class="shortcut-key">/</span></div>
       <div class="shortcut-item"><span>Close</span><span class="shortcut-key">Esc</span></div>
@@ -2425,6 +2463,10 @@ function renderAgents() {
       stateIcon = '<span class="agent-state-icon">\uD83D\uDC80</span>';
       stateLabel = 'Killed';
       stateLabelClass = 'killed';
+    } else if (status === 'sleeping') {
+      stateIcon = '<span class="agent-state-icon">\uD83D\uDCA4</span>';
+      stateLabel = 'Sleeping';
+      stateLabelClass = 'sleeping';
     } else if (isReviving) {
       stateIcon = '<span class="agent-state-icon reviving">\u26A1</span>';
       stateLabel = 'Reviving\u2026';
@@ -2473,7 +2515,8 @@ function renderAgents() {
         <div class="agent-card-actions">
           ${status === 'active' ? `<button class="btn-chat" onclick="event.stopPropagation();openChat('${a.id}','${esc(a.name)}','${esc(a.avatar_url||'')}')">Chat</button>` : ''}
           <button class="btn-audit" onclick="event.stopPropagation();scrollToAudit('${a.id}','${esc(a.name)}')">Audit</button>
-          ${status !== 'terminated' ? `<button class="btn-kill" onclick="event.stopPropagation();confirmKill('${a.id}','${esc(a.name)}')">Kill <span class="key-badge">K</span></button>` : ''}
+          ${status === 'active' ? `<button class="btn-sleep" onclick="event.stopPropagation();sleepAgent('${a.id}','${esc(a.name)}')">Sleep <span class="key-badge">Z</span></button>` : ''}
+          ${status === 'sleeping' ? `<button class="btn-wake" onclick="event.stopPropagation();wakeAgent('${a.id}','${esc(a.name)}')">Wake <span class="key-badge">Z</span></button>` : ''}
           ${status === 'terminated' ? `<button class="btn-revive" onclick="event.stopPropagation();reviveAgent('${a.id}','${esc(a.name)}')">Revive</button>` : ''}
         </div>
       </div>`;
@@ -3894,6 +3937,41 @@ async function reviveAgent(agentId, agentName) {
   }
 }
 
+// ── SLEEP / WAKE (Do Not Disturb) ──
+async function sleepAgent(agentId, agentName) {
+  try {
+    await api('POST', `/api/agents/${agentId}/sleep`);
+    toast(`${agentName} is now sleeping (Do Not Disturb)`, 'success');
+    const card = document.getElementById('agent-card-' + agentId);
+    if (card) {
+      const stateEl = card.querySelector('.agent-state');
+      if (stateEl) {
+        stateEl.innerHTML = '<span class="agent-state-icon">\uD83D\uDCA4</span><span class="agent-state-label sleeping">Sleeping</span>';
+      }
+    }
+    setTimeout(() => loadDashboard(), 600);
+  } catch (e) {
+    toast('Failed to sleep agent: ' + e.message, 'error');
+  }
+}
+
+async function wakeAgent(agentId, agentName) {
+  try {
+    await api('POST', `/api/agents/${agentId}/wake`);
+    toast(`${agentName} is awake and active`, 'success');
+    const card = document.getElementById('agent-card-' + agentId);
+    if (card) {
+      const stateEl = card.querySelector('.agent-state');
+      if (stateEl) {
+        stateEl.innerHTML = '<span class="agent-state-icon">\uD83D\uDFE2</span><span class="agent-state-label active">Active</span>';
+      }
+    }
+    setTimeout(() => loadDashboard(), 600);
+  } catch (e) {
+    toast('Failed to wake agent: ' + e.message, 'error');
+  }
+}
+
 // ── LOGIN FLOW ──
 function clearSession() {
   state.token = null;
@@ -4436,7 +4514,7 @@ document.addEventListener('keydown', (e) => {
   if (key === '/') { e.preventDefault(); const sf = document.getElementById('skill-search') || document.getElementById('audit-filter-agent'); if (sf) { switchTab(sf.id.includes('skill') ? 'skills' : 'audit'); sf.focus(); } return; }
   if (state.selectedAgentId) {
     if (key === 'c') { const a = (state.agents?.agents || []).find(x => x.id === state.selectedAgentId); if (a && a.status === 'active') openChat(a.id, a.name); return; }
-    if (key === 'k') { const a = (state.agents?.agents || []).find(x => x.id === state.selectedAgentId); if (a && a.status !== 'terminated') confirmKill(a.id, a.name); return; }
+    if (key === 'z') { const a = (state.agents?.agents || []).find(x => x.id === state.selectedAgentId); if (a && a.status === 'active') sleepAgent(a.id, a.name); else if (a && a.status === 'sleeping') wakeAgent(a.id, a.name); return; }
     if (key === 'r') { const a = (state.agents?.agents || []).find(x => x.id === state.selectedAgentId); if (a && a.status === 'terminated') reviveAgent(a.id, a.name); return; }
   }
 });
