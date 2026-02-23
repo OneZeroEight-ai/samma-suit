@@ -2544,11 +2544,22 @@ function scrollToAudit(agentId, agentName) {
   if (sel) { sel.value = agentName || agentId; filterAudit(); }
 }
 
-function renderAuditLog() {
-  const entries = state.overview?.recent_audit || [];
-  state.auditEntries = entries;
-  populateAuditFilters(entries);
+async function renderAuditLog() {
+  // Start with overview data, then fetch full audit log in background
+  const overviewEntries = state.overview?.recent_audit || [];
+  state.auditEntries = overviewEntries;
+  populateAuditFilters(overviewEntries);
   filterAudit();
+  // Fetch dedicated audit endpoint for richer data
+  try {
+    const data = await api('GET', '/api/dashboard/audit?limit=200');
+    const entries = data.audit || [];
+    if (entries.length > 0) {
+      state.auditEntries = entries;
+      populateAuditFilters(entries);
+      filterAudit();
+    }
+  } catch (e) { /* fall back to overview data */ }
 }
 
 function populateAuditFilters(entries) {
@@ -2601,7 +2612,7 @@ function renderAuditTable(entries) {
   let running = totalCost;
 
   let html = `<div class="audit-scroll"><table class="audit-table"><thead><tr>
-    <th>Timestamp</th><th>Agent</th><th>Action</th><th>Layers</th><th>Tokens</th><th>Cost</th>
+    <th>Timestamp</th><th>Agent</th><th>Action</th><th>Model</th><th>Layers</th><th>In / Out Tokens</th><th>Cost</th><th>Duration</th>
     </tr></thead><tbody>`;
   for (const e of entries) {
     const ts = e.created_at ? new Date(e.created_at).toLocaleString() : '—';
@@ -2612,13 +2623,18 @@ function renderAuditTable(entries) {
       return `<span class="layer-badge ${cls}">${l}</span>`;
     }).join('');
     const cost = e.cost_usd != null ? e.cost_usd : 0;
+    const modelShort = e.model ? e.model.replace('claude-', '').replace('-20250929', '').replace('-20251001', '') : '—';
+    const tokensStr = (e.input_tokens || e.output_tokens) ? `${(e.input_tokens || 0).toLocaleString()} / ${(e.output_tokens || 0).toLocaleString()}` : '—';
+    const durationStr = e.duration_ms ? `${(e.duration_ms / 1000).toFixed(1)}s` : '—';
     html += `<tr>
       <td class="audit-ts">${ts}</td>
       <td>${esc(e.agent_name || '—')}</td>
       <td>${esc(e.action || '—')}</td>
+      <td style="font-family:var(--font-mono);font-size:11px">${esc(modelShort)}</td>
       <td>${layers || '—'}</td>
-      <td style="font-family:var(--font-mono);font-size:12px">${e.tokens_used != null ? e.tokens_used.toLocaleString() : '—'}</td>
-      <td style="font-family:var(--font-mono);font-size:12px">${e.cost_usd != null ? '$' + e.cost_usd.toFixed(4) : '—'}<span class="cumulative">cum: $${running.toFixed(4)}</span></td>
+      <td style="font-family:var(--font-mono);font-size:12px">${tokensStr}</td>
+      <td style="font-family:var(--font-mono);font-size:12px">${cost > 0 ? '$' + cost.toFixed(4) : '—'}<span class="cumulative">cum: $${running.toFixed(4)}</span></td>
+      <td style="font-family:var(--font-mono);font-size:12px">${durationStr}</td>
     </tr>`;
     running -= cost;
   }
@@ -3132,17 +3148,17 @@ async function openAgentDetail(agentId) {
     const auditEntries = auditRes.audit || [];
     if (auditEntries.length > 0) {
       html += '<h4 style="margin-top:24px;margin-bottom:12px;font-size:14px;color:var(--gray)">Recent Activity</h4>';
-      html += '<div class="audit-scroll" style="max-height:250px"><table class="audit-table"><thead><tr><th>Time</th><th>Action</th><th>Layers</th><th>Cost</th></tr></thead><tbody>';
+      html += '<div class="audit-scroll" style="max-height:250px"><table class="audit-table"><thead><tr><th>Time</th><th>Action</th><th>Model</th><th>Tokens</th><th>Cost</th></tr></thead><tbody>';
       for (const e of auditEntries) {
         const ts = e.created_at ? new Date(e.created_at).toLocaleString() : '—';
-        const layers = (e.layers_enforced || []).map(l =>
-          `<span class="layer-badge ${l.toLowerCase()}">${l}</span>`
-        ).join('');
+        const modelShort = e.model ? e.model.replace('claude-', '').replace('-20250929', '').replace('-20251001', '') : '—';
+        const tokensStr = (e.input_tokens || e.output_tokens) ? `${(e.input_tokens||0).toLocaleString()} / ${(e.output_tokens||0).toLocaleString()}` : '—';
         html += `<tr>
           <td class="audit-ts">${ts}</td>
           <td>${esc(e.action || '—')}</td>
-          <td>${layers || '—'}</td>
-          <td style="font-family:var(--font-mono);font-size:12px">${e.cost_usd != null ? '$'+e.cost_usd.toFixed(4) : '—'}</td>
+          <td style="font-family:var(--font-mono);font-size:11px">${esc(modelShort)}</td>
+          <td style="font-family:var(--font-mono);font-size:12px">${tokensStr}</td>
+          <td style="font-family:var(--font-mono);font-size:12px">${(e.cost_usd||0) > 0 ? '$'+e.cost_usd.toFixed(4) : '—'}</td>
         </tr>`;
       }
       html += '</tbody></table></div>';
@@ -4169,6 +4185,7 @@ function switchTab(tab) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + tab));
   history.replaceState(null, '', '#' + tab);
   if (tab === 'skills' && !state.skills) loadSkills();
+  if (tab === 'audit') renderAuditLog();
   if (tab === 'live') startLiveFeed();
   if (tab === 'costs') loadCosts();
   if (tab === 'billing') loadBillingStatus();
